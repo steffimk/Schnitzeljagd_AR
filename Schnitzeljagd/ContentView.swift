@@ -1,0 +1,29 @@
+//
+//  ContentView.swift
+//  schnitzeljagd_v2
+//
+//  Created by admin on 24.05.20.
+//  Copyright © 2020 PIOSE. All rights reserved.
+//
+
+import SwiftUI
+import RealityKit
+
+struct ContentView : View {
+    @EnvironmentObject var data: DataModel
+    var body: some View {
+        HStack {
+            ARUIView()
+            if data.enableAR {ARDisplayView()}
+            else {Spacer()}
+        }
+    }
+}
+
+#if DEBUG
+struct ContentView_Previews : PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+#endif
