@@ -3,10 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01C2EF1DB8A4FDB4408B112A /* Pods_SchnitzeljagdTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE56678F334E7C04E6F86FF2 /* Pods_SchnitzeljagdTests.framework */; };
+		158AE64A3F3086966C88DCFD /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BAF08E32A1ECAFDBF964E7C /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework */; };
+		84D8BBF3247E4ED4006990B4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */; };
+		84D8BBF5247E6893006990B4 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8BBF4247E6893006990B4 /* SessionStore.swift */; };
+		84D8BBF9247E7BD5006990B4 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8BBF8247E7BD5006990B4 /* SignInView.swift */; };
 		84DA5209247D2796006546B6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA5208247D2796006546B6 /* AppDelegate.swift */; };
 		84DA520B247D2796006546B6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA520A247D2796006546B6 /* ContentView.swift */; };
 		84DA520D247D2796006546B6 /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = 84DA520C247D2796006546B6 /* Experience.rcproject */; };
@@ -19,6 +24,7 @@
 		84DA523C247D2911006546B6 /* ARUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA523A247D2911006546B6 /* ARUIView.swift */; };
 		84DA523D247D2911006546B6 /* ARDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA523B247D2911006546B6 /* ARDisplayView.swift */; };
 		84DA523F247D29A2006546B6 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA523E247D29A2006546B6 /* MapView.swift */; };
+		F22BF67D8CEF878CBB8D0983 /* Pods_Schnitzeljagd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03B6BD240311064274541C23 /* Pods_Schnitzeljagd.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +45,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03B6BD240311064274541C23 /* Pods_Schnitzeljagd.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Schnitzeljagd.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2898B0EDE1EFCBC8AAF211D0 /* Pods-SchnitzeljagdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchnitzeljagdTests.release.xcconfig"; path = "Target Support Files/Pods-SchnitzeljagdTests/Pods-SchnitzeljagdTests.release.xcconfig"; sourceTree = "<group>"; };
+		5A81267970F94FD8D8091719 /* Pods-SchnitzeljagdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchnitzeljagdTests.debug.xcconfig"; path = "Target Support Files/Pods-SchnitzeljagdTests/Pods-SchnitzeljagdTests.debug.xcconfig"; sourceTree = "<group>"; };
+		6BAF08E32A1ECAFDBF964E7C /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Schnitzeljagd_SchnitzeljagdUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		84D8BBF4247E6893006990B4 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		84D8BBF8247E7BD5006990B4 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		84DA5205247D2796006546B6 /* Schnitzeljagd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Schnitzeljagd.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84DA5208247D2796006546B6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84DA520A247D2796006546B6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -57,6 +70,11 @@
 		84DA523A247D2911006546B6 /* ARUIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARUIView.swift; sourceTree = "<group>"; };
 		84DA523B247D2911006546B6 /* ARDisplayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARDisplayView.swift; sourceTree = "<group>"; };
 		84DA523E247D29A2006546B6 /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MapView.swift; path = ../../app/Schnitzeljagd/MapView.swift; sourceTree = "<group>"; };
+		BF03FD3F9717C364456DAC50 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig"; path = "Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		C9C6040EA1485B2D5D62751C /* Pods-Schnitzeljagd.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Schnitzeljagd.release.xcconfig"; path = "Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd.release.xcconfig"; sourceTree = "<group>"; };
+		CE56678F334E7C04E6F86FF2 /* Pods_SchnitzeljagdTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SchnitzeljagdTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D41CBA0E8ACBFEEB5BEC1763 /* Pods-Schnitzeljagd.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Schnitzeljagd.debug.xcconfig"; path = "Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd.debug.xcconfig"; sourceTree = "<group>"; };
+		F1DFFB6A8363787D650ACD00 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Schnitzeljagd-SchnitzeljagdUITests.release.xcconfig"; path = "Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +82,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F22BF67D8CEF878CBB8D0983 /* Pods_Schnitzeljagd.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01C2EF1DB8A4FDB4408B112A /* Pods_SchnitzeljagdTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,12 +98,36 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				158AE64A3F3086966C88DCFD /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B99CE9628EECA6A040454EC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D41CBA0E8ACBFEEB5BEC1763 /* Pods-Schnitzeljagd.debug.xcconfig */,
+				C9C6040EA1485B2D5D62751C /* Pods-Schnitzeljagd.release.xcconfig */,
+				BF03FD3F9717C364456DAC50 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig */,
+				F1DFFB6A8363787D650ACD00 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.release.xcconfig */,
+				5A81267970F94FD8D8091719 /* Pods-SchnitzeljagdTests.debug.xcconfig */,
+				2898B0EDE1EFCBC8AAF211D0 /* Pods-SchnitzeljagdTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		34C54D50A7C171679BB3ECAA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				03B6BD240311064274541C23 /* Pods_Schnitzeljagd.framework */,
+				6BAF08E32A1ECAFDBF964E7C /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework */,
+				CE56678F334E7C04E6F86FF2 /* Pods_SchnitzeljagdTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		84DA51FC247D2796006546B6 = {
 			isa = PBXGroup;
 			children = (
@@ -91,6 +135,8 @@
 				84DA521E247D2798006546B6 /* SchnitzeljagdTests */,
 				84DA5229247D2798006546B6 /* SchnitzeljagdUITests */,
 				84DA5206247D2796006546B6 /* Products */,
+				0B99CE9628EECA6A040454EC /* Pods */,
+				34C54D50A7C171679BB3ECAA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -116,8 +162,11 @@
 				84DA520E247D2797006546B6 /* Assets.xcassets */,
 				84DA5213247D2797006546B6 /* LaunchScreen.storyboard */,
 				84DA5216247D2797006546B6 /* Info.plist */,
+				84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */,
 				84DA5210247D2797006546B6 /* Preview Content */,
 				84DA5238247D2860006546B6 /* DataModel.swift */,
+				84D8BBF4247E6893006990B4 /* SessionStore.swift */,
+				84D8BBF8247E7BD5006990B4 /* SignInView.swift */,
 			);
 			path = Schnitzeljagd;
 			sourceTree = "<group>";
@@ -155,9 +204,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 84DA522F247D2798006546B6 /* Build configuration list for PBXNativeTarget "Schnitzeljagd" */;
 			buildPhases = (
+				05BF2E13DA6EE2293A22E81A /* [CP] Check Pods Manifest.lock */,
 				84DA5201247D2796006546B6 /* Sources */,
 				84DA5202247D2796006546B6 /* Frameworks */,
 				84DA5203247D2796006546B6 /* Resources */,
+				9817CD7119F1652DEBC1BB64 /* [CP] Embed Pods Frameworks */,
+				D346B49872C6970FDF16CC81 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -172,6 +224,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 84DA5232247D2798006546B6 /* Build configuration list for PBXNativeTarget "SchnitzeljagdTests" */;
 			buildPhases = (
+				90BC1868D893EDEB4518295E /* [CP] Check Pods Manifest.lock */,
 				84DA5217247D2798006546B6 /* Sources */,
 				84DA5218247D2798006546B6 /* Frameworks */,
 				84DA5219247D2798006546B6 /* Resources */,
@@ -190,9 +243,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 84DA5235247D2798006546B6 /* Build configuration list for PBXNativeTarget "SchnitzeljagdUITests" */;
 			buildPhases = (
+				7185AA95904D6144A2BDAA42 /* [CP] Check Pods Manifest.lock */,
 				84DA5222247D2798006546B6 /* Sources */,
 				84DA5223247D2798006546B6 /* Frameworks */,
 				84DA5224247D2798006546B6 /* Resources */,
+				C235048E43B323581AB06EF6 /* [CP] Embed Pods Frameworks */,
+				5B85F18C8396E0C06F57975C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -253,6 +309,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84DA5215247D2797006546B6 /* LaunchScreen.storyboard in Resources */,
+				84D8BBF3247E4ED4006990B4 /* GoogleService-Info.plist in Resources */,
 				84DA5212247D2797006546B6 /* Preview Assets.xcassets in Resources */,
 				84DA520F247D2797006546B6 /* Assets.xcassets in Resources */,
 			);
@@ -274,15 +331,154 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		05BF2E13DA6EE2293A22E81A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Schnitzeljagd-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5B85F18C8396E0C06F57975C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7185AA95904D6144A2BDAA42 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Schnitzeljagd-SchnitzeljagdUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		90BC1868D893EDEB4518295E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SchnitzeljagdTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9817CD7119F1652DEBC1BB64 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C235048E43B323581AB06EF6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D346B49872C6970FDF16CC81 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		84DA5201247D2796006546B6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84D8BBF9247E7BD5006990B4 /* SignInView.swift in Sources */,
 				84DA523F247D29A2006546B6 /* MapView.swift in Sources */,
 				84DA520B247D2796006546B6 /* ContentView.swift in Sources */,
 				84DA5239247D2860006546B6 /* DataModel.swift in Sources */,
 				84DA5209247D2796006546B6 /* AppDelegate.swift in Sources */,
+				84D8BBF5247E6893006990B4 /* SessionStore.swift in Sources */,
 				84DA523C247D2911006546B6 /* ARUIView.swift in Sources */,
 				84DA523D247D2911006546B6 /* ARDisplayView.swift in Sources */,
 				84DA520D247D2796006546B6 /* Experience.rcproject in Sources */,
@@ -448,17 +644,19 @@
 		};
 		84DA5230247D2798006546B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D41CBA0E8ACBFEEB5BEC1763 /* Pods-Schnitzeljagd.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Schnitzeljagd/Preview Content\"";
+				DEVELOPMENT_TEAM = PL8HSG54KG;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Schnitzeljagd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = piose.Schnitzeljagd;
+				PRODUCT_BUNDLE_IDENTIFIER = PiOSE.Schnitzeljagd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -467,17 +665,19 @@
 		};
 		84DA5231247D2798006546B6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9C6040EA1485B2D5D62751C /* Pods-Schnitzeljagd.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Schnitzeljagd/Preview Content\"";
+				DEVELOPMENT_TEAM = PL8HSG54KG;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Schnitzeljagd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = piose.Schnitzeljagd;
+				PRODUCT_BUNDLE_IDENTIFIER = PiOSE.Schnitzeljagd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -486,6 +686,7 @@
 		};
 		84DA5233247D2798006546B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5A81267970F94FD8D8091719 /* Pods-SchnitzeljagdTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -507,6 +708,7 @@
 		};
 		84DA5234247D2798006546B6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2898B0EDE1EFCBC8AAF211D0 /* Pods-SchnitzeljagdTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -528,6 +730,7 @@
 		};
 		84DA5236247D2798006546B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BF03FD3F9717C364456DAC50 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -547,6 +750,7 @@
 		};
 		84DA5237247D2798006546B6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1DFFB6A8363787D650ACD00 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

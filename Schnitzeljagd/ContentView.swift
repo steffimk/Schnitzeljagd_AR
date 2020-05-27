@@ -10,13 +10,27 @@ import SwiftUI
 import RealityKit
 
 struct ContentView : View {
+    
     @EnvironmentObject var data: DataModel
+    @EnvironmentObject var session: SessionStore
+    
+    func getUser () {
+        session.listen()
+    }
+    
     var body: some View {
-        HStack {
-            ARUIView()
-            if data.enableAR {ARDisplayView()}
-            else {Spacer()}
-        }
+        Group {
+            if (session.session != nil){
+                HStack {
+                    ARUIView()
+                    if data.enableAR {ARDisplayView()}
+                    else {Spacer()}
+                }
+            } else {
+                SignInView()
+            }
+        }.onAppear(perform: getUser)
+
     }
 }
 
@@ -24,6 +38,7 @@ struct ContentView : View {
 struct ContentView_Previews : PreviewProvider {
     static var previews: some View {
         ContentView()
+        .environmentObject(SessionStore())
     }
 }
 #endif
