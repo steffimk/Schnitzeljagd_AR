@@ -386,6 +386,20 @@
                         ]
                       ],
                       "children" : {
+                        "iconicItem" : {
+                          "overrides" : {
+                            "factory" : null,
+                            "runtimeAttributes" : [
+                              [
+                                "RuntimeIdentifier",
+                                {
+                                  "typeName" : "UUID",
+                                  "value" : "CCFA5FDD-6A85-4E15-9469-E93A2462E6AD"
+                                }
+                              ]
+                            ]
+                          }
+                        },
                         "item" : {
                           "overrides" : {
                             "factory" : null,
@@ -516,10 +530,10 @@
                 0
               ],
               "identifier" : "57A417AE-B6A3-42F7-8518-4637B7506EAB",
-              "material" : "concrete",
+              "material" : "rubber",
               "overrides" : {
                 "children" : {
-                  "3402673C-A4E9-4A79-992D-12A4AC86627B" : {
+                  "9FEB9F88-D7C5-4C41-B98F-A12CA983D468" : {
                     "overrides" : {
                       "children" : {
                         "USDScene" : {
@@ -543,7 +557,7 @@
                                 "url",
                                 {
                                   "typeName" : "String",
-                                  "value" : "model:17afd2f8956f2625dfba6f0ed42e57c1\/usdz_schnitzel_neu2___1590484429033(2).usdz"
+                                  "value" : "model:43a9af500092852117d876c43a5853e1\/usdz_schnitzel_klein___1590581971308.usdz"
                                 }
                               ],
                               [
@@ -563,7 +577,7 @@
                                 "RuntimeIdentifier",
                                 {
                                   "typeName" : "UUID",
-                                  "value" : "64606CB4-BE19-4A69-B38F-1FCB00AB4BED"
+                                  "value" : "5F3DE5AA-1381-4162-9349-335A1E728CB4"
                                 }
                               ]
                             ]
@@ -599,7 +613,7 @@
                           "RuntimeIdentifier",
                           {
                             "typeName" : "UUID",
-                            "value" : "247D2CBB-05B0-4363-89CF-730289082756"
+                            "value" : "68654858-463B-48F1-BD97-9B36DAE8468A"
                           }
                         ],
                         [
@@ -608,30 +622,52 @@
                             "typeName" : "String",
                             "value" : "schnitzel"
                           }
+                        ],
+                        [
+                          "rigidBody-enabled",
+                          {
+                            "typeName" : "Bool",
+                            "value" : true
+                          }
+                        ],
+                        [
+                          "rigidBody-material",
+                          {
+                            "typeName" : "RigidBodyMaterial",
+                            "value" : {
+                              "builtIn" : "rubber",
+                              "overrides" : {
+
+                              }
+                            }
+                          }
                         ]
                       ]
                     },
                     "transform" : {
                       "matrix" : [
-                        0.17033466696739197,
+                        0.14734438061714172,
                         0,
                         0,
                         0,
                         0,
-                        0.17033466696739197,
+                        0.14734438061714172,
                         0,
                         0,
                         0,
                         0,
-                        0.17033466696739197,
+                        0.14734438061714172,
                         0,
                         0,
-                        -0.030460117384791374,
+                        -0.017517587170004845,
                         0,
                         1
                       ]
                     }
                   },
+                  "56E8AB47-EA38-4087-8A9E-25BD9A3C23E4" : null,
+                  "3402673C-A4E9-4A79-992D-12A4AC86627B" : null,
+                  "6938165A-2552-4B54-81E9-5ED4B3DF9F49" : null,
                   "Cube" : null,
                   "EBB07592-F71B-4123-BAD8-0EAC260FC8BA" : null
                 },
@@ -650,21 +686,21 @@
               "title" : "Schnitzel",
               "viewTransform" : {
                 "cameraTransform" : [
-                  0.99998682737350464,
+                  0.99193453788757324,
+                  -9.3132257461547852e-10,
+                  0.12675105035305023,
                   0,
-                  0.0051269270479679108,
+                  0.035166122019290924,
+                  0.96074217557907104,
+                  -0.27520471811294556,
                   0,
-                  0.0020831534639000893,
-                  0.91373252868652344,
-                  -0.40631070733070374,
+                  -0.12177509069442749,
+                  0.27744251489639282,
+                  0.95299339294433594,
                   0,
-                  -0.0046846400946378708,
-                  0.40631610155105591,
-                  0.91372048854827881,
-                  0,
-                  0.058644771575927734,
-                  3.3854384422302246,
-                  5.0014533996582031,
+                  0.0044404985383152962,
+                  0.36718034744262695,
+                  1.0076769590377808,
                   1
                 ],
                 "sceneTransform" : [

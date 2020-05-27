@@ -29,7 +29,7 @@ final class DataModel: ObservableObject {
         arView = ARView(frame: .zero)
         
         // Load the "Box" scene from the "Experience" Reality File
-        let boxAnchor = try! Experience.loadHotdog()
+        let boxAnchor = try! Experience.loadSchnitzel()
         
         // Add the box anchor to the scene
         arView.scene.anchors.append(boxAnchor)
@@ -37,7 +37,7 @@ final class DataModel: ObservableObject {
     
     func translateBox() {
         // Try to find the steel box Entity
-        if let hotdog = (arView.scene.anchors[0] as? Experience.Hotdog)?.hotdog {
+        if let schnitzel = (arView.scene.anchors[0] as? Experience.Schnitzel)?.schnitzel {
             // Convert centimeters to meters
             let xTranslationM = xTranslation / 100
             let yTranslationM = yTranslation / 100
@@ -47,7 +47,7 @@ final class DataModel: ObservableObject {
             let translation = SIMD3<Float>(xTranslationM, yTranslationM, zTranslationM)
             
             // Translate the box by this amount
-            hotdog.transform.translation = translation
+            schnitzel.transform.translation = translation
         }
     }
 }
