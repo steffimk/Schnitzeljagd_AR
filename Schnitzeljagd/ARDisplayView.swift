@@ -8,6 +8,7 @@
 
 import SwiftUI
 import RealityKit
+import ARKit
 
 struct ARDisplayView: View {
     var body: some View {
@@ -22,6 +23,23 @@ struct ARViewContainer: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: ARView, context: Context) {}
+}
+
+extension ARView: ARCoachingOverlayViewDelegate {
+    func addCoaching() {
+        
+        let coachingOverlay = ARCoachingOverlayView()
+        coachingOverlay.delegate = self
+        coachingOverlay.session = self.session
+        coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        coachingOverlay.goal = .anyPlane
+        self.addSubview(coachingOverlay)
+    }
+    
+    public func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
+        //Ready to add entities next?
+    }
 }
 
 #if DEBUG

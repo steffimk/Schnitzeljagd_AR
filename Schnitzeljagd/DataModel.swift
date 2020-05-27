@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import RealityKit
+import ARKit
 
 final class DataModel: ObservableObject {
     static var shared = DataModel()
@@ -28,10 +29,15 @@ final class DataModel: ObservableObject {
         // Initialise the ARView
         arView = ARView(frame: .zero)
         
+        arView.addCoaching()
+        
+        let config = ARWorldTrackingConfiguration()
+        config.planeDetection = .horizontal
+        arView.session.run(config, options: [])
+                
         // Load the "Box" scene from the "Experience" Reality File
         let boxAnchor = try! Experience.loadSchnitzel()
         
-        // Add the box anchor to the scene
         arView.scene.anchors.append(boxAnchor)
     }
     
