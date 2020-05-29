@@ -1,0 +1,6 @@
+framework module Pods_SchnitzeljagdTests {
+  umbrella header "Pods-SchnitzeljagdTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
