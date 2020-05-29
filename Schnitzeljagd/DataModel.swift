@@ -10,6 +10,7 @@ import Foundation
 import Combine
 import RealityKit
 import ARKit
+import UIKit
 
 final class DataModel: ObservableObject {
     static var shared = DataModel()
