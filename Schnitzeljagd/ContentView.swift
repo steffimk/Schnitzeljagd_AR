@@ -9,28 +9,39 @@
 import SwiftUI
 import RealityKit
 
-struct ContentView : View {
+//struct ContentView : View {
+//
+//    @EnvironmentObject var data: DataModel
+//    @EnvironmentObject var session: SessionStore
+//
+//    func getUser () {
+//        session.listen()
+//    }
     
-    @EnvironmentObject var data: DataModel
-    @EnvironmentObject var session: SessionStore
-    
-    func getUser () {
-        session.listen()
-    }
-    
-    var body: some View {
-        Group {
-            if (session.session != nil){
-                HStack {
-                    ARUIView()
-                    if data.enableAR {ARDisplayView()}
-                    else {Spacer()}
-                }
-            } else {
-                SignInView()
-            }
-        }.onAppear(perform: getUser)
+//    var body: some View {
+//        Group {
+//            if (session.session != nil){
+//                HStack {
+//                    ARUIView()
+//                    if data.enableAR {ARDisplayView()}
+//                    else {Spacer()}
+//                }
+//            } else {
+//                SignInView()
+//            }
+//        }.onAppear(perform: getUser)
+//
+//    }
+//}
 
+struct ContentView : View {
+    @EnvironmentObject var data: DataModel
+    var body: some View {
+        HStack {
+            ARUIView()
+            if data.enableAR {ARDisplayView()}
+            else {Spacer()}
+        }
     }
 }
 
