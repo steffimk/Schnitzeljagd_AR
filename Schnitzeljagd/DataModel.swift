@@ -13,7 +13,7 @@ import ARKit
 import UIKit
 
 final class DataModel: ObservableObject {
-    static var shared = DataModel()
+    static var shared = DataModel() // Singleton
     @Published var arView: ARView!
     @Published var enableAR = false
     @Published var xTranslation: Float = 0 {
@@ -36,9 +36,11 @@ final class DataModel: ObservableObject {
         config.planeDetection = .horizontal
         arView.session.run(config, options: [])
                 
-        // Load the "Box" scene from the "Experience" Reality File
+        // Load the "Schnitzel" scene from the "Experience" Reality File
         let boxAnchor = try! Experience.loadSchnitzel()
-        
+        let schnitzel = boxAnchor.schnitzel as? HasCollision
+        arView.installGestures(.all, for: schnitzel!)
+        schnitzel!.generateCollisionShapes(recursive: true)
         arView.scene.anchors.append(boxAnchor)
     }
     
