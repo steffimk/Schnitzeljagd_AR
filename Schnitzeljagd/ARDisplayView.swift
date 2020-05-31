@@ -42,6 +42,32 @@ extension ARView: ARCoachingOverlayViewDelegate {
     }
 }
 
+// Add a Schnitzel by tapping
+ extension ARView {
+    @objc func addSchnitzelToSceneView(withGestureRecognizer recognizer: UIGestureRecognizer) {
+        let tapLocation = recognizer.location(in: self)
+        let hitTestResults = self.hitTest(tapLocation, types: .existingPlane)
+
+        guard let hitTestResult = hitTestResults.first else { return }
+        let translation = hitTestResult.worldTransform
+        let x = translation.columns.3.x
+        let y = translation.columns.3.y
+        let z = translation.columns.3.z
+
+        let schnitzelAnchor = try! Experience.loadSchnitzel()
+        schnitzelAnchor.position = SIMD3<Float>(x,y,z)
+        self.scene.anchors.append(schnitzelAnchor)
+    }
+
+    func addTapGestureToSceneView() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addSchnitzelToSceneView(withGestureRecognizer:)))
+        self.addGestureRecognizer(tapGestureRecognizer)
+        print("New Schnitzel")
+    }
+}
+    
+
+
 #if DEBUG
 struct ARDisplayView_Previews: PreviewProvider {
     static var previews: some View {

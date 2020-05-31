@@ -16,46 +16,25 @@ final class DataModel: ObservableObject {
     static var shared = DataModel()
     @Published var arView: ARView!
     @Published var enableAR = false
-    @Published var xTranslation: Float = 0 {
-        didSet {translateBox()}
-    }
-    @Published var yTranslation: Float = 0 {
-        didSet {translateBox()}
-    }
-    @Published var zTranslation: Float = 0 {
-        didSet {translateBox()}
-    }
     
     init() {
         // Initialise the ARView
         arView = ARView(frame: .zero)
         
         arView.addCoaching()
+        arView.addTapGestureToSceneView()
         
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
         arView.session.run(config, options: [])
                 
-        // Load the "Box" scene from the "Experience" Reality File
-        let boxAnchor = try! Experience.loadSchnitzel()
+        // Load the "Schnitzel" scene from the "Experience" Reality File
+        //let schnitzelAnchor = try! Experience.loadSchnitzel()
         
-        arView.scene.anchors.append(boxAnchor)
-    }
-    
-    func translateBox() {
-        // Try to find the steel box Entity
-        if let schnitzel = (arView.scene.anchors[0] as? Experience.Schnitzel)?.schnitzel {
-            // Convert centimeters to meters
-            let xTranslationM = xTranslation / 100
-            let yTranslationM = yTranslation / 100
-            let zTranslationM = zTranslation / 100
-            
-            // Convert to a vector of 3 float values
-            let translation = SIMD3<Float>(xTranslationM, yTranslationM, zTranslationM)
-            
-            // Translate the box by this amount
-            schnitzel.transform.translation = translation
-        }
+        //arView.scene.anchors.append(schnitzelAnchor)
+        
     }
 }
+
+
 

@@ -21,10 +21,10 @@ import RealityKit
 //    var body: some View {
 //        Group {
 //            if (session.session != nil){
-//                HStack {
-//                    ARUIView()
-//                    if data.enableAR {ARDisplayView()}
-//                    else {Spacer()}
+//                VStack {
+//                  if data.enableAR {ARDisplayView()}
+//                  else {MapView()}
+//                  ARUIView()
 //                }
 //            } else {
 //                SignInView()
@@ -37,10 +37,10 @@ import RealityKit
 struct ContentView : View {
     @EnvironmentObject var data: DataModel
     var body: some View {
-        HStack {
-            ARUIView()
+        VStack {
             if data.enableAR {ARDisplayView()}
-            else {Spacer()}
+            else {MapView()}
+            ARUIView()
         }
     }
 }

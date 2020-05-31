@@ -28,9 +28,6 @@ struct ARUIView: View {
                         .stroke(Color.purple, lineWidth: 5)
                 )
         }.padding()
-//            Stepper("X: \(Int(data.xTranslation))", value:$data.xTranslation, in: -100...100)
-//            Stepper("y: \(Int(data.yTranslation))", value:$data.yTranslation, in: -100...100)
-//            Stepper("XZ \(Int(data.zTranslation))", value:$data.zTranslation, in: -100...100)
     }
 }
 }
