@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  schnitzeljagd_v2
 //
-//  Created by admin on 24.05.20.
+//  Created by Team Schnitzeljagd on 24.05.20.
 //  Copyright © 2020 PIOSE. All rights reserved.
 //
 

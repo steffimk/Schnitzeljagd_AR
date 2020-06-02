@@ -2,7 +2,7 @@
 //  DataModel.swift
 //  schnitzeljagd_v2
 //
-//  Created by admin on 24.05.20.
+//  Created by Team Schnitzeljagd on 24.05.20.
 //  Copyright © 2020 PIOSE. All rights reserved.
 //
 
@@ -27,11 +27,31 @@ final class DataModel: ObservableObject {
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
         arView.session.run(config, options: [])
-                
-        // Load the "Schnitzel" scene from the "Experience" Reality File
-        //let schnitzelAnchor = try! Experience.loadSchnitzel()
         
-        //arView.scene.anchors.append(schnitzelAnchor)
+        // NOT WORKING YET - Add Raycast
+//        let scene = try! Experience.loadSchnitzel()
+//
+//        func onTap(_ sender: UITapGestureRecognizer) {
+//
+//                scene.schnitzel!.name = "Schnitzel"
+//
+//                let tapLocation: CGPoint = sender.location(in: arView)
+//                let estimatedPlane: ARRaycastQuery.Target = .estimatedPlane
+//                let alignment: ARRaycastQuery.TargetAlignment = .horizontal
+//
+//                let result: [ARRaycastResult] = arView.raycast(from: tapLocation,
+//                                                           allowing: estimatedPlane,
+//                                                          alignment: alignment)
+//
+//                guard let rayCast: ARRaycastResult = result.first
+//                else { return }
+//
+//                let anchor = AnchorEntity(world: rayCast.worldTransform)
+//                anchor.addChild(scene)
+//                arView.scene.anchors.append(anchor)
+//
+//                print(rayCast)
+//            }
         
     }
 }

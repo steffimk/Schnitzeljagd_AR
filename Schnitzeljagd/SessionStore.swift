@@ -2,7 +2,7 @@
 //  SessionStore.swift
 //  Schnitzeljagd
 //
-//  Created by admin on 27.05.20.
+//  Created by Team Schnitzeljagd on 27.05.20.
 //  Copyright © 2020 PIOSE. All rights reserved.
 //
 
