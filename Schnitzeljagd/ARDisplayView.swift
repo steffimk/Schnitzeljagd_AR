@@ -40,10 +40,8 @@ extension ARView: ARCoachingOverlayViewDelegate {
     public func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
         //Ready to add entities next?
     }
-}
-
-// Add a Schnitzel by tapping
- extension ARView {
+    
+    // Add a Schnitzel by tapping
     @objc func addSchnitzelToSceneView(withGestureRecognizer recognizer: UIGestureRecognizer) {
         let tapLocation = recognizer.location(in: self)
         let hitTestResults = self.hitTest(tapLocation, types: .existingPlane)
@@ -65,8 +63,6 @@ extension ARView: ARCoachingOverlayViewDelegate {
         print("New Schnitzel")
     }
 }
-    
-
 
 #if DEBUG
 struct ARDisplayView_Previews: PreviewProvider {
