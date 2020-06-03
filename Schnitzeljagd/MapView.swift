@@ -8,6 +8,7 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
@@ -15,12 +16,14 @@ struct MapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        let coordinate = CLLocationCoordinate2D(
-            latitude: 48.150833, longitude: 11.580278)
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: coordinate, span: span)
+        var span = MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)
+        var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 48, longitude: 12), span: span)
+        if let coordinate = DataModel.shared.location?.coordinate{
+            span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+            region = MKCoordinateRegion(center: coordinate, span: span)
+            uiView.addAnnotation(mapAnnotation(coordinate: coordinate, title: TextEnum.annotationLocTitle.rawValue, subtitle: TextEnum.annotationLocSubtitle.rawValue))
+        }
         uiView.setRegion(region, animated: true)
-        uiView.addAnnotation(mapAnnotation(coordinate: coordinate, title: "LMU", subtitle: "Ludwig-Maximilians-Universität"))
     }
     
 }

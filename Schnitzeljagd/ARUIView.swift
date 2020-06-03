@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+
 #if !targetEnvironment(simulator)
 
 struct ARUIView: View {
@@ -17,7 +18,7 @@ struct ARUIView: View {
             self.data.enableAR.toggle()
         }) {
             if data.enableAR {
-                Text("AR")
+                Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
                     .font(.title)
                     .padding()
@@ -30,7 +31,7 @@ struct ARUIView: View {
                             .stroke(Color.purple, lineWidth: 5)
                 )}
             else {
-                Text("AR")
+                Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
                     .font(.title)
                     .padding()
@@ -49,7 +50,6 @@ struct ARUIView: View {
 
 struct ARUIView_Previews: PreviewProvider {
     static var previews: some View {
-        ARUIView()
-    }
+        ARUIView()    }
 }
 #endif

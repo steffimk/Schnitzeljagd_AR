@@ -11,12 +11,15 @@ import Combine
 import RealityKit
 import ARKit
 import UIKit
+import CoreLocation
 
 
 final class DataModel: ObservableObject {
-    static var shared = DataModel()
+    static var shared = DataModel() // Singleton
     @Published var arView: ARView!
-    @Published var enableAR = false
+    @Published var enableAR: Bool = false
+    var locationManager: CLLocationManager = CLLocationManager()
+    @Published var location: CLLocation?
     
     init() {
         // Initialise the ARView

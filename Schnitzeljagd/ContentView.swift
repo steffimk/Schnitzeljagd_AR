@@ -44,7 +44,7 @@ struct ContentView : View {
                 Rectangle()
                     .fill(Color(red: 0, green: 119/255, blue: 27/255))
                     .frame(height: 150)
-                Text("Schnitzeljagd")
+                    Text(TextEnum.appTitle.rawValue)
                     .position(x:130, y:100)
                     .foregroundColor(Color(red:1, green: 252/255, blue: 230/255))
                     .font(.system(size: 30, weight: .bold))
