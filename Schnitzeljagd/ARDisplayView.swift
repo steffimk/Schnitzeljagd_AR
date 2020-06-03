@@ -56,8 +56,14 @@ extension ARView: ARCoachingOverlayViewDelegate {
         let z = translation.columns.3.z
 
         let schnitzelAnchor = try! Experience.loadSchnitzel()
+        
+        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+        schnitzel!.generateCollisionShapes(recursive: true)
+        DataModel.shared.arView.installGestures(.all, for: schnitzel!)
+        
         schnitzelAnchor.position = SIMD3<Float>(x,y,z)
         self.scene.anchors.append(schnitzelAnchor)
+        
     }
 
     func addTapGestureToSceneView() {
