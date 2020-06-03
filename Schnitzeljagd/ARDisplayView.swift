@@ -10,6 +10,9 @@ import SwiftUI
 import RealityKit
 import ARKit
 
+#if !targetEnvironment(simulator)
+
+
 struct ARDisplayView: View {
     var body: some View {
         return ARViewContainer().edgesIgnoringSafeArea(.all)
@@ -64,10 +67,12 @@ extension ARView: ARCoachingOverlayViewDelegate {
     }
 }
 
+
 #if DEBUG
 struct ARDisplayView_Previews: PreviewProvider {
     static var previews: some View {
         ARDisplayView()
     }
 }
+#endif
 #endif

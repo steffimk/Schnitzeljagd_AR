@@ -12,6 +12,7 @@ import RealityKit
 import ARKit
 import UIKit
 
+
 final class DataModel: ObservableObject {
     static var shared = DataModel()
     @Published var arView: ARView!
@@ -19,14 +20,15 @@ final class DataModel: ObservableObject {
     
     init() {
         // Initialise the ARView
+        #if !targetEnvironment(simulator)
         arView = ARView(frame: .zero)
-        
         arView.addCoaching()
         arView.addTapGestureToSceneView()
-        
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
-        arView.session.run(config, options: [])
+
+        #endif
+        //arView.session.run(config, options: [])
         
         // NOT WORKING YET - Add Raycast
 //        let scene = try! Experience.loadSchnitzel()
@@ -55,6 +57,5 @@ final class DataModel: ObservableObject {
         
     }
 }
-
 
 

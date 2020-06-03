@@ -11,6 +11,8 @@ import SwiftUI
 import Firebase
 import GoogleSignIn
 
+
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
@@ -19,11 +21,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // ...
         return
       }
-    
+    #if !targetEnvironment(simulator)
       guard let authentication = user.authentication else { return }
       let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
                                                         accessToken: authentication.accessToken)
       // ...
+
+    #endif
     }
     
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
@@ -74,6 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
+        
 }
 
 struct AppDelegate_Previews: PreviewProvider {

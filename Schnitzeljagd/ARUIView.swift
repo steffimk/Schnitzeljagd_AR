@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+#if !targetEnvironment(simulator)
 
 struct ARUIView: View {
     @EnvironmentObject var data: DataModel
@@ -51,3 +52,4 @@ struct ARUIView_Previews: PreviewProvider {
         ARUIView()
     }
 }
+#endif

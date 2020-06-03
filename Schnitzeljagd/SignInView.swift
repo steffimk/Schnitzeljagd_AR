@@ -33,6 +33,7 @@ struct SignInView : View {
 
     var body: some View {
         VStack {
+            
             TextField("Email", text: $email)
             SecureField("Password", text: $password)
             if (error) {
@@ -47,6 +48,6 @@ struct SignInView : View {
 
 struct SignInView_Previews: PreviewProvider {
     static var previews: some View {
-        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
+     SignInView()
     }
 }
