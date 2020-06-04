@@ -23,6 +23,7 @@ final class DataModel: ObservableObject {
     let locationManager: CLLocationManager = CLLocationManager()
     let locationDelegate: LocationDelegate = LocationDelegate()
     @Published var location: CLLocation?
+    let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
     
     init() {
         // Initialise the ARView

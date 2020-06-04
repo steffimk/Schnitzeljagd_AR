@@ -55,9 +55,9 @@ struct ContentView : View {
             
             #if !targetEnvironment(simulator)
             if data.enableAR {
-                    ARDisplayView()
+                    ARDisplayView().padding(.top, -15).padding(.bottom, -90)
             }
-            else { MapView().frame(maxHeight: .infinity)}
+            else { MapView().frame(maxHeight: .infinity).padding(.top, -15)}
             ARUIView()
             #endif
         }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))

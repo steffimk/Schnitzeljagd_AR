@@ -15,17 +15,17 @@ struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         startLocationServices()
         let mapView = MKMapView(frame: .zero)
-        mapView.showsUserLocation = true
-        mapView.userTrackingMode = .follow
+        mapView.delegate = DataModel.shared.mapViewDelegate
+        mapView.showsCompass = true
         return mapView
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-//        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-//        let coordinate = uiView.userLocation.coordinate
-//        let region = MKCoordinateRegion(center: coordinate, span: span)
-//        uiView.addAnnotation(MapAnnotation(coordinate: coordinateLMU, title: TextEnum.annotationTitle.rawValue, subtitle: TextEnum.annotationSubtitle.rawValue)) TODO: add annotations of schnitzel in the environment
-//        uiView.setRegion(region, animated: true)
+        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803)
+        let mapAnnotationSchnitzel = MapAnnotation(coordinate: coordinateCenterSchnitzel, title: TextEnum.annotationTitle.rawValue, subtitle: TextEnum.annotationSubtitle.rawValue)
+        let schnitzelRegion = CLCircularRegion(center: coordinateCenterSchnitzel, radius: 50, identifier: "Probe Schnitzel-Region")
+        DataModel.shared.locationManager.startMonitoring(for: schnitzelRegion)
+        uiView.addAnnotation(mapAnnotationSchnitzel)
     }
     
     static func dismantleUIView(_ uiView: MKMapView, coordinator: ()) {
@@ -33,7 +33,7 @@ struct MapView: UIViewRepresentable {
     }
     
     func startLocationServices(){
-        DataModel.shared.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        DataModel.shared.locationManager.desiredAccuracy = kCLLocationAccuracyBest // Accuracy of location - keep as low as possible to minimize power consumption
         DataModel.shared.locationManager.pausesLocationUpdatesAutomatically = true
         DataModel.shared.locationManager.startUpdatingLocation()
     }
@@ -52,6 +52,15 @@ class MapAnnotation : NSObject, MKAnnotation {
         
         super.init()
     }
+}
+
+class MapViewDelegate : NSObject, MKMapViewDelegate {
+    
+    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
+        mapView.showsUserLocation = true
+        mapView.userTrackingMode = .followWithHeading
+    }
+    
 }
 
 struct MapView_Previews: PreviewProvider {

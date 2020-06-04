@@ -21,30 +21,30 @@ struct ARUIView: View {
                 Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
                     .font(.title)
-                    .padding()
+                    .padding(8)
                     .background(Color.green)
                     .cornerRadius(40)
                     .foregroundColor(.white)
-                    .padding(10)
+                    .padding(8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.purple, lineWidth: 5)
+                            .stroke(Color.purple, lineWidth: 4)
                 )}
             else {
                 Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
                     .font(.title)
-                    .padding()
+                    .padding(8)
                     .background(Color.blue)
                     .cornerRadius(40)
                     .foregroundColor(.white)
-                    .padding(10)
+                    .padding(8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.purple, lineWidth: 5)
+                            .stroke(Color.purple, lineWidth: 4)
                 )}
             }
-        }.padding()
+    }.padding(7).padding(.top, -10)
     }
 }
 

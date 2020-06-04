@@ -24,14 +24,18 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
         print("Location updates are paused")
     }
     
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        print("Location Manager started to monitor region \(region.identifier)")
+    }
+    
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion){
         // TODO: Handle entered region
-        print("User entered region")
+        print("User entered region \(region.identifier)")
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion){
         // TODO: Handle exited region
-        print("User exited region")
+        print("User exited region \(region.identifier)")
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading){
