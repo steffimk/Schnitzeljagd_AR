@@ -10,9 +10,10 @@ import Foundation
 import CoreLocation
 
 class LocationDelegate : NSObject, CLLocationManagerDelegate {
-   
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        DataModel.shared.location = locations[locations.count-1] // save most recent location
+        DataModel.shared.location = locations.last! // saves most recent location
+        print("Location was updated")
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager){
@@ -39,15 +40,27 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus){
         switch(status){
-        case .notDetermined: print("Location authorization not determined") // ask user to determine auth status
-        case .restricted: print("Location authorization restricted") // app cannot function
-        case .authorizedAlways: print("Location always authorized") // change nothing
-        case .authorizedWhenInUse: print("Location autherized when in use") // change nothing
+        case .notDetermined:
+            print("Location authorization not determined") // ask user to determine auth status
+            manager.stopUpdatingLocation()
+        case .restricted:
+            print("Location authorization restricted")
+            manager.stopUpdatingLocation()
+        case .authorizedAlways:
+            print("Location always authorized")
+            manager.startUpdatingLocation()
+        case .authorizedWhenInUse:
+            print("Location authorized when in use")
+            manager.startUpdatingLocation()
         default: print("Other location authorization")
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        if let error = error as? CLError, error.code == .denied {
+           // Location updates are not authorized.
+           manager.stopUpdatingLocation()
+        }
         print("Location Manager failed: " + error.localizedDescription)
     }
 

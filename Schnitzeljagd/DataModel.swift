@@ -18,7 +18,10 @@ final class DataModel: ObservableObject {
     static var shared = DataModel() // Singleton
     @Published var arView: ARView!
     @Published var enableAR: Bool = false
-    var locationManager: CLLocationManager = CLLocationManager()
+    
+    // Location
+    let locationManager: CLLocationManager = CLLocationManager()
+    let locationDelegate: LocationDelegate = LocationDelegate()
     @Published var location: CLLocation?
     
     init() {
@@ -29,8 +32,11 @@ final class DataModel: ObservableObject {
         arView.addTapGestureToSceneView()
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
-
+        
+        locationManager.delegate = locationDelegate
+        locationManager.requestWhenInUseAuthorization()
         #endif
+        
         //arView.session.run(config, options: [])
         
         // NOT WORKING YET - Add Raycast

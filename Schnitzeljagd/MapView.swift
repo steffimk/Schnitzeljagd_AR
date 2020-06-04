@@ -11,24 +11,36 @@ import MapKit
 import CoreLocation
 
 struct MapView: UIViewRepresentable {
+    
     func makeUIView(context: Context) -> MKMapView {
-        return MKMapView(frame: .zero)
+        startLocationServices()
+        let mapView = MKMapView(frame: .zero)
+        mapView.showsUserLocation = true
+        mapView.userTrackingMode = .follow
+        return mapView
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        var span = MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)
-        var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 48, longitude: 12), span: span)
-        if let coordinate = DataModel.shared.location?.coordinate{
-            span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-            region = MKCoordinateRegion(center: coordinate, span: span)
-            uiView.addAnnotation(mapAnnotation(coordinate: coordinate, title: TextEnum.annotationLocTitle.rawValue, subtitle: TextEnum.annotationLocSubtitle.rawValue))
-        }
-        uiView.setRegion(region, animated: true)
+//        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+//        let coordinate = uiView.userLocation.coordinate
+//        let region = MKCoordinateRegion(center: coordinate, span: span)
+//        uiView.addAnnotation(MapAnnotation(coordinate: coordinateLMU, title: TextEnum.annotationTitle.rawValue, subtitle: TextEnum.annotationSubtitle.rawValue)) TODO: add annotations of schnitzel in the environment
+//        uiView.setRegion(region, animated: true)
+    }
+    
+    static func dismantleUIView(_ uiView: MKMapView, coordinator: ()) {
+        DataModel.shared.locationManager.stopUpdatingLocation()
+    }
+    
+    func startLocationServices(){
+        DataModel.shared.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        DataModel.shared.locationManager.pausesLocationUpdatesAutomatically = true
+        DataModel.shared.locationManager.startUpdatingLocation()
     }
     
 }
 
-class mapAnnotation : NSObject, MKAnnotation {
+class MapAnnotation : NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
     var title: String?
     var subtitle: String?

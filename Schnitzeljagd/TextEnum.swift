@@ -18,7 +18,7 @@ enum TextEnum: String {
     case AR = "AR"
     
     // MapView Messages
-    case annotationLocTitle = "Standort"
-    case annotationLocSubtitle = "Dein derzeitiger Standort"
+    case annotationTitle = "Schnitzel"
+    case annotationSubtitle = "Im Umkreis von 70m befindet sich ein Schnitzel"
     
 }

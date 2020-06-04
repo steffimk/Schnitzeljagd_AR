@@ -37,35 +37,30 @@ import RealityKit
 struct ContentView : View {
     @EnvironmentObject var data: DataModel
     var body: some View {
-        
-        
         VStack {
-            ZStack {
-                Rectangle()
-                    .fill(Color(red: 0, green: 119/255, blue: 27/255))
-                    .frame(height: 150)
-                    Text(TextEnum.appTitle.rawValue)
-                    .position(x:130, y:100)
-                    .foregroundColor(Color(red:1, green: 252/255, blue: 230/255))
-                    .font(.system(size: 30, weight: .bold))
-                Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/) {
-                     RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(red:1, green: 252/255, blue: 230/255))
-                    }
-                    
-                    .frame(width: 50, height: 50)
-                    .position(x:360, y:100)
-                
-            }
-            .frame(width: 414, height: 100)
-            .position(x:207, y: 0)
+          HStack {
+              Button(action: {}){
+                  Image(systemName: "line.horizontal.3").foregroundColor(.white).font(Font.system(.title))
+              }
+              Spacer()
+                  Text(TextEnum.appTitle.rawValue)
+                  .font(.title)
+                  .fontWeight(.bold)
+                  .foregroundColor(.white)
+              Spacer()
+              Button(action: {}){
+                  Image(systemName: "person.crop.circle").foregroundColor(.white).font(Font.system(.largeTitle))
+              }
+          }.padding()
             
             #if !targetEnvironment(simulator)
-            if data.enableAR {ARDisplayView()}
-            else {MapView()}
+            if data.enableAR {
+                    ARDisplayView()
+            }
+            else { MapView().frame(maxHeight: .infinity)}
             ARUIView()
             #endif
-        }
+        }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
         
     }
 }
