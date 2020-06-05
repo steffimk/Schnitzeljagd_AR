@@ -63,13 +63,13 @@ extension ARView: ARCoachingOverlayViewDelegate {
         
         schnitzelAnchor.position = SIMD3<Float>(x,y,z)
         self.scene.anchors.append(schnitzelAnchor)
+        print("New Schnitzel")
         
     }
 
     func addTapGestureToSceneView() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addSchnitzelToSceneView(withGestureRecognizer:)))
         self.addGestureRecognizer(tapGestureRecognizer)
-        print("New Schnitzel")
     }
 }
 

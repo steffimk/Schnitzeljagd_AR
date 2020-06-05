@@ -26,34 +26,15 @@ final class DataModel: ObservableObject {
         arView.addTapGestureToSceneView()
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
+        
+        // Load the "Box" scene from the "Experience" Reality File
+            let boxAnchor = try! Experience.loadSchnitzel()
+            
+            arView.scene.anchors.append(boxAnchor)
 
         #endif
         //arView.session.run(config, options: [])
         
-        // NOT WORKING YET - Add Raycast
-//        let scene = try! Experience.loadSchnitzel()
-//
-//        func onTap(_ sender: UITapGestureRecognizer) {
-//
-//                scene.schnitzel!.name = "Schnitzel"
-//
-//                let tapLocation: CGPoint = sender.location(in: arView)
-//                let estimatedPlane: ARRaycastQuery.Target = .estimatedPlane
-//                let alignment: ARRaycastQuery.TargetAlignment = .horizontal
-//
-//                let result: [ARRaycastResult] = arView.raycast(from: tapLocation,
-//                                                           allowing: estimatedPlane,
-//                                                          alignment: alignment)
-//
-//                guard let rayCast: ARRaycastResult = result.first
-//                else { return }
-//
-//                let anchor = AnchorEntity(world: rayCast.worldTransform)
-//                anchor.addChild(scene)
-//                arView.scene.anchors.append(anchor)
-//
-//                print(rayCast)
-//            }
         
     }
 }

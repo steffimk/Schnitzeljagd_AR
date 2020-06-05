@@ -52,10 +52,10 @@ struct ContentView : View {
                      RoundedRectangle(cornerRadius: 20)
                     .fill(Color(red:1, green: 252/255, blue: 230/255))
                     }
-                    
+
                     .frame(width: 50, height: 50)
                     .position(x:360, y:100)
-                
+
             }
             .frame(width: 414, height: 100)
             .position(x:207, y: 0)
