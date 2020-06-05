@@ -45,6 +45,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         GIDSignIn.sharedInstance().delegate = self
         
+        var ref: DatabaseReference!
+        ref = Database.database().reference()
+        
         let contentView = ContentView()
         
 

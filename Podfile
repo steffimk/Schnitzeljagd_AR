@@ -6,6 +6,7 @@ target 'Schnitzeljagd' do
   use_frameworks!
   pod 'Firebase/Auth'
   pod 'GoogleSignIn'
+  pod 'Firebase/Database'
 
   # Pods for Schnitzeljagd
   target 'SchnitzeljagdTests' do

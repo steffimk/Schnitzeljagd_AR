@@ -29,7 +29,23 @@ struct ARUIView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 40)
                             .stroke(Color.purple, lineWidth: 4)
-                )}
+                )
+                Button(action: {
+                    self.data.saveSchnitzel()
+                }) {
+                        Text("Save")
+                            .fontWeight(.bold)
+                            .font(.title)
+                            .padding(8)
+                            .background(Color.yellow)
+                            .cornerRadius(40)
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .stroke(Color.purple, lineWidth: 4)
+                        )
+                }}
             else {
                 Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
