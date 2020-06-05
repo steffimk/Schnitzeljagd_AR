@@ -26,14 +26,10 @@ final class DataModel: ObservableObject {
         arView.addTapGestureToSceneView()
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
+        arView.session.run(config, options: [])
         
-        // Load the "Box" scene from the "Experience" Reality File
-            let boxAnchor = try! Experience.loadSchnitzel()
-            
-            arView.scene.anchors.append(boxAnchor)
-
         #endif
-        //arView.session.run(config, options: [])
+        
         
         
     }
