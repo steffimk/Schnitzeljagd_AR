@@ -34,8 +34,7 @@ final class DataModel: ObservableObject {
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
         
-        locationManager.delegate = locationDelegate
-        locationManager.requestWhenInUseAuthorization()
+        initLocationServices()
         #endif
         
         //arView.session.run(config, options: [])
@@ -65,6 +64,15 @@ final class DataModel: ObservableObject {
 //                print(rayCast)
 //            }
         
+    }
+    
+    func initLocationServices(){
+        self.locationManager.delegate = locationDelegate
+        self.locationManager.requestWhenInUseAuthorization()
+        // Stop monitoring all previously monitored regions
+        for region in self.locationManager.monitoredRegions {
+            self.locationManager.stopMonitoring(for: region)
+        }
     }
 }
 

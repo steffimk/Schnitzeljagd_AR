@@ -13,6 +13,9 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         DataModel.shared.location = locations.last! // saves most recent location
+        for region in manager.monitoredRegions {
+            manager.requestState(for: region)
+        }
         print("Location was updated")
     }
     
@@ -36,6 +39,16 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion){
         // TODO: Handle exited region
         print("User exited region \(region.identifier)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+        let stateValue: String
+        switch(state.rawValue){
+        case 1: stateValue = "Inside" // TODO
+        case 2: stateValue = "Outside" // TODO
+        default: stateValue = "Unknown"
+        }
+        print("State of region \(region.identifier) determined: \(stateValue)")
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading){

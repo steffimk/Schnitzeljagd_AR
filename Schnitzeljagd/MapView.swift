@@ -21,9 +21,9 @@ struct MapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803)
-//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3879, longitude: 9.9509)
-        let schnitzelRegion = SchnitzelRegion(center: coordinateCenterSchnitzel, radius: 50, regionIdentifier: "SchnitzelRegion Dummy")
+//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803)
+        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500)
+        let schnitzelRegion = SchnitzelRegion(center: coordinateCenterSchnitzel, radius: 70, regionIdentifier: "SchnitzelRegion Dummy")
         DataModel.shared.locationManager.startMonitoring(for: schnitzelRegion.region)
         uiView.addAnnotation(schnitzelRegion.annotation)
         uiView.addOverlay(schnitzelRegion.circle)
@@ -48,6 +48,8 @@ class SchnitzelRegion {
     
     init(center: CLLocationCoordinate2D, radius: CLLocationDistance, regionIdentifier: String){
         self.region = CLCircularRegion(center: center, radius: radius, identifier: regionIdentifier)
+        self.region.notifyOnEntry = true
+        self.region.notifyOnExit = true
         self.annotation = MapAnnotation(coordinate: center, title: TextEnum.annotationTitle.rawValue, subtitle: TextEnum.annotationSubtitle.rawValue)
         self.circle = MKCircle(center: center, radius: radius)
     }
