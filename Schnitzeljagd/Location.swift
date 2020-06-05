@@ -11,10 +11,23 @@ import CoreLocation
 
 class LocationDelegate : NSObject, CLLocationManagerDelegate {
     
+    var isInsideRegion: Bool
+    var currentRegion: CLRegion?
+    
+    override init(){
+        self.isInsideRegion = false
+        super.init()
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         DataModel.shared.location = locations.last! // saves most recent location
+        self.isInsideRegion = false
+        self.currentRegion = nil
         for region in manager.monitoredRegions {
             manager.requestState(for: region)
+        }
+        if self.isInsideRegion {
+            DataModel.shared.enableAR = true // TODO enter ar mode and do sth with currentRegion
         }
         print("Location was updated")
     }
@@ -44,8 +57,11 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
         let stateValue: String
         switch(state.rawValue){
-        case 1: stateValue = "Inside" // TODO
-        case 2: stateValue = "Outside" // TODO
+        case 1:
+            self.isInsideRegion = true
+            self.currentRegion = region
+            stateValue = "Inside"
+        case 2: stateValue = "Outside"
         default: stateValue = "Unknown"
         }
         print("State of region \(region.identifier) determined: \(stateValue)")
