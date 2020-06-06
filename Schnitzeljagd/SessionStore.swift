@@ -19,8 +19,8 @@ struct User {
     
     static let `default` = Self(
         uid: "sdfdsaf",
-        displayName: "Ben McMahen",
-        email: "ben.mcmahen@gmail.com",
+        displayName: "Schnitzeljagd",
+        email: "schnitzeljagd@gmail.com",
         photoURL: nil
     )
 

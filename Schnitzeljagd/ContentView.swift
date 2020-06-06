@@ -36,7 +36,15 @@ import RealityKit
 
 struct ContentView : View {
     @EnvironmentObject var data: DataModel
+    @EnvironmentObject var session: SessionStore
+          
+    func getUser () {
+          session.listen()
+    }
+          
     var body: some View {
+          //Group {
+          //    if (session.session != nil){
         VStack {
           HStack {
               Button(action: {}){
@@ -61,6 +69,10 @@ struct ContentView : View {
             ARUIView()
             #endif
         }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
+         //     } else {
+         //           SignInView()
+         //     }
+         // }.onAppear(perform: getUser)
         
     }
 }
@@ -69,7 +81,7 @@ struct ContentView : View {
 struct ContentView_Previews : PreviewProvider {
     static var previews: some View {
         ContentView()
-        .environmentObject(SessionStore())
+            .environmentObject(SessionStore())
     }
 }
 #endif

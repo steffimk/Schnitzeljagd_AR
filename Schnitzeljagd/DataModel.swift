@@ -36,9 +36,10 @@ final class DataModel: ObservableObject {
         config.planeDetection = .horizontal
         
         initLocationServices()
+        arView.session.run(config, options: [])
         #endif
         
-        arView.session.run(config, options: [])
+        
         
     }
     
