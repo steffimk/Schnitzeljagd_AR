@@ -12,8 +12,9 @@ import SwiftUI
 
 struct ARUIView: View {
     @EnvironmentObject var data: DataModel
+    
     var body: some View {
-    VStack {
+    HStack {
         Button(action: {
             self.data.enableAR.toggle()
         }) {
@@ -30,10 +31,20 @@ struct ARUIView: View {
                         RoundedRectangle(cornerRadius: 40)
                             .stroke(Color.purple, lineWidth: 4)
                 )
+                
                 Button(action: {
-                    self.data.saveSchnitzel()
+                    if self.data.save {
+                        self.data.saveSchnitzel()
+                        self.data.save = false
+                        
+                    }
+                    else {
+                        self.data.loadSchnitzel()
+                        self.data.save = true
+                    }
                 }) {
-                        Text("Save")
+                    if data.save {
+                        Text(TextEnum.save.rawValue)
                             .fontWeight(.bold)
                             .font(.title)
                             .padding(8)
@@ -44,8 +55,22 @@ struct ARUIView: View {
                             .overlay(
                                 RoundedRectangle(cornerRadius: 40)
                                     .stroke(Color.purple, lineWidth: 4)
-                        )
-                }}
+                        )}
+                    else {
+                        Text(TextEnum.load.rawValue)
+                            .fontWeight(.bold)
+                            .font(.title)
+                            .padding(8)
+                            .background(Color.gray)
+                            .cornerRadius(40)
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .stroke(Color.purple, lineWidth: 4)
+                        )}
+                    }
+            }
             else {
                 Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
@@ -60,6 +85,8 @@ struct ARUIView: View {
                             .stroke(Color.purple, lineWidth: 4)
                 )}
             }
+        
+        
     }.padding(7).padding(.top, -10)
     }
 }

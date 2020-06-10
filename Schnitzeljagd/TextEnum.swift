@@ -16,6 +16,8 @@ enum TextEnum: String {
     // Basic Messages
     case appTitle = "Schnitzeljagd"
     case AR = "AR"
+    case save = "save"
+    case load = "load"
     
     // MapView Messages
     case annotationTitle = "Schnitzel"

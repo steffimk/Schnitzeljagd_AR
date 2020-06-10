@@ -43,11 +43,11 @@ struct ContentView : View {
     }
           
     var body: some View {
-          //Group {
-          //    if (session.session != nil){
+          Group {
+              if (session.session != nil){
         VStack {
           HStack {
-              Button(action: {}){
+                    Button(action: {}){
                   Image(systemName: "line.horizontal.3").foregroundColor(.white).font(Font.system(.title))
               }
               Spacer()
@@ -56,7 +56,7 @@ struct ContentView : View {
                   .fontWeight(.bold)
                   .foregroundColor(.white)
               Spacer()
-              Button(action: {}){
+              Button(action: {self.session.signOut()}){
                   Image(systemName: "person.crop.circle").foregroundColor(.white).font(Font.system(.largeTitle))
               }
           }.padding()
@@ -69,10 +69,10 @@ struct ContentView : View {
             ARUIView()
             #endif
         }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
-         //     } else {
-         //           SignInView()
-         //     }
-         // }.onAppear(perform: getUser)
+              } else {
+                    SignInView()
+              }
+          }.onAppear(perform: getUser)
         
     }
 }

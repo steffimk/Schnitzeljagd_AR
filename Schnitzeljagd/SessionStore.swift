@@ -67,15 +67,15 @@ class SessionStore : ObservableObject {
         }
     }
     
-    //func signInWithGoogle () {
-    //    GIDSignIn.sharedInstance().signIn()
-    //}
+    func signInWithGoogle () {
+//        GIDSignIn.sharedInstance().signIn()
+    }
     
     func signOut () -> Bool {
         do {
             try Auth.auth().signOut()
-//            self.isLoggedIn = false
-//            self.session = nil
+            self.isLoggedIn = false
+            self.session = nil
             return true
         } catch {
             return false

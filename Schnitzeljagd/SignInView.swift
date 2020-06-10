@@ -33,15 +33,19 @@ struct SignUpView : View {
         }
     }
     
+    
     var body : some View {
+        ZStack {
         VStack {
             
             Text("Create an account")
                 .font(.title)
                 .padding(.horizontal)
+                .foregroundColor(.white)
             
             TextField("Email", text: $email)
                 .padding()
+                .frame(width: 250, height: 30, alignment: .center)
             
             VStack(alignment: .leading) {
                 SecureField("Password", text: $password)
@@ -49,6 +53,7 @@ struct SignUpView : View {
                 .padding()
                 .frame(width: 250, height: 30, alignment: .center)
                 Text("At least 8 characters required.").font(.footnote).foregroundColor(Color.gray)
+                .padding()
                 }.padding(.horizontal)
             
             if (error) {
@@ -64,21 +69,26 @@ struct SignUpView : View {
                 action: signUp
                 )
                 .disabled(loading)
-                .padding()
-            
-            
-            Divider()
-            
-            Text("An account will allow you to save and access recipe information across devices. You can delete your account at any time and your information will not be shared.")
-                .font(.footnote)
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.leading)
-                .lineLimit(nil)
-                .padding()
-            
-            Spacer()
+                .padding(5)
+                .foregroundColor(.white)
+                .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
+                .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00), lineWidth: 5)
+                )
+                   // alignment: Spacer()
             
         }
+            .frame(width: 300, height: 300, alignment: .center)
+            .background(Color.black)
+            //.overlay(
+            //    RoundedRectangle(cornerRadius: 20)
+            //        .stroke(Color.white, lineWidth: 15)
+            //)
+        }
+        .frame(width: 500, height: 800, alignment: .center)
+        .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 0))
+        .foregroundColor(.black)
         
     }
     
@@ -110,11 +120,17 @@ struct SignInView : View {
     }
 
     var body: some View {
+        NavigationView {
         ZStack {
             VStack {
                 
+                Text("Log in")
+                .font(.title)
+                .padding(.horizontal)
+                .foregroundColor(.white)
+                
                 TextField("Email", text: $email)
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .padding(.all)
                     .frame(width: 250, height: 30, alignment: .center)
                 
@@ -124,7 +140,8 @@ struct SignInView : View {
                 .padding()
                 .frame(width: 250, height: 30, alignment: .center)
                 if (error) {
-                    Text("ahhh crap")
+                    Text("Invalid Credentials").padding(3)
+                    .font(.footnote).foregroundColor(Color.gray)
                 }
                 Button(action: signIn) {
                     Text("Sign in")
@@ -134,34 +151,36 @@ struct SignInView : View {
                 .padding(.vertical, 3)
                 .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 5)
                         .stroke(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00), lineWidth: 8)
                 )
-                NavigationLink(destination: SignUpView()) {
-                    Text("Sign up")
-                        .foregroundColor(Color.gray)
-                }
-                .padding(8)
-                .frame(minWidth: 0, maxWidth: 100)
+                    NavigationLink(destination: SignUpView()) {
+                        Text("Sign up")
+                            .foregroundColor(Color.gray)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(8)
+                    .frame(minWidth: 0, maxWidth: 100)
                 
                 
             }
-            .frame(width: 300, height: 200, alignment: .center)
-            .background(Color.white)
+            .frame(width: 300, height: 250, alignment: .center)
+            .background(Color.black)
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.white, lineWidth: 15)
+                    .stroke(Color.black, lineWidth: 15)
             )
         }
         .frame(width: 500, height: 1000, alignment: .center)
-        .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
+        .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 0))
         .foregroundColor(.white)
 
+    }
     }
 }
 
 struct SignInView_Previews: PreviewProvider {
     static var previews: some View {
-     SignInView()
+     SignUpView()
     }
 }

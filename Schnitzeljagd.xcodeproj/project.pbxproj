@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01C2EF1DB8A4FDB4408B112A /* Pods_SchnitzeljagdTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE56678F334E7C04E6F86FF2 /* Pods_SchnitzeljagdTests.framework */; };
 		158AE64A3F3086966C88DCFD /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BAF08E32A1ECAFDBF964E7C /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework */; };
+		8466F078248D9F4F00EAAC12 /* SnapshotAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */; };
 		84D8BBF3247E4ED4006990B4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */; };
 		84D8BBF5247E6893006990B4 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8BBF4247E6893006990B4 /* SessionStore.swift */; };
 		84D8BBF9247E7BD5006990B4 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8BBF8247E7BD5006990B4 /* SignInView.swift */; };
@@ -51,6 +52,7 @@
 		2898B0EDE1EFCBC8AAF211D0 /* Pods-SchnitzeljagdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchnitzeljagdTests.release.xcconfig"; path = "Target Support Files/Pods-SchnitzeljagdTests/Pods-SchnitzeljagdTests.release.xcconfig"; sourceTree = "<group>"; };
 		5A81267970F94FD8D8091719 /* Pods-SchnitzeljagdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchnitzeljagdTests.debug.xcconfig"; path = "Target Support Files/Pods-SchnitzeljagdTests/Pods-SchnitzeljagdTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6BAF08E32A1ECAFDBF964E7C /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Schnitzeljagd_SchnitzeljagdUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotAnchor.swift; sourceTree = "<group>"; };
 		84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		84D8BBF4247E6893006990B4 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		84D8BBF8247E7BD5006990B4 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; };
@@ -173,6 +175,7 @@
 				84D8BBF8247E7BD5006990B4 /* SignInView.swift */,
 				A27BD61B2487FB19006D286F /* Location.swift */,
 				A27BD6212488259C006D286F /* TextEnum.swift */,
+				8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */,
 			);
 			path = Schnitzeljagd;
 			sourceTree = "<group>";
@@ -489,6 +492,7 @@
 				84DA523C247D2911006546B6 /* ARUIView.swift in Sources */,
 				84DA523D247D2911006546B6 /* ARDisplayView.swift in Sources */,
 				84F1B06C2480FBDB00FCC68A /* MapView.swift in Sources */,
+				8466F078248D9F4F00EAAC12 /* SnapshotAnchor.swift in Sources */,
 				84DA520D247D2796006546B6 /* Experience.rcproject in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -698,7 +702,9 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PL8HSG54KG;
 				INFOPLIST_FILE = SchnitzeljagdTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -720,7 +726,9 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PL8HSG54KG;
 				INFOPLIST_FILE = SchnitzeljagdTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -742,6 +750,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PL8HSG54KG;
 				INFOPLIST_FILE = SchnitzeljagdUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -762,6 +771,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PL8HSG54KG;
 				INFOPLIST_FILE = SchnitzeljagdUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
