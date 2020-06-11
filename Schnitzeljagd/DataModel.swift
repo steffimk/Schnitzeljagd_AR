@@ -14,12 +14,19 @@ import UIKit
 import CoreLocation
 import Firebase
 
+extension ARWorldMap {
+    var snapshotAnchor: SnapshotAnchor? {
+        return anchors.compactMap { $0 as? SnapshotAnchor }.first
+    }
+}
+
 
 final class DataModel: ObservableObject {
     static var shared = DataModel() // Singleton
     @Published var arView: ARView!
     @Published var enableAR: Bool = false
     @Published var save: Bool = true
+    @IBOutlet weak var snapshotThumbnail: UIImageView!
     
     // MARK: - Location
     let locationManager: CLLocationManager = CLLocationManager()
@@ -39,8 +46,6 @@ final class DataModel: ObservableObject {
         initLocationServices()
         arView.session.run(config, options: [])
         
-        
-        
     }
     
     func initLocationServices(){
@@ -52,7 +57,6 @@ final class DataModel: ObservableObject {
         }
         self.locationManager.stopUpdatingLocation()
     }
-    
     
     
     // MARK: - ARSessionObserver
@@ -113,13 +117,13 @@ final class DataModel: ObservableObject {
     }()
 
     @Published var ref = Database.database().reference()
-    func saveSchnitzel() {
+    @IBAction func saveSchnitzel() {
 
-        // let userID: String = (Auth.auth().currentUser?.uid)!
+//        let userID: String = (Auth.auth().currentUser?.uid)!
 //        let lat: Double = (locationManager.location?.coordinate.latitude)!
 //        let lon: Double = (locationManager.location?.coordinate.longitude)!
 //
-//        // self.ref.child("Location").child(userID).setValue(["latitude": lat, "longitude": lon])
+//        self.ref.child("Location").child(userID).setValue(["latitude": lat, "longitude": lon])
 //        self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
 //        print("locations = \(lat) \(lon)")
         
@@ -140,6 +144,9 @@ final class DataModel: ObservableObject {
                 }
             } catch {
                 fatalError("Can't save map: \(error.localizedDescription)")
+            }
+            for anchor in self.arView.scene.anchors {
+                self.arView.scene.removeAnchor(anchor)
             }
         }
     }
@@ -165,6 +172,13 @@ final class DataModel: ObservableObject {
             }
         }()
         
+        let configuration = self.defaultConfiguration // this app's standard world tracking settings
+        configuration.initialWorldMap = worldMap
+        self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+
+        isRelocalizingMap = true
+        virtualObjectAnchor = nil
+        
         print("Loaded Schnitzel")
     }
     
@@ -189,6 +203,7 @@ final class DataModel: ObservableObject {
     let virtualObjectAnchorName = "virtualObject"
 
     let virtualObject = try! Experience.loadSchnitzel()
+    
     #endif
 
 }

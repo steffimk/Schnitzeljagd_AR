@@ -46,6 +46,9 @@ extension ARView: ARCoachingOverlayViewDelegate {
     
     // Add a Schnitzel by tapping
     @objc func addSchnitzelToSceneView(withGestureRecognizer recognizer: UIGestureRecognizer) {
+        for anchor in self.scene.anchors {
+            self.scene.removeAnchor(anchor)
+        }
         let tapLocation = recognizer.location(in: self)
         let hitTestResults = self.hitTest(tapLocation, types: .existingPlane)
 
@@ -67,6 +70,7 @@ extension ARView: ARCoachingOverlayViewDelegate {
     }
 
     func addTapGestureToSceneView() {
+        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addSchnitzelToSceneView(withGestureRecognizer:)))
         self.addGestureRecognizer(tapGestureRecognizer)
         print("New Schnitzel")
