@@ -79,7 +79,7 @@ struct SignUpView : View {
                    // alignment: Spacer()
             
         }
-            .frame(width: 300, height: 300, alignment: .center)
+            .frame(width: 300, height: 300, alignment: .top)
             .background(Color.black)
             //.overlay(
             //    RoundedRectangle(cornerRadius: 20)
@@ -117,6 +117,7 @@ struct SignInView : View {
                 self.password = ""
             }
         }
+        
     }
 
     var body: some View {
@@ -164,7 +165,7 @@ struct SignInView : View {
                 
                 
             }
-            .frame(width: 300, height: 250, alignment: .center)
+            .frame(width: 300, height: 250, alignment: .top)
             .background(Color.black)
             .overlay(
                 RoundedRectangle(cornerRadius: 20)

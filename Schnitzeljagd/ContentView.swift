@@ -9,34 +9,11 @@
 import SwiftUI
 import RealityKit
 
-//struct ContentView : View {
-//
-//    @EnvironmentObject var data: DataModel
-//    @EnvironmentObject var session: SessionStore
-//
-//    func getUser () {
-//        session.listen()
-//    }
-    
-//    var body: some View {
-//        Group {
-//            if (session.session != nil){
-//                VStack {
-//                  if data.enableAR {ARDisplayView()}
-//                  else {MapView()}
-//                  ARUIView()
-//                }
-//            } else {
-//                SignInView()
-//            }
-//        }.onAppear(perform: getUser)
-//
-//    }
-//}
 
 struct ContentView : View {
     @EnvironmentObject var data: DataModel
     @EnvironmentObject var session: SessionStore
+    @State private var showUserMenu = false
           
     func getUser () {
           session.listen()
@@ -56,9 +33,44 @@ struct ContentView : View {
                   .fontWeight(.bold)
                   .foregroundColor(.white)
               Spacer()
-              Button(action: {self.session.signOut()}){
+                    Button(action: {self.showUserMenu.toggle()}){
                   Image(systemName: "person.crop.circle").foregroundColor(.white).font(Font.system(.largeTitle))
               }
+              .popover(
+                  isPresented: self.$showUserMenu,
+                  arrowEdge: .top
+              ) {
+                    VStack{
+                    Text("\(self.session.session?.email ?? "Schnitzel")" )
+                              
+                    Divider()
+                              
+                    NavigationLink(destination: ContentView()) {
+                        Text("Found Schnitzel")
+                            .foregroundColor(Color.gray)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(8)
+                    .frame(minWidth: 0, maxWidth: 200)
+                    
+                    Divider()
+                              
+                    NavigationLink(destination: ContentView()) {
+                        Text("User Settings")
+                            .foregroundColor(Color.gray)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(8)
+                    .frame(minWidth: 0, maxWidth: 200)
+                    
+                    Divider()
+                    
+                    Button(action: {self.showUserMenu.toggle();
+                              self.session.signOut() }){
+                      Text("Logout")
+                    }
+                    }.frame(width: 200, height: 100, alignment: .top)
+                    }.frame(alignment: .top)
           }.padding()
             
             #if !targetEnvironment(simulator)
@@ -81,7 +93,7 @@ struct ContentView : View {
 struct ContentView_Previews : PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(SessionStore())
+            .environmentObject(SessionStore(session: User.default))
     }
 }
 #endif

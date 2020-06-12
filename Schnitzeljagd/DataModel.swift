@@ -15,9 +15,11 @@ import CoreLocation
 import Firebase
 
 extension ARWorldMap {
+    #if !targetEnvironment(simulator)
     var snapshotAnchor: SnapshotAnchor? {
         return anchors.compactMap { $0 as? SnapshotAnchor }.first
     }
+    #endif
 }
 
 
