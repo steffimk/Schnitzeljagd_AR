@@ -121,13 +121,13 @@ final class DataModel: ObservableObject {
     @Published var ref = Database.database().reference()
     @IBAction func saveSchnitzel() {
 
-//        let userID: String = (Auth.auth().currentUser?.uid)!
-//        let lat: Double = (locationManager.location?.coordinate.latitude)!
-//        let lon: Double = (locationManager.location?.coordinate.longitude)!
-//
-//        self.ref.child("Location").child(userID).setValue(["latitude": lat, "longitude": lon])
-//        self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
-//        print("locations = \(lat) \(lon)")
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        let lat: Double = (locationManager.location?.coordinate.latitude)!
+        let lon: Double = (locationManager.location?.coordinate.longitude)!
+
+        self.ref.child("Location").child(userID).setValue(["latitude": lat, "longitude": lon])
+        self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
+        print("locations = \(lat) \(lon)")
         
         arView.session.getCurrentWorldMap { worldMap, error in
             guard let map = worldMap
