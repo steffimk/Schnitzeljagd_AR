@@ -124,9 +124,10 @@ final class DataModel: ObservableObject {
         let userID: String = (Auth.auth().currentUser?.uid)!
         let lat: Double = (locationManager.location?.coordinate.latitude)!
         let lon: Double = (locationManager.location?.coordinate.longitude)!
-
+        
+        //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
         self.ref.child("Location").child(userID).setValue(["latitude": lat, "longitude": lon])
-        self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
+        //self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
         print("locations = \(lat) \(lon)")
         
         arView.session.getCurrentWorldMap { worldMap, error in
@@ -140,6 +141,7 @@ final class DataModel: ObservableObject {
             
             do {
                 let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
+                self.ref.child("Data").child(userID).setValue(String(decoding: data, as: UTF8.self))
                 try data.write(to: self.mapSaveURL, options: [.atomic])
                 DispatchQueue.main.async {
                     return print("Saved Schnitzel")
@@ -155,6 +157,16 @@ final class DataModel: ObservableObject {
     
     // Called opportunistically to verify that map data can be loaded from filesystem.
     var mapDataFromFile: Data? {
+        var data: Data?
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        self.ref.child("Data").observeSingleEvent(of: .value, with: { (snapshot) in
+            // Get user value
+            let value = snapshot.value as? NSDictionary
+            let d = value?[userID] as? String ?? ""
+            data=d.data(using: .utf8)
+        })
+        
+        //return data
         return try? Data(contentsOf: mapSaveURL)
     }
     
