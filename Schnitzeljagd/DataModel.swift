@@ -28,7 +28,6 @@ final class DataModel: ObservableObject {
     @Published var arView: ARView!
     @Published var enableAR: Bool = false
     @Published var save: Bool = true
-    @IBOutlet weak var snapshotThumbnail: UIImageView!
     
     // MARK: - Location
     let locationManager: CLLocationManager = CLLocationManager()
@@ -41,7 +40,7 @@ final class DataModel: ObservableObject {
         
         arView = ARView(frame: .zero)
         arView.addCoaching()
-        arView.addTapGestureToSceneView()
+        //arView.addTapGestureToSceneView()
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
         
@@ -62,7 +61,13 @@ final class DataModel: ObservableObject {
     
     
     // MARK: - ARSessionObserver
+    @IBOutlet weak var sessionInfoView: UIView!
     @IBOutlet weak var sessionInfoLabel: UILabel!
+    @IBOutlet weak var sceneView: ARSCNView!
+    @IBOutlet weak var saveExperienceButton: UIButton!
+    @IBOutlet weak var loadExperienceButton: UIButton!
+    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var snapshotThumbnail: UIImageView!
     
     func sessionWasInterrupted(_ session: ARSession) {
         // Inform the user that the session has been interrupted, for example, by presenting an overlay.
@@ -213,10 +218,106 @@ final class DataModel: ObservableObject {
         virtualObjectAnchor = nil
     }
     
+    private func updateSessionInfoLabel(for frame: ARFrame, trackingState: ARCamera.TrackingState) {
+            // Update the UI to provide feedback on the state of the AR experience.
+            let message: String
+            
+            snapshotThumbnail.isHidden = true
+            switch (trackingState, frame.worldMappingStatus) {
+            case (.normal, .mapped),
+                 (.normal, .extending):
+                if frame.anchors.contains(where: { $0.name == virtualObjectAnchorName }) {
+                    // User has placed an object in scene and the session is mapped, prompt them to save the experience
+                    message = "Tap 'Save Experience' to save the current map."
+                } else {
+                    message = "Tap on the screen to place an object."
+                }
+                
+            case (.normal, _) where mapDataFromFile != nil && !isRelocalizingMap:
+                message = "Move around to map the environment or tap 'Load Experience' to load a saved experience."
+                
+            case (.normal, _) where mapDataFromFile == nil:
+                message = "Move around to map the environment."
+                
+            case (.limited(.relocalizing), _) where isRelocalizingMap:
+                message = "Move your device to the location shown in the image."
+                snapshotThumbnail.isHidden = false
+                
+            default:
+                message = "trackingState.localizedFeedback"
+            }
+            
+            sessionInfoLabel.text = message
+            sessionInfoView.isHidden = message.isEmpty
+        }
+        
+        // MARK: - Placing AR Content
+        
+        /// - Tag: PlaceObject
+//        @IBAction func handleSceneTap(_ sender: UITapGestureRecognizer) {
+//            // Disable placing objects when the session is still relocalizing
+//            if isRelocalizingMap && virtualObjectAnchor == nil {
+//                return
+//            }
+//            // Hit test to find a place for a virtual object.
+//            guard let hitTestResult = sceneView
+//                .hitTest(sender.location(in: sceneView), types: [.existingPlaneUsingGeometry, .estimatedHorizontalPlane])
+//                .first
+//                else { return }
+//
+//            // Remove exisitng anchor and add new anchor
+//            if let existingAnchor = virtualObjectAnchor {
+//                sceneView.session.remove(anchor: existingAnchor)
+//            }
+//            virtualObjectAnchor = ARAnchor(name: virtualObjectAnchorName, transform: hitTestResult.worldTransform)
+//            sceneView.session.add(anchor: virtualObjectAnchor!)
+//        }
+//
+//        var virtualObjectAnchor: ARAnchor?
+//        let virtualObjectAnchorName = "virtualObject"
+//
+//        let virtualObject = try! Experience.loadSchnitzel()
+    
+    @IBAction func handleSceneTap(withGestureRecognizer recognizer: UIGestureRecognizer) {
+        // Disable placing objects when the session is still relocalizing
+        if isRelocalizingMap && virtualObjectAnchor == nil {
+            return
+        }
+        // Hit test to find a place for a virtual object.
+        let tapLocation = recognizer.location(in: arView)
+        let hitTestResults = arView.hitTest(tapLocation, types: .existingPlane)
+
+        
+        // Remove exisitng anchor and add new anchor
+        if let existingAnchor = virtualObjectAnchor {
+            arView.session.remove(anchor: existingAnchor)
+        }
+        guard let hitTestResult = hitTestResults.first else { return }
+        let translation = hitTestResult.worldTransform
+        let x = translation.columns.3.x
+        let y = translation.columns.3.y
+        let z = translation.columns.3.z
+
+        let schnitzelAnchor = try! Experience.loadSchnitzel()
+        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+        schnitzel!.generateCollisionShapes(recursive: true)
+        DataModel.shared.arView.installGestures(.all, for: schnitzel!)
+        
+        schnitzelAnchor.position = SIMD3<Float>(x,y,z)
+        virtualObjectAnchor = ARAnchor(name: virtualObjectAnchorName, transform: translation)
+        arView.scene.anchors.append(schnitzelAnchor)
+        
+        print("New Schnitzel")    }
+    
     var virtualObjectAnchor: ARAnchor?
     let virtualObjectAnchorName = "virtualObject"
-
-    let virtualObject = try! Experience.loadSchnitzel()
+    
+    func addTapGestureToSceneView() {
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(arView.addSchnitzelToSceneView(withGestureRecognizer:)))
+        arView.addGestureRecognizer(tapGestureRecognizer)
+    
+    }
     
     #endif
 
