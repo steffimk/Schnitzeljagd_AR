@@ -21,12 +21,13 @@ struct MapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803)
-//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500)
-        let schnitzelRegion = SchnitzelRegion(center: coordinateCenterSchnitzel, radius: 70, regionIdentifier: "SchnitzelRegion Dummy")
-        DataModel.shared.locationManager.startMonitoring(for: schnitzelRegion.region)
-        uiView.addAnnotation(schnitzelRegion.annotation)
-        uiView.addOverlay(schnitzelRegion.circle)
+//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1664, longitude: 11.5858) // Leo
+        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
+//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
+        let schnitzelAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: 50, regionIdentifier: "SchnitzelRegion Dummy")
+        DataModel.shared.locationManager.startMonitoring(for: schnitzelAnnotation.region)
+        uiView.addAnnotation(schnitzelAnnotation)
+        uiView.addOverlay(schnitzelAnnotation.circle)
     }
     
     static func dismantleUIView(_ uiView: MKMapView, coordinator: ()) {
@@ -41,51 +42,55 @@ struct MapView: UIViewRepresentable {
     
 }
 
-class SchnitzelRegion {
-    let region: CLCircularRegion
-    let annotation: MapAnnotation
-    let circle: MKCircle
-    
-    init(center: CLLocationCoordinate2D, radius: CLLocationDistance, regionIdentifier: String){
-        self.region = CLCircularRegion(center: center, radius: radius, identifier: regionIdentifier)
-        self.region.notifyOnEntry = true
-        self.region.notifyOnExit = true
-        self.annotation = MapAnnotation(coordinate: center, title: TextEnum.annotationTitle.rawValue, subtitle: TextEnum.annotationSubtitle.rawValue)
-        self.circle = MKCircle(center: center, radius: radius)
-    }
-}
-
-class MapAnnotation : NSObject, MKAnnotation {
+class AnnotationWithRegion : NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
     var title: String?
     var subtitle: String?
     
-    init(coordinate: CLLocationCoordinate2D, title: String?, subtitle: String?){
-        self.coordinate = coordinate
+    let region: CLCircularRegion
+    let circle: MKCircle
+    
+    init(center: CLLocationCoordinate2D, radius: CLLocationDistance, regionIdentifier: String, title: String = TextEnum.annotationTitle.rawValue, subtitle: String = TextEnum.annotationSubtitle.rawValue) {
+        self.coordinate = center
         self.title = title
         self.subtitle = subtitle
         
+        self.region = CLCircularRegion(center: center, radius: radius, identifier: regionIdentifier)
+        self.region.notifyOnEntry = true
+        self.region.notifyOnExit = true
+        self.circle = MKCircle(center: center, radius: radius)
+
         super.init()
     }
 }
 
 class MapViewDelegate : NSObject, MKMapViewDelegate {
-    
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
-        mapView.showsUserLocation = true
-        mapView.userTrackingMode = .followWithHeading
+          mapView.showsUserLocation = true
+          mapView.userTrackingMode = .followWithHeading
     }
     
-    func mapView(_ mapView: MKMapView,
-                  rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
 
-        let circleRenderer = MKCircleRenderer(overlay: overlay)
-        circleRenderer.fillColor = .black
-        circleRenderer.alpha = 0.2
+          let circleRenderer = MKCircleRenderer(overlay: overlay)
+          circleRenderer.fillColor = .black
+          circleRenderer.alpha = 0.2
 
-        return circleRenderer
-     }
-    
+          return circleRenderer
+    }
+
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+          if let annotationWithRegion = view.annotation as? AnnotationWithRegion {
+              if DataModel.shared.currentRegions.contains(annotationWithRegion.region) {
+                  DataModel.shared.showStartChaseAlert = true
+              }
+        }
+        print("Annotation was selected")
+    }
+
+    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+        print("Annotation was deselected")
+    }
 }
 
 struct MapView_Previews: PreviewProvider {

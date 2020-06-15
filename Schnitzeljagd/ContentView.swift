@@ -8,6 +8,7 @@
 
 import SwiftUI
 import RealityKit
+import MapKit
 
 //struct ContentView : View {
 //
@@ -36,6 +37,7 @@ import RealityKit
 
 struct ContentView : View {
     @EnvironmentObject var data: DataModel
+
     var body: some View {
         VStack {
           HStack {
@@ -61,7 +63,15 @@ struct ContentView : View {
             ARUIView()
             #endif
         }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
-        
+          .alert(isPresented: $data.showStartChaseAlert) {
+                    Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
+                          primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
+                              DataModel.shared.enableAR = true; DataModel.shared.showStartChaseAlert = false
+                          }),
+                          secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
+                              DataModel.shared.showStartChaseAlert = false
+                          }))
+          }
     }
 }
 

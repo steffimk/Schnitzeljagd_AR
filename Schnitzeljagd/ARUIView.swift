@@ -13,7 +13,7 @@ import SwiftUI
 struct ARUIView: View {
     @EnvironmentObject var data: DataModel
     var body: some View {
-    VStack {
+    HStack {
         Button(action: {
             self.data.enableAR.toggle()
         }) {
@@ -43,7 +43,7 @@ struct ARUIView: View {
                         RoundedRectangle(cornerRadius: 40)
                             .stroke(Color.purple, lineWidth: 4)
                 )}
-            }
+        }
     }.padding(7).padding(.top, -10)
     }
 }

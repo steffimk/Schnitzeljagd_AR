@@ -21,4 +21,10 @@ enum TextEnum: String {
     case annotationTitle = "Schnitzel"
     case annotationSubtitle = "Im Umkreis von 50m befindet sich ein Schnitzel"
     
+    // Entered Region
+    case alertTitle = "Schnitzeljagd starten"
+    case alertMessage = "Möchtest du die Schnitzeljagd annehmen und in den AR Modus wechseln?"
+    case alertAccept = "Ja"
+    case alertDecline = "Nein"
+    
 }

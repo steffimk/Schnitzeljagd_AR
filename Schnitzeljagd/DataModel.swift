@@ -16,14 +16,18 @@ import CoreLocation
 
 final class DataModel: ObservableObject {
     static var shared = DataModel() // Singleton
+    
+    //AR
     @Published var arView: ARView!
-    @Published var enableAR: Bool = true
+    @Published var enableAR: Bool = false
     
     // Location
     let locationManager: CLLocationManager = CLLocationManager()
     let locationDelegate: LocationDelegate = LocationDelegate()
     @Published var location: CLLocation?
     let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
+    @Published var showStartChaseAlert: Bool = false
+    var currentRegions: Set<CLRegion> = Set<CLRegion>()
     
     init() {
         // Initialise the ARView
@@ -49,6 +53,9 @@ final class DataModel: ObservableObject {
             self.locationManager.stopMonitoring(for: region)
         }
         self.locationManager.stopUpdatingLocation()
+        
+        // TODO:
+        print("currentRegions is empty: \(currentRegions.isEmpty)")
     }
 }
 
