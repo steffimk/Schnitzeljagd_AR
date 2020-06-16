@@ -22,7 +22,7 @@ struct ARUIView: View {
                 self.data.screenState = .MENU_MAP
             }
         }) {
-            if data.screenState == .PLACE_SCHNITZEL_AR {
+            if (self.data.screenState == .PLACE_SCHNITZEL_AR) {
                 Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
                     .font(.title)

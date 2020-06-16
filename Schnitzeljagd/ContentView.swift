@@ -25,8 +25,8 @@ struct ContentView : View {
               if (session.session != nil){
         VStack {
           HStack {
-                    Button(action: {}){
-                  Image(systemName: "line.horizontal.3").foregroundColor(.white).font(Font.system(.title))
+                    Button(action: { self.data.screenState = .MENU_MAP }){
+                  Image(systemName: "house").foregroundColor(.white).font(Font.system(.title))
               }
               Spacer()
                   Text(TextEnum.appTitle.rawValue)

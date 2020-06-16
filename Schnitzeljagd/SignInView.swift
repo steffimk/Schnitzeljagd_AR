@@ -80,7 +80,7 @@ struct SignUpView : View {
             
         }
             .frame(width: 300, height: 300, alignment: .top)
-            .background(Color.black)
+            .background(Color.blue)
             //.overlay(
             //    RoundedRectangle(cornerRadius: 20)
             //        .stroke(Color.white, lineWidth: 15)
@@ -88,7 +88,7 @@ struct SignUpView : View {
         }
         .frame(width: 500, height: 800, alignment: .center)
         .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 0))
-        .foregroundColor(.black)
+        .foregroundColor(.blue)
         
     }
     
@@ -166,10 +166,10 @@ struct SignInView : View {
                 
             }
             .frame(width: 300, height: 250, alignment: .top)
-            .background(Color.black)
+            .background(Color.blue)
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.black, lineWidth: 15)
+                    .stroke(Color.blue, lineWidth: 15)
             )
         }
         .frame(width: 500, height: 1000, alignment: .center)
