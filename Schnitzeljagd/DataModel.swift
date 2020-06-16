@@ -19,17 +19,21 @@ final class DataModel: ObservableObject {
     
     //AR
     @Published var arView: ARView!
-    @Published var enableAR: Bool = false
+    @Published var screenState: ScreenState
     
-    // Location
+    // Location related
     let locationManager: CLLocationManager = CLLocationManager()
     let locationDelegate: LocationDelegate = LocationDelegate()
     @Published var location: CLLocation?
     let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
-    @Published var showStartChaseAlert: Bool = false
+    @Published var showStartSearchAlert: Bool = false
     var currentRegions: Set<CLRegion> = Set<CLRegion>()
     
+    // Schnitzeljagd
+    var schnitzelJagd: SchnitzelJagd?
+    
     init() {
+        screenState = ScreenState.MENU_MAP
         // Initialise the ARView
         #if !targetEnvironment(simulator)
         arView = ARView(frame: .zero)
@@ -53,10 +57,25 @@ final class DataModel: ObservableObject {
             self.locationManager.stopMonitoring(for: region)
         }
         self.locationManager.stopUpdatingLocation()
-        
-        // TODO:
-        print("currentRegions is empty: \(currentRegions.isEmpty)")
     }
 }
 
+class SchnitzelJagd {
+    
+    var annotationWithRegion: AnnotationWithRegion
+    
+    init(annotation: AnnotationWithRegion){
+        self.annotationWithRegion = annotation
+    }
+    
+}
+
+enum ScreenState {
+    
+    case MENU_MAP
+    case SEARCH_SCHNITZEL_MAP
+    case SEARCH_SCHNITZEL_AR
+    case PLACE_SCHNITZEL_AR
+    
+}
 

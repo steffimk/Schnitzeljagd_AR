@@ -39,9 +39,9 @@ struct ContentView : View {
     @EnvironmentObject var data: DataModel
 
     var body: some View {
-        VStack {
-          HStack {
-              Button(action: {}){
+          VStack {
+              HStack {
+                  Button(action: {}){
                   Image(systemName: "line.horizontal.3").foregroundColor(.white).font(Font.system(.title))
               }
               Spacer()
@@ -55,24 +55,37 @@ struct ContentView : View {
               }
           }.padding()
             
-            #if !targetEnvironment(simulator)
-            if data.enableAR {
-                    ARDisplayView().padding(.top, -15).padding(.bottom, -90)
-            }
-            else { MapView().frame(maxHeight: .infinity).padding(.top, -15)}
-            ARUIView()
-            #endif
-        }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
-          .alert(isPresented: $data.showStartChaseAlert) {
+          #if !targetEnvironment(simulator)
+          if data.screenState == .PLACE_SCHNITZEL_AR {
+              ARDisplayView().padding(.top, -15).padding(.bottom, -90)
+          } else if data.screenState == .SEARCH_SCHNITZEL_MAP {
+              SearchMapView().frame(maxHeight: .infinity).padding(.top, -15)
+          } else {
+              MapView().frame(maxHeight: .infinity).padding(.top, -15)
+          }
+          ARUIView()
+          #endif
+        }.background(getBackgroundColor())
+          .alert(isPresented: $data.showStartSearchAlert) {
                     Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
                           primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
-                              DataModel.shared.enableAR = true; DataModel.shared.showStartChaseAlert = false
+                              DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
+                              DataModel.shared.showStartSearchAlert = false
                           }),
                           secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
-                              DataModel.shared.showStartChaseAlert = false
+                              DataModel.shared.showStartSearchAlert = false
                           }))
           }
     }
+          
+          func getBackgroundColor() -> Color {
+                    switch data.screenState{
+                    case .SEARCH_SCHNITZEL_MAP, .SEARCH_SCHNITZEL_AR: return Color.orange
+                    default: return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00) //darkgreen
+                    }
+          }
+          
+          
 }
 
 #if DEBUG

@@ -15,9 +15,13 @@ struct ARUIView: View {
     var body: some View {
     HStack {
         Button(action: {
-            self.data.enableAR.toggle()
+            if self.data.screenState == .MENU_MAP {
+                self.data.screenState = .PLACE_SCHNITZEL_AR
+            } else {
+                self.data.screenState = .MENU_MAP
+            }
         }) {
-            if data.enableAR {
+            if data.screenState == .PLACE_SCHNITZEL_AR || data.screenState == .SEARCH_SCHNITZEL_AR  {
                 Text(TextEnum.AR.rawValue)
                     .fontWeight(.bold)
                     .font(.title)
