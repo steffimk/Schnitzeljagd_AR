@@ -49,7 +49,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         ref = Database.database().reference()
         
         let contentView = ContentView()
-        
 
         // Use a UIHostingController as window root view controller.
         let window = UIWindow(frame: UIScreen.main.bounds)

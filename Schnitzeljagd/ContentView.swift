@@ -8,6 +8,7 @@
 
 import SwiftUI
 import RealityKit
+import MapKit
 
 
 struct ContentView : View {
@@ -74,19 +75,41 @@ struct ContentView : View {
           }.padding()
             
             #if !targetEnvironment(simulator)
-            if data.enableAR {
-                    ARDisplayView().padding(.top, -15).padding(.bottom, -90)
+            if data.screenState == .PLACE_SCHNITZEL_AR {
+                ARDisplayView().padding(.top, -15).padding(.bottom, -90)
+            } else if data.screenState == .SEARCH_SCHNITZEL_MAP {
+                SearchMapView().frame(maxHeight: .infinity).padding(.top, -15)
+            } else {
+                MapView().frame(maxHeight: .infinity).padding(.top, -15)
             }
-            else { MapView().frame(maxHeight: .infinity).padding(.top, -15)}
             ARUIView()
             #endif
-        }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
+        }.background(getBackgroundColor())
+          .alert(isPresented: $data.showStartSearchAlert) {
+                  Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
+                        primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
+                            DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
+                            DataModel.shared.showStartSearchAlert = false
+                        }),
+                        secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
+                            DataModel.shared.showStartSearchAlert = false
+                        }))
+        }
               } else {
                     SignInView()
               }
           }.onAppear(perform: getUser)
-        
+
     }
+          
+          func getBackgroundColor() -> Color {
+                    switch data.screenState{
+                    case .SEARCH_SCHNITZEL_MAP, .SEARCH_SCHNITZEL_AR: return Color.orange
+                    default: return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00) //darkgreen
+                    }
+          }
+          
+          
 }
 
 #if DEBUG

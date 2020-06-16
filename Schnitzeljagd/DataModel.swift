@@ -25,8 +25,11 @@ extension ARWorldMap {
 
 final class DataModel: ObservableObject {
     static var shared = DataModel() // Singleton
+    
+    //AR
     @Published var arView: ARView!
-    @Published var enableAR: Bool = false
+
+    @Published var screenState: ScreenState
     @Published var save: Bool = true
     @IBOutlet weak var snapshotThumbnail: UIImageView!
     
@@ -35,10 +38,17 @@ final class DataModel: ObservableObject {
     let locationDelegate: LocationDelegate = LocationDelegate()
     @Published var location: CLLocation?
     let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
+    @Published var showStartSearchAlert: Bool = false
+    var currentRegions: Set<CLRegion> = Set<CLRegion>()
+    
+    // Schnitzeljagd
+    var schnitzelJagd: SchnitzelJagd?
+    
     #if !targetEnvironment(simulator)
     // MARK: - Initialise the ARView
     init() {
-        
+        screenState = ScreenState.MENU_MAP
+        // Initialise the ARView
         arView = ARView(frame: .zero)
         arView.addCoaching()
         arView.addTapGestureToSceneView()
@@ -222,4 +232,22 @@ final class DataModel: ObservableObject {
 
 }
 
+class SchnitzelJagd {
+    
+    var annotationWithRegion: AnnotationWithRegion
+    
+    init(annotation: AnnotationWithRegion){
+        self.annotationWithRegion = annotation
+    }
+    
+}
+
+enum ScreenState {
+    
+    case MENU_MAP
+    case SEARCH_SCHNITZEL_MAP
+    case SEARCH_SCHNITZEL_AR
+    case PLACE_SCHNITZEL_AR
+    
+}
 
