@@ -10,93 +10,95 @@ import SwiftUI
 
 #if !targetEnvironment(simulator)
 
-struct ARUIView: View {
+struct PlaceSchnitzelUIView: View {
     @EnvironmentObject var data: DataModel
     
     var body: some View {
-    HStack {
-        Button(action: {
-            if self.data.screenState == .MENU_MAP {
-                self.data.screenState = .PLACE_SCHNITZEL_AR
-            } else {
-                self.data.screenState = .MENU_MAP
-            }
-        }) {
-            if (self.data.screenState == .PLACE_SCHNITZEL_AR) {
-                Text(TextEnum.AR.rawValue)
-                    .fontWeight(.bold)
-                    .font(.title)
-                    .padding(8)
-                    .background(Color.green)
-                    .cornerRadius(40)
-                    .foregroundColor(.white)
-                    .padding(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.purple, lineWidth: 4)
-                )
-                
+        HStack {
+            if (self.data.save){
                 Button(action: {
-                    if self.data.save {
-                        self.data.saveSchnitzel()
-                        self.data.save = false
-                        
-                    }
-                    else {
-                        self.data.loadSchnitzel()
-                        self.data.save = true
-                    }
+                    self.data.saveSchnitzel()
+                    self.data.save = false
                 }) {
-                    if data.save {
-                        Text(TextEnum.save.rawValue)
-                            .fontWeight(.bold)
-                            .font(.title)
-                            .padding(8)
-                            .background(Color.yellow)
-                            .cornerRadius(40)
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .stroke(Color.purple, lineWidth: 4)
-                        )}
-                    else {
-                        Text(TextEnum.load.rawValue)
-                            .fontWeight(.bold)
-                            .font(.title)
-                            .padding(8)
-                            .background(Color.gray)
-                            .cornerRadius(40)
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .stroke(Color.purple, lineWidth: 4)
-                        )}
-                    }
+                    Text(TextEnum.save.rawValue)
+                        .fontWeight(.bold)
+                        .modifier(TextModifier(color: .yellow))
+                }
+            } else {
+                Button(action: {
+                    self.data.loadSchnitzel()
+                    self.data.save = true
+                }){
+                    Text(TextEnum.load.rawValue)
+                        .fontWeight(.bold)
+                        .modifier(TextModifier(color: .gray))
+                }
             }
-            else {
-                Text(TextEnum.AR.rawValue)
-                    .fontWeight(.bold)
-                    .font(.title)
-                    .padding(8)
-                    .background(Color.blue)
-                    .cornerRadius(40)
-                    .foregroundColor(.white)
-                    .padding(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.purple, lineWidth: 4)
-                )}
-            }
-        
-        
-    }.padding(7).padding(.top, -10)
+        }.padding(7).padding(.top, -10)
     }
 }
 
-struct ARUIView_Previews: PreviewProvider {
-    static var previews: some View {
-        ARUIView()    }
+struct MapUIView: View {
+    @EnvironmentObject var data: DataModel
+    
+    var body: some View {
+        HStack {
+            Button(action: {
+                switch(self.data.screenState){
+                case .MENU_MAP: self.data.screenState = .PLACE_SCHNITZEL_AR
+                case .SEARCH_SCHNITZEL_MAP: self.data.screenState = .SEARCH_SCHNITZEL_AR
+                default: return
+                }
+            }) {
+                Text(getButtonText(screenState: self.data.screenState))
+                    .fontWeight(.bold)
+                    .modifier(TextModifier())}
+        }.padding(7).padding(.top, -10)
+    }
+    
+    func getButtonText(screenState: ScreenState) -> String {
+        if screenState == .MENU_MAP {
+            return TextEnum.placeAR.rawValue
+        } else {
+            return TextEnum.searchAR.rawValue
+        }
+    }
 }
+
+struct SearchARUIView: View {
+    @EnvironmentObject var data: DataModel
+    
+    var body: some View {
+        HStack {
+            Button(action: {
+                self.data.screenState = .SEARCH_SCHNITZEL_MAP
+            }) {
+                Text(TextEnum.searchMap.rawValue)
+                    .fontWeight(.bold)
+                    .modifier(TextModifier(color: .green))
+            }
+        }.padding(7).padding(.top, -10)
+    }
+
+}
+
+struct TextModifier: ViewModifier {
+    
+    var color: Color = .blue
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.headline)
+            .padding(8)
+            .background(color)
+            .cornerRadius(40)
+            .foregroundColor(.white)
+            .padding(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 40)
+                    .stroke(Color.purple, lineWidth: 4)
+        )
+    }
+}
+
 #endif

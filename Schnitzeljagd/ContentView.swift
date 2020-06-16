@@ -77,12 +77,17 @@ struct ContentView : View {
             #if !targetEnvironment(simulator)
             if data.screenState == .PLACE_SCHNITZEL_AR {
                 ARDisplayView().padding(.top, -15).padding(.bottom, -90)
+                PlaceSchnitzelUIView()
             } else if data.screenState == .SEARCH_SCHNITZEL_MAP {
                 SearchMapView().frame(maxHeight: .infinity).padding(.top, -15)
-            } else {
+                MapUIView()
+            } else if data.screenState == .MENU_MAP {
                 MapView().frame(maxHeight: .infinity).padding(.top, -15)
-            }
-            ARUIView()
+                MapUIView()
+            } else {
+                ARDisplayView().padding(.top, -15).padding(.bottom, -90) // TODO: custom ARView for SearchSchnitzelAR
+                SearchARUIView()
+          }
             #endif
         }.background(getBackgroundColor())
           .alert(isPresented: $data.showStartSearchAlert) {

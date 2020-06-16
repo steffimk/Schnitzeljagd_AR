@@ -16,6 +16,10 @@ enum TextEnum: String {
     // Basic Messages
     case appTitle = "Schnitzeljagd"
     case AR = "AR"
+    case placeAR = "Neues Schnitzel"
+    case searchAR = "Schnitzel fangen"
+    case searchMap = "Kartenansicht"
+    case menuMap =  "Jagd beenden"
     case save = "save"
     case load = "load"
     
@@ -25,7 +29,7 @@ enum TextEnum: String {
     
     // Entered Region
     case alertTitle = "Schnitzeljagd starten"
-    case alertMessage = "Möchtest du die Schnitzeljagd annehmen und in den AR Modus wechseln?"
+    case alertMessage = "Möchtest du die Schnitzeljagd annehmen?"
     case alertAccept = "Ja"
     case alertDecline = "Nein"
     
