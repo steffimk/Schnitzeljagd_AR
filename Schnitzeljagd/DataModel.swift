@@ -40,6 +40,7 @@ final class DataModel: ObservableObject {
     let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
     @Published var showStartSearchAlert: Bool = false
     var currentRegions: Set<CLRegion> = Set<CLRegion>()
+    var loadedData: LoadedData?
     
     // Schnitzeljagd
     var schnitzelJagd: SchnitzelJagd?
@@ -57,7 +58,7 @@ final class DataModel: ObservableObject {
         
         initLocationServices()
         arView.session.run(config, options: [])
-        
+        loadedData = LoadedData()
     }
     
     func initLocationServices(){
@@ -232,6 +233,15 @@ final class DataModel: ObservableObject {
 
 }
 
+class LoadedData : ObservableObject {
+    
+    @Published var loadedSchnitzelAnnotations: Set<AnnotationWithRegion>
+    
+    init(){
+        loadedSchnitzelAnnotations = Set<AnnotationWithRegion>()
+    }
+}
+
 class SchnitzelJagd {
     
     var annotationWithRegion: AnnotationWithRegion
@@ -250,4 +260,3 @@ enum ScreenState {
     case PLACE_SCHNITZEL_AR
     
 }
-

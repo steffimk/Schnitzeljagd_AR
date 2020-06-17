@@ -25,7 +25,7 @@ enum TextEnum: String {
     
     // MapView Messages
     case annotationTitle = "Schnitzel"
-    case annotationSubtitle = "Im Umkreis von 50m befindet sich ein Schnitzel"
+    case annotationSubtitle = "Im Umkreis von 80m befindet sich ein Schnitzel"
     
     // Entered Region
     case alertTitle = "Schnitzeljagd starten"

@@ -16,7 +16,6 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
         for region in manager.monitoredRegions {
             manager.requestState(for: region)
         }
-        print("Location was updated")
     }
     
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager){
