@@ -17,7 +17,7 @@ enum TextEnum: String {
     case appTitle = "Schnitzeljagd"
     case AR = "AR"
     case placeAR = "Neues Schnitzel"
-    case searchAR = "Schnitzel fangen"
+    case searchAR = "AR Modus"
     case searchMap = "Kartenansicht"
     case menuMap =  "Jagd beenden"
     case save = "save"
