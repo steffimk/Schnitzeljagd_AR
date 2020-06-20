@@ -22,6 +22,13 @@ extension ARWorldMap {
     #endif
 }
 
+extension Date {
+    func toMillis() -> Int64! {
+        return Int64(self.timeIntervalSince1970 * 1000)
+    }
+}
+
+
 
 final class DataModel: ObservableObject {
     static var shared = DataModel() // Singleton
@@ -31,6 +38,7 @@ final class DataModel: ObservableObject {
 
     @Published var screenState: ScreenState
     @Published var save: Bool = true
+    @Published var schnitzelId: String = ""
     @IBOutlet weak var snapshotThumbnail: UIImageView!
     
     // MARK: - Location
@@ -134,25 +142,26 @@ final class DataModel: ObservableObject {
         let userID: String = (Auth.auth().currentUser?.uid)!
         let lat: Double = (locationManager.location?.coordinate.latitude)!
         let lon: Double = (locationManager.location?.coordinate.longitude)!
+        self.schnitzelId = String(Date().toMillis())
         
-        //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
-        self.ref.child("Location").child(userID).setValue(["latitude": lat, "longitude": lon])
-        //self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
-        print("locations = \(lat) \(lon)")
+        self.ref.child("Schnitzel").child(self.schnitzelId).child("Location").setValue(["latitude": lat, "longitude": lon])
+        self.ref.child("Schnitzel").child(self.schnitzelId).child("User").setValue(userID)
+        self.ref.child("Schnitzel").child(self.schnitzelId).child("Titel").setValue("test")
+
         
         arView.session.getCurrentWorldMap { worldMap, error in
             guard let map = worldMap
                 else { return print("Can't get current world map")}
             
-            // Add a snapshot image indicating where the map was captured.
-            guard let snapshotAnchor = SnapshotAnchor(capturing: self.arView)
-                else { return print("Can't take snapshot") }
-            map.anchors.append(snapshotAnchor)
+//            // Add a snapshot image indicating where the map was captured.
+//            guard let snapshotAnchor = SnapshotAnchor(capturing: self.arView)
+//                else { return print("Can't take snapshot") }
+//            map.anchors.append(snapshotAnchor)
             
             do {
                 let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
-                self.ref.child("Data").child(userID).setValue(String(decoding: data, as: UTF8.self))
-                try data.write(to: self.mapSaveURL, options: [.atomic])
+                self.ref.child("Schnitzel").child(self.schnitzelId).child("Worldmap").setValue(data.base64EncodedString())
+                //try data.write(to: self.mapSaveURL, options: [.atomic])
                 DispatchQueue.main.async {
                     return print("Saved Schnitzel")
                 }
@@ -185,8 +194,17 @@ final class DataModel: ObservableObject {
         
         /// - Tag: ReadWorldMap
         let worldMap: ARWorldMap = {
-            guard let data = mapDataFromFile
-                else { fatalError("Map data should already be verified to exist before Load button is enabled.") }
+            var data: Data = Data()
+            ref.child("Schnitzel").child(self.schnitzelId).child("Worldmap").observeSingleEvent(of: .value, with: { (snapshot) in
+                let schnitzelData = snapshot.value as? String
+                data = Data(base64Encoded: schnitzelData!)!
+                print(schnitzelData)
+                print(data)
+
+              }) { (error) in
+                print(error.localizedDescription)
+            }
+            
             do {
                 guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
                     else { fatalError("No ARWorldMap in archive.") }
