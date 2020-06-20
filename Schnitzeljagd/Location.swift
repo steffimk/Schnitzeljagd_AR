@@ -14,16 +14,15 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         DataModel.shared.location = locations.last! // saves most recent location
         if DataModel.shared.screenState == .MENU_MAP {
-            for region in manager.monitoredRegions {
-                let r = region as! CLCircularRegion
-                let distance = locations.last!.distance(from: CLLocation(latitude: r.center.latitude, longitude: r.center.longitude))
-                if distance <= r.radius {
+            for schnitzel in DataModel.shared.loadedData.loadedSchnitzel {
+                let region = schnitzel.annotationWithRegion.region
+                let distance = locations.last!.distance(from: CLLocation(latitude: region.center.latitude, longitude: region.center.longitude))
+                if distance <= region.radius {
                     DataModel.shared.currentRegions.insert(region)
                     print("User entered region \(region.identifier)")
-                } else if distance > r.radius + NumberEnum.regionBuffer.rawValue {
+                } else if distance > region.radius + NumberEnum.regionBuffer.rawValue {
                     DataModel.shared.currentRegions.remove(region)
                 }
-                // manager.requestState(for: region)
             }
         }
     }
@@ -36,33 +35,33 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
         print("Location updates are paused")
     }
     
-    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-        print("Location Manager started to monitor region \(region.identifier)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion){
-        print("User entered region \(region.identifier)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion){
-        print("User exited region \(region.identifier)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        
-        let stateValue: String
-        switch(state){
-        case .inside:
-            stateValue = "Inside"
-//            DataModel.shared.currentRegions.insert(region) // moved to didUpdateLocation
-        case .outside:
-            stateValue = "Outside"
-//            DataModel.shared.currentRegions.remove(region) // moved to didUpdateLocation
-        default: stateValue = "Unknown"
-        }
-        
-        print("State of region \(region.identifier) determined: \(stateValue)")
-    }
+//    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+//        print("Location Manager started to monitor region \(region.identifier)")
+//    }
+//
+//    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion){
+//        print("User entered region \(region.identifier)")
+//    }
+//
+//    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion){
+//        print("User exited region \(region.identifier)")
+//    }
+//
+//    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+//
+//        let stateValue: String
+//        switch(state){
+//        case .inside:
+//            stateValue = "Inside"
+////            DataModel.shared.currentRegions.insert(region) // moved to didUpdateLocation
+//        case .outside:
+//            stateValue = "Outside"
+////            DataModel.shared.currentRegions.remove(region) // moved to didUpdateLocation
+//        default: stateValue = "Unknown"
+//        }
+//
+//        print("State of region \(region.identifier) determined: \(stateValue)")
+//    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading){
         // TODO: Handle new Heading

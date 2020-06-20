@@ -13,21 +13,22 @@ import Firebase
 
 struct MapView: UIViewRepresentable {
     
-    @ObservedObject var loadedData: LoadedData = DataModel.shared.loadedData!
+    @ObservedObject var loadedData: LoadedData = DataModel.shared.loadedData
     
     func makeUIView(context: Context) -> MKMapView {
         startLocationServices()
         let mapView = MKMapView(frame: .zero)
         mapView.delegate = DataModel.shared.mapViewDelegate
         mapView.showsCompass = true
-        DataModel.shared.loadedData?.observeAndLoadSchnitzelAnnotations()
+        DataModel.shared.loadedData.observeAndLoadSchnitzelAnnotations()
         
         // TODO: Following is just for testing
 //        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1664, longitude: 11.5858) // Leo
 //        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
         let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
-        let schnitzelLMUAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: "SchnitzelRegion Uni")
-        loadedData.loadedSchnitzelAnnotations.insert(schnitzelLMUAnnotation)
+        let schnitzelLMUAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: "SchnitzelRegion Uni", isOwned: false)
+        let schnitzelJagd = SchnitzelJagd(id: "SelbstEingefügt", ownerId: "NoOne", annotation: schnitzelLMUAnnotation)
+        loadedData.loadedSchnitzel.insert(schnitzelJagd)
         return mapView
     }
     
@@ -35,10 +36,11 @@ struct MapView: UIViewRepresentable {
         print("MapView is being updated")
 
         uiView.removeAnnotations(uiView.annotations)
-        for annotation in loadedData.loadedSchnitzelAnnotations {
+        for schnitzel in loadedData.loadedSchnitzel {
+            let annotation = schnitzel.annotationWithRegion
             uiView.addAnnotation(annotation)
             uiView.addOverlay(annotation.circle)
-            DataModel.shared.locationManager.startMonitoring(for: annotation.region)
+//            DataModel.shared.locationManager.startMonitoring(for: annotation.region)
         }
     }
     
@@ -65,7 +67,7 @@ struct SearchMapView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        let schnitzelAnnotation = DataModel.shared.schnitzelJagd!.annotationWithRegion
+        let schnitzelAnnotation = DataModel.shared.loadedData.currentSchnitzelJagd!.annotationWithRegion
         uiView.addOverlay(schnitzelAnnotation.circle)
         print("SearchMapView updated")
         let shownRegion = MKCoordinateRegion(center: schnitzelAnnotation.coordinate, latitudinalMeters: CLLocationDistance(exactly: 200)!, longitudinalMeters: CLLocationDistance(exactly: 200)!)
@@ -86,6 +88,8 @@ struct SearchMapView: UIViewRepresentable {
 
 class MapViewDelegate : NSObject, MKMapViewDelegate {
     
+    let annotationIdentifier: String = "AnnotationIdentifier"
+    
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
           mapView.showsUserLocation = true
         if DataModel.shared.screenState == .MENU_MAP {
@@ -93,6 +97,28 @@ class MapViewDelegate : NSObject, MKMapViewDelegate {
         }
     }
         
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation as? AnnotationWithRegion != nil {
+            var annotationView: MKAnnotationView?
+            if let dequeuedAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: annotationIdentifier) {
+                annotationView = dequeuedAnnotationView
+                annotationView?.annotation = annotation
+            }
+            else {
+                let newAnnotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: annotationIdentifier)
+                newAnnotationView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+                annotationView = newAnnotationView
+            }
+            if let annotationView = annotationView {
+                annotationView.canShowCallout = true
+                annotationView.image = UIImage(named: "fleisch")
+            }
+
+            return annotationView
+        }
+        return nil
+    }
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
 
         let circleRenderer = MKCircleRenderer(overlay: overlay)
@@ -112,7 +138,7 @@ class MapViewDelegate : NSObject, MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if DataModel.shared.screenState == .MENU_MAP, let annotationWithRegion = view.annotation as? AnnotationWithRegion {
             if DataModel.shared.currentRegions.contains(annotationWithRegion.region) {
-                DataModel.shared.schnitzelJagd = SchnitzelJagd(annotation: annotationWithRegion)
+                DataModel.shared.loadedData.setCurrentSchnitzelJagd(annotation: annotationWithRegion)
                 DataModel.shared.showStartSearchAlert = true
               }
         }

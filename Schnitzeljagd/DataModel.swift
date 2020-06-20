@@ -22,6 +22,11 @@ extension ARWorldMap {
     #endif
 }
 
+extension Date {
+    func toMillis() -> Int64! {
+        return Int64(self.timeIntervalSince1970 * 1000)
+    }
+}
 
 final class DataModel: ObservableObject {
     static var shared = DataModel() // Singleton
@@ -40,10 +45,7 @@ final class DataModel: ObservableObject {
     let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
     @Published var showStartSearchAlert: Bool = false
     var currentRegions: Set<CLRegion> = Set<CLRegion>()
-    var loadedData: LoadedData?
-    
-    // Schnitzeljagd
-    var schnitzelJagd: SchnitzelJagd?
+    var loadedData: LoadedData = LoadedData()
     
     #if !targetEnvironment(simulator)
     // MARK: - Initialise the ARView
@@ -58,7 +60,6 @@ final class DataModel: ObservableObject {
         
         initLocationServices()
         arView.session.run(config, options: [])
-        loadedData = LoadedData()
     }
     
     func initLocationServices(){
@@ -130,41 +131,46 @@ final class DataModel: ObservableObject {
     }()
 
     @Published var ref = Database.database().reference()
-    @IBAction func saveSchnitzel() {
+    @IBAction func saveSchnitzel(title: String, description: String) {
 
-        let userID: String = (Auth.auth().currentUser?.uid)!
-        let lat: Double = (locationManager.location?.coordinate.latitude)!
-        let lon: Double = (locationManager.location?.coordinate.longitude)!
-        
-        //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
-        self.ref.child("Location").child(userID).setValue(["latitude": lat, "longitude": lon])
-        //self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
-        print("locations = \(lat) \(lon)")
-        
-        arView.session.getCurrentWorldMap { worldMap, error in
-            guard let map = worldMap
-                else { return print("Can't get current world map")}
-            
-            // Add a snapshot image indicating where the map was captured.
-            guard let snapshotAnchor = SnapshotAnchor(capturing: self.arView)
-                else { return print("Can't take snapshot") }
-            map.anchors.append(snapshotAnchor)
-            
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
-                self.ref.child("Data").child(userID).setValue(String(decoding: data, as: UTF8.self))
-                try data.write(to: self.mapSaveURL, options: [.atomic])
-                DispatchQueue.main.async {
-                    return print("Saved Schnitzel")
-                }
-            } catch {
-                fatalError("Can't save map: \(error.localizedDescription)")
-            }
-            for anchor in self.arView.scene.anchors {
-                self.arView.scene.removeAnchor(anchor)
-            }
-        }
-    }
+           let userID: String = (Auth.auth().currentUser?.uid)!
+           let lat: Double = (locationManager.location?.coordinate.latitude)!
+           let lon: Double = (locationManager.location?.coordinate.longitude)!
+           let SchnitzelId: String = String(Date().toMillis())
+           
+           //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
+           self.ref.child("Schnitzel").child(SchnitzelId).child("Location").setValue(["latitude": lat, "longitude": lon])
+           self.ref.child("Schnitzel").child(SchnitzelId).child("User").setValue(userID)
+           self.ref.child("Schnitzel").child(SchnitzelId).child("Titel").setValue(title)
+           self.ref.child("Schnitzel").child(SchnitzelId).child("Description").setValue(description)
+           //self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
+           print("locations = \(lat) \(lon)")
+           
+           arView.session.getCurrentWorldMap { worldMap, error in
+               guard let map = worldMap
+                   else { return print("Can't get current world map")}
+               
+               // Add a snapshot image indicating where the map was captured.
+               guard self.arView.session.currentFrame != nil else { return }
+//               let image = self.arView.snapshot()
+//               UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+//               print("Saved snapshot")
+
+               do {
+                   let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
+                   self.ref.child("Data").child(userID).setValue(String(decoding: data, as: UTF8.self))
+                   try data.write(to: self.mapSaveURL, options: [.atomic])
+                   DispatchQueue.main.async {
+                       return print("Saved Schnitzel")
+                   }
+               } catch {
+                   fatalError("Can't save map: \(error.localizedDescription)")
+               }
+               worldMap!.anchors.removeAll()
+
+           }
+       }
+
     
     // Called opportunistically to verify that map data can be loaded from filesystem.
     var mapDataFromFile: Data? {

@@ -12,12 +12,14 @@ import SwiftUI
 
 struct PlaceSchnitzelUIView: View {
     @EnvironmentObject var data: DataModel
+    @State var title: String = "Titel des neuen Schnitzels" // TODO
+    @State var description: String = "Beschreibung der Schnitzeljagd" // TODO
     
     var body: some View {
         HStack {
             if (self.data.save){
                 Button(action: {
-                    self.data.saveSchnitzel()
+                    self.data.saveSchnitzel(title: self.title, description: self.description)
                     self.data.save = false
                 }) {
                     Text(TextEnum.save.rawValue)
@@ -56,7 +58,7 @@ struct MapUIView: View {
 
 struct SearchMapUIView: View {
     @EnvironmentObject var data: DataModel
-    @State var timePassed = DataModel.shared.schnitzelJagd!.timePassed
+    @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -64,8 +66,8 @@ struct SearchMapUIView: View {
         HStack {
             Text("Timer: \(timePassed)")
                  .onReceive(timer) { _ in
-                     self.data.schnitzelJagd!.timePassed += 1
-                     self.timePassed += 1
+                    self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
+                    self.timePassed += 1
              }.font(.headline)
               .padding(8)
               .foregroundColor(.white)
@@ -84,7 +86,7 @@ struct SearchMapUIView: View {
 
 struct SearchARUIView: View {
     @EnvironmentObject var data: DataModel
-    @State var timePassed = DataModel.shared.schnitzelJagd!.timePassed
+    @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
        
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -92,7 +94,7 @@ struct SearchARUIView: View {
         HStack {
             Text("Timer: \(timePassed)")
                  .onReceive(timer) { _ in
-                    self.data.schnitzelJagd!.timePassed += 1
+                    self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
                     self.timePassed += 1
              }.font(.headline)
               .padding(8)
