@@ -233,27 +233,6 @@ final class DataModel: ObservableObject {
 
 }
 
-class LoadedData : ObservableObject {
-    
-    @Published var loadedSchnitzelAnnotations: Set<AnnotationWithRegion>
-    
-    init(){
-        loadedSchnitzelAnnotations = Set<AnnotationWithRegion>()
-    }
-}
-
-class SchnitzelJagd {
-    
-    var annotationWithRegion: AnnotationWithRegion
-    var timePassed: Int
-    
-    init(annotation: AnnotationWithRegion) {
-        self.annotationWithRegion = annotation
-        self.timePassed = 0
-    }
-    
-}
-
 enum ScreenState {
     
     case MENU_MAP

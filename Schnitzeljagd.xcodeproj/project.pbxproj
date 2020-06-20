@@ -27,6 +27,7 @@
 		84F1B06C2480FBDB00FCC68A /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1B06B2480FBDB00FCC68A /* MapView.swift */; };
 		A27BD61C2487FB19006D286F /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27BD61B2487FB19006D286F /* Location.swift */; };
 		A27BD6222488259C006D286F /* TextEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27BD6212488259C006D286F /* TextEnum.swift */; };
+		A2C4AE83249E2B9900D69E86 /* SchnitzelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C4AE82249E2B9900D69E86 /* SchnitzelModel.swift */; };
 		F22BF67D8CEF878CBB8D0983 /* Pods_Schnitzeljagd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03B6BD240311064274541C23 /* Pods_Schnitzeljagd.framework */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +77,7 @@
 		84F1B06B2480FBDB00FCC68A /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		A27BD61B2487FB19006D286F /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		A27BD6212488259C006D286F /* TextEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEnum.swift; sourceTree = "<group>"; };
+		A2C4AE82249E2B9900D69E86 /* SchnitzelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchnitzelModel.swift; sourceTree = "<group>"; };
 		BF03FD3F9717C364456DAC50 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig"; path = "Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		C9C6040EA1485B2D5D62751C /* Pods-Schnitzeljagd.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Schnitzeljagd.release.xcconfig"; path = "Target Support Files/Pods-Schnitzeljagd/Pods-Schnitzeljagd.release.xcconfig"; sourceTree = "<group>"; };
 		CE56678F334E7C04E6F86FF2 /* Pods_SchnitzeljagdTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SchnitzeljagdTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -176,6 +178,7 @@
 				A27BD61B2487FB19006D286F /* Location.swift */,
 				A27BD6212488259C006D286F /* TextEnum.swift */,
 				8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */,
+				A2C4AE82249E2B9900D69E86 /* SchnitzelModel.swift */,
 			);
 			path = Schnitzeljagd;
 			sourceTree = "<group>";
@@ -494,6 +497,7 @@
 				84F1B06C2480FBDB00FCC68A /* MapView.swift in Sources */,
 				8466F078248D9F4F00EAAC12 /* SnapshotAnchor.swift in Sources */,
 				84DA520D247D2796006546B6 /* Experience.rcproject in Sources */,
+				A2C4AE83249E2B9900D69E86 /* SchnitzelModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

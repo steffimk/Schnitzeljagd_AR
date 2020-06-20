@@ -34,3 +34,12 @@ enum TextEnum: String {
     case alertDecline = "Nein"
     
 }
+
+enum NumberEnum: Double {
+    
+    case regionRadius = 80
+    
+    /** Buffer of exiting a region to prevent flimmering in meters */
+    case regionBuffer = 10
+    
+}

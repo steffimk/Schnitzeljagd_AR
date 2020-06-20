@@ -20,7 +20,7 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
                 if distance <= r.radius {
                     DataModel.shared.currentRegions.insert(region)
                     print("User entered region \(region.identifier)")
-                } else if distance > r.radius + 10 {        // TODO: Adjust? Currently 10 meters buffer to prevent flimmering
+                } else if distance > r.radius + NumberEnum.regionBuffer.rawValue {
                     DataModel.shared.currentRegions.remove(region)
                 }
                 // manager.requestState(for: region)

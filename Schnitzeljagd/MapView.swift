@@ -20,13 +20,13 @@ struct MapView: UIViewRepresentable {
         let mapView = MKMapView(frame: .zero)
         mapView.delegate = DataModel.shared.mapViewDelegate
         mapView.showsCompass = true
-        loadSchnitzelCoordinates()
+        DataModel.shared.loadedData?.observeAndLoadSchnitzelAnnotations()
         
         // TODO: Following is just for testing
 //        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1664, longitude: 11.5858) // Leo
-        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
-//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
-        let schnitzelLMUAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: 80, regionIdentifier: "SchnitzelRegion Uni")
+//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
+        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
+        let schnitzelLMUAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: "SchnitzelRegion Uni")
         loadedData.loadedSchnitzelAnnotations.insert(schnitzelLMUAnnotation)
         return mapView
     }
@@ -52,43 +52,6 @@ struct MapView: UIViewRepresentable {
         DataModel.shared.locationManager.startUpdatingLocation()
     }
     
-    func loadSchnitzelCoordinates() {
-        let userID: String = (Auth.auth().currentUser?.uid)!
-        DataModel.shared.ref.child("Location").child(userID).observe(DataEventType.value, with: { (snapshot) in
-            let value = snapshot.value as? NSDictionary
-            let lat = value?["latitude"] as? CLLocationDegrees ?? 0
-            let lon = value?["longitude"] as? CLLocationDegrees ?? 0
-            print("Loaded Schnitzel Coordinates: \(lat) + \(lon)")
-            let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-            let schnitzelAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: 80, regionIdentifier: "SchnitzelRegion Dummy")
-            DataModel.shared.loadedData!.loadedSchnitzelAnnotations.insert(schnitzelAnnotation)
-        }) { (error) in
-            print(error.localizedDescription)
-        }
-    }
-    
-}
-
-class AnnotationWithRegion : NSObject, MKAnnotation {
-    var coordinate: CLLocationCoordinate2D
-    var title: String?
-    var subtitle: String?
-    
-    let region: CLCircularRegion
-    let circle: MKCircle
-    
-    init(center: CLLocationCoordinate2D, radius: CLLocationDistance, regionIdentifier: String, title: String = TextEnum.annotationTitle.rawValue, subtitle: String = TextEnum.annotationSubtitle.rawValue) {
-        self.coordinate = center
-        self.title = title
-        self.subtitle = subtitle
-        
-        self.region = CLCircularRegion(center: center, radius: radius, identifier: regionIdentifier)
-        self.region.notifyOnEntry = true
-        self.region.notifyOnExit = true
-        self.circle = MKCircle(center: center, radius: radius)
-
-        super.init()
-    }
 }
 
 struct SearchMapView: UIViewRepresentable {
