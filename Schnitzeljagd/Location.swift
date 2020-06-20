@@ -18,10 +18,11 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
                 let region = schnitzel.annotationWithRegion.region
                 let distance = locations.last!.distance(from: CLLocation(latitude: region.center.latitude, longitude: region.center.longitude))
                 if distance <= region.radius {
-                    DataModel.shared.currentRegions.insert(region)
-                    print("User entered region \(region.identifier)")
+                    let insertion = DataModel.shared.currentRegions.insert(region)
+                    if insertion.inserted { print("User entered region \(region.identifier)") }
                 } else if distance > region.radius + NumberEnum.regionBuffer.rawValue {
-                    DataModel.shared.currentRegions.remove(region)
+                    let removal = DataModel.shared.currentRegions.remove(region)
+                    if removal != nil { print("User exited region \(region.identifier)") }
                 }
             }
         }

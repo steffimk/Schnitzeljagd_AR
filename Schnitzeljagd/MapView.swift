@@ -25,8 +25,10 @@ struct MapView: UIViewRepresentable {
         // TODO: Following is just for testing
 //        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1664, longitude: 11.5858) // Leo
 //        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
-        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
-        let schnitzelLMUAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: "SchnitzelRegion Uni", isOwned: false)
+        let coordinateSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
+        let shifting = AnnotationWithRegion.calculateRandomCenter(latitude: coordinateSchnitzel.latitude, longitude: coordinateSchnitzel.longitude, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
+        let center = CLLocationCoordinate2D(latitude: shifting.latitude, longitude: shifting.longitude)
+        let schnitzelLMUAnnotation = AnnotationWithRegion(actualLocation: coordinateSchnitzel, center: center, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: "HC Region", isOwned: false)
         let schnitzelJagd = SchnitzelJagd(id: "SelbstEingefügt", ownerId: "NoOne", annotation: schnitzelLMUAnnotation)
         loadedData.loadedSchnitzel.insert(schnitzelJagd)
         return mapView
@@ -88,7 +90,8 @@ struct SearchMapView: UIViewRepresentable {
 
 class MapViewDelegate : NSObject, MKMapViewDelegate {
     
-    let annotationIdentifier: String = "AnnotationIdentifier"
+    let schnitzelViewIdentifier: String = "SchnitzelViewIdentifier"
+    let schnitzelBWViewIdentifier: String = "SchnitzelBWViewIdentifier"
     
     func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
           mapView.showsUserLocation = true
@@ -98,20 +101,29 @@ class MapViewDelegate : NSObject, MKMapViewDelegate {
     }
         
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if annotation as? AnnotationWithRegion != nil {
+        if let annotationWithRegion = annotation as? AnnotationWithRegion {
+            var imageName: String
+            var identifier: String
+            if annotationWithRegion.isOwned {
+                imageName = "fleisch_bw"
+                identifier = schnitzelBWViewIdentifier
+            } else {
+                imageName = "fleisch"
+                identifier = schnitzelViewIdentifier
+            }
             var annotationView: MKAnnotationView?
-            if let dequeuedAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: annotationIdentifier) {
+            if let dequeuedAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) {
                 annotationView = dequeuedAnnotationView
                 annotationView?.annotation = annotation
             }
             else {
-                let newAnnotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: annotationIdentifier)
+                let newAnnotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 newAnnotationView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
                 annotationView = newAnnotationView
             }
             if let annotationView = annotationView {
                 annotationView.canShowCallout = true
-                annotationView.image = UIImage(named: "fleisch")
+                annotationView.image = UIImage(named: imageName)
             }
 
             return annotationView
@@ -137,7 +149,7 @@ class MapViewDelegate : NSObject, MKMapViewDelegate {
 
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if DataModel.shared.screenState == .MENU_MAP, let annotationWithRegion = view.annotation as? AnnotationWithRegion {
-            if DataModel.shared.currentRegions.contains(annotationWithRegion.region) {
+            if !annotationWithRegion.isOwned && DataModel.shared.currentRegions.contains(annotationWithRegion.region) {
                 DataModel.shared.loadedData.setCurrentSchnitzelJagd(annotation: annotationWithRegion)
                 DataModel.shared.showStartSearchAlert = true
               }

@@ -137,14 +137,16 @@ final class DataModel: ObservableObject {
            let lat: Double = (locationManager.location?.coordinate.latitude)!
            let lon: Double = (locationManager.location?.coordinate.longitude)!
            let SchnitzelId: String = String(Date().toMillis())
-           
+           let shiftedCoordinates = AnnotationWithRegion.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
+        
            //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
+           self.ref.child("Schnitzel").child(SchnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])
            self.ref.child("Schnitzel").child(SchnitzelId).child("Location").setValue(["latitude": lat, "longitude": lon])
            self.ref.child("Schnitzel").child(SchnitzelId).child("User").setValue(userID)
            self.ref.child("Schnitzel").child(SchnitzelId).child("Titel").setValue(title)
            self.ref.child("Schnitzel").child(SchnitzelId).child("Description").setValue(description)
-           //self.ref.child("Location").setValue(["latitude": lat, "longitude": lon])
-           print("locations = \(lat) \(lon)")
+        
+        print("locations = \(lat) \(lon), shifted = \(shiftedCoordinates.latitude) \(shiftedCoordinates.longitude)")
            
            arView.session.getCurrentWorldMap { worldMap, error in
                guard let map = worldMap
