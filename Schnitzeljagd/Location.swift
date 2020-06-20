@@ -13,8 +13,18 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         DataModel.shared.location = locations.last! // saves most recent location
-        for region in manager.monitoredRegions {
-            manager.requestState(for: region)
+        if DataModel.shared.screenState == .MENU_MAP {
+            for region in manager.monitoredRegions {
+                let r = region as! CLCircularRegion
+                let distance = locations.last!.distance(from: CLLocation(latitude: r.center.latitude, longitude: r.center.longitude))
+                if distance <= r.radius {
+                    DataModel.shared.currentRegions.insert(region)
+                    print("User entered region \(region.identifier)")
+                } else if distance > r.radius + 10 {        // TODO: Adjust? Currently 10 meters buffer to prevent flimmering
+                    DataModel.shared.currentRegions.remove(region)
+                }
+                // manager.requestState(for: region)
+            }
         }
     }
     
@@ -31,25 +41,23 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion){
-        // TODO: Handle entered region
         print("User entered region \(region.identifier)")
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion){
-        // TODO: Handle exited region
         print("User exited region \(region.identifier)")
     }
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-
+        
         let stateValue: String
-        switch(state.rawValue){
-        case 1:
+        switch(state){
+        case .inside:
             stateValue = "Inside"
-            DataModel.shared.currentRegions.insert(region) // TODO: move to entered region
-        case 2:
+//            DataModel.shared.currentRegions.insert(region) // moved to didUpdateLocation
+        case .outside:
             stateValue = "Outside"
-            DataModel.shared.currentRegions.remove(region) // TODO: move to exited region
+//            DataModel.shared.currentRegions.remove(region) // moved to didUpdateLocation
         default: stateValue = "Unknown"
         }
         

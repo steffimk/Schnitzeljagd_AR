@@ -245,9 +245,11 @@ class LoadedData : ObservableObject {
 class SchnitzelJagd {
     
     var annotationWithRegion: AnnotationWithRegion
+    var timePassed: Int
     
-    init(annotation: AnnotationWithRegion){
+    init(annotation: AnnotationWithRegion) {
         self.annotationWithRegion = annotation
+        self.timePassed = 0
     }
     
 }

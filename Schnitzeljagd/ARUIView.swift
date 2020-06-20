@@ -44,32 +44,60 @@ struct MapUIView: View {
     var body: some View {
         HStack {
             Button(action: {
-                switch(self.data.screenState){
-                case .MENU_MAP: self.data.screenState = .PLACE_SCHNITZEL_AR
-                case .SEARCH_SCHNITZEL_MAP: self.data.screenState = .SEARCH_SCHNITZEL_AR
-                default: return
-                }
+                self.data.screenState = .PLACE_SCHNITZEL_AR
             }) {
-                Text(getButtonText(screenState: self.data.screenState))
+                Text(TextEnum.placeAR.rawValue)
                     .fontWeight(.bold)
                     .modifier(TextModifier())}
         }.padding(7).padding(.top, -10)
     }
+
+}
+
+struct SearchMapUIView: View {
+    @EnvironmentObject var data: DataModel
+    @State var timePassed = DataModel.shared.schnitzelJagd!.timePassed
     
-    func getButtonText(screenState: ScreenState) -> String {
-        if screenState == .MENU_MAP {
-            return TextEnum.placeAR.rawValue
-        } else {
-            return TextEnum.searchAR.rawValue
-        }
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    var body: some View {
+        HStack {
+            Text("Timer: \(timePassed)")
+                 .onReceive(timer) { _ in
+                     self.data.schnitzelJagd!.timePassed += 1
+                     self.timePassed += 1
+             }.font(.headline)
+              .padding(8)
+              .foregroundColor(.white)
+            Spacer()
+            Button(action: {
+                self.data.screenState = .SEARCH_SCHNITZEL_AR
+            }) {
+                Text(TextEnum.searchAR.rawValue)
+                    .fontWeight(.bold)
+                    .modifier(TextModifier())}
+
+        }.padding(7).padding(.top, -10)
     }
+
 }
 
 struct SearchARUIView: View {
     @EnvironmentObject var data: DataModel
+    @State var timePassed = DataModel.shared.schnitzelJagd!.timePassed
+       
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         HStack {
+            Text("Timer: \(timePassed)")
+                 .onReceive(timer) { _ in
+                    self.data.schnitzelJagd!.timePassed += 1
+                    self.timePassed += 1
+             }.font(.headline)
+              .padding(8)
+              .foregroundColor(.white)
+            Spacer()
             Button(action: {
                 self.data.screenState = .SEARCH_SCHNITZEL_MAP
             }) {

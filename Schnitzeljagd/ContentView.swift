@@ -80,7 +80,7 @@ struct ContentView : View {
                 PlaceSchnitzelUIView()
             } else if data.screenState == .SEARCH_SCHNITZEL_MAP {
                 SearchMapView().frame(maxHeight: .infinity).padding(.top, -15)
-                MapUIView()
+                SearchMapUIView()
             } else if data.screenState == .MENU_MAP {
                 MapView().frame(maxHeight: .infinity).padding(.top, -15)
                 MapUIView()

@@ -24,13 +24,10 @@ struct MapView: UIViewRepresentable {
         
         // TODO: Following is just for testing
 //        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1664, longitude: 11.5858) // Leo
-////        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
-////        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
-//        let schnitzelAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: 80, regionIdentifier: "SchnitzelRegion Uni")
-//        DataModel.shared.locationManager.startMonitoring(for: schnitzelAnnotation.region)
-//        mapView.addAnnotation(schnitzelAnnotation)
-//        mapView.addOverlay(schnitzelAnnotation.circle)
-                
+        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
+//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
+        let schnitzelLMUAnnotation = AnnotationWithRegion(center: coordinateCenterSchnitzel, radius: 80, regionIdentifier: "SchnitzelRegion Uni")
+        loadedData.loadedSchnitzelAnnotations.insert(schnitzelLMUAnnotation)
         return mapView
     }
     
