@@ -12,19 +12,23 @@ import CoreLocation
 class LocationDelegate : NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        DataModel.shared.location = locations.last! // saves most recent location
-        if DataModel.shared.screenState == .MENU_MAP {
-            for schnitzel in DataModel.shared.loadedData.loadedSchnitzel {
+        let data = DataModel.shared
+        data.location = locations.last! // saves most recent location
+        if data.screenState == .MENU_MAP {
+            for schnitzel in data.loadedData.loadedSchnitzel {
                 let region = schnitzel.annotationWithRegion.region
                 let distance = locations.last!.distance(from: CLLocation(latitude: region.center.latitude, longitude: region.center.longitude))
                 if distance <= region.radius {
-                    let insertion = DataModel.shared.currentRegions.insert(region)
+                    let insertion = data.currentRegions.insert(region)
                     if insertion.inserted { print("User entered region \(region.identifier)") }
                 } else if distance > region.radius + NumberEnum.regionBuffer.rawValue {
-                    let removal = DataModel.shared.currentRegions.remove(region)
+                    let removal = data.currentRegions.remove(region)
                     if removal != nil { print("User exited region \(region.identifier)") }
                 }
             }
+        } else if data.screenState == .SEARCH_SCHNITZEL_MAP || data.screenState == .SEARCH_SCHNITZEL_AR {
+            let annotation = data.loadedData.currentSchnitzelJagd!.annotationWithRegion
+            annotation.updatedDistance = locations.last!.distance(from: CLLocation(latitude: annotation.actualLocation.latitude, longitude: annotation.actualLocation.longitude))
         }
     }
     

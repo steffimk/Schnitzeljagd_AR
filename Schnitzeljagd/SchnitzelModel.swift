@@ -65,7 +65,7 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
     var title: String?
     var subtitle: String?
     var isOwned: Bool
-    
+    var updatedDistance: CLLocationDistance?
     let region: CLCircularRegion
     let circle: MKCircle
     

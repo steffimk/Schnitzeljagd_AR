@@ -111,7 +111,13 @@ struct ContentView : View {
           
           func getBackgroundColor() -> Color {
                     switch data.screenState{
-                    case .SEARCH_SCHNITZEL_MAP, .SEARCH_SCHNITZEL_AR: return Color.orange
+                    case .SEARCH_SCHNITZEL_MAP, .SEARCH_SCHNITZEL_AR:
+                              guard let dist = data.loadedData.currentSchnitzelJagd?.annotationWithRegion.updatedDistance! else {
+                                        return Color.orange
+                              }
+                              let blue: Double = dist / 80.0
+                              let red: Double = 1.0 - blue
+                              return Color(red: red, green: 0.0, blue: blue, opacity: 1.00)
                     default: return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00) //darkgreen
                     }
           }
