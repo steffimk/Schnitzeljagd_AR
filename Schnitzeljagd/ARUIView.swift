@@ -18,8 +18,9 @@ protocol CustomUIViewDelegate {
 
 struct PlaceSchnitzelUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
-    @State var title: String = "Titel des neuen Schnitzels" // TODO
-    @State var description: String = "Beschreibung der Schnitzeljagd" // TODO
+    @State var value: CGFloat = 0
+    @State var title: String = "Dein Titel"
+    @State var description: String = "Deine Beschreibung"
     var delegate: CustomUIViewDelegate?
     
     init (delegate: ContentView){
@@ -29,13 +30,26 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
     var body: some View {
         HStack {
             if (self.data.save){
-                Button(action: {
-                    self.data.saveSchnitzel(title: self.title, description: self.description)
-                    self.data.save = false
-                }) {
-                    Text(TextEnum.save.rawValue)
-                        .fontWeight(.bold)
-                        .modifier(TextModifier(color: .yellow))
+                VStack {
+                    TextField("Titel", text: $title).font(.title).foregroundColor(.white).background(Color.clear).padding(.horizontal, 15)
+                    TextField("Beschreibung", text: $description).font(.callout).foregroundColor(.white).background(Color.clear).padding(.horizontal, 15)
+                    Button(action: {
+                        self.data.saveSchnitzel(title: self.title, description: self.description)
+                        self.data.save = false
+                    }) {
+                        Text(TextEnum.save.rawValue)
+                            .fontWeight(.bold)
+                            .modifier(TextModifier(color: .yellow))
+                    }
+                }.offset(y: -self.value).animation(.spring()).onAppear {
+                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) {
+                        (notification) in
+                        let value = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+                        self.value = value.height
+                    }
+                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) {
+                        _ in self.value = 0
+                    }
                 }
             } else {
                 Button(action: {
@@ -47,7 +61,7 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
                         .modifier(TextModifier(color: .gray))
                 }
             }
-        }.padding(7).padding(.top, -10)
+            }.padding(7).padding(.top, -10)
     }
 }
 
@@ -82,7 +96,7 @@ struct SearchMapUIView: View, CustomUIView {
     }
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+
     var body: some View {
         HStack {
             Text("Timer: \(timePassed)")
@@ -144,7 +158,6 @@ struct SearchARUIView: View, CustomUIView {
             }
         }.padding(7).padding(.top, -10)
     }
-
 }
 
 struct TextModifier: ViewModifier {

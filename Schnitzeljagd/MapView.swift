@@ -40,11 +40,8 @@ struct MapView: UIViewRepresentable {
         uiView.removeAnnotations(uiView.annotations)
         for schnitzel in loadedData.loadedSchnitzel {
             let annotation = schnitzel.annotationWithRegion
-            let actualSchnitzel = MKPointAnnotation(__coordinate: annotation.actualLocation)
-            uiView.addAnnotation(actualSchnitzel)
             uiView.addAnnotation(annotation)
             uiView.addOverlay(annotation.circle)
-//            DataModel.shared.locationManager.startMonitoring(for: annotation.region)
         }
     }
     
@@ -71,6 +68,9 @@ struct SearchMapView: UIViewRepresentable {
         print("SearchMapView updated")
         let shownRegion = MKCoordinateRegion(center: schnitzelAnnotation.coordinate, latitudinalMeters: CLLocationDistance(exactly: 200)!, longitudinalMeters: CLLocationDistance(exactly: 200)!)
         uiView.setRegion(uiView.regionThatFits(shownRegion), animated: true)
+        
+//        let actualSchnitzel = MKPointAnnotation(__coordinate: schnitzelAnnotation.actualLocation)
+//        uiView.addAnnotation(actualSchnitzel)
     }
     
 }

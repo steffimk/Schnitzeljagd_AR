@@ -99,10 +99,10 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
               xOffset = Int.random(in: 0...maxOffset*2) - maxOffset
               yOffset = Int.random(in: 0...maxOffset*2) - maxOffset
           } while Double(maxOffset) < Double(xOffset*xOffset + yOffset*yOffset).squareRoot()
-          print("Offset in meters: x = \(xOffset) y = \(yOffset)")
+
           let latitudeOffset: Double = Double(xOffset)/earthRadius
           let longitudeOffset: Double = Double(yOffset)/(earthRadius * cos(Double.pi * latitude/180.0))
-          print("Offset in degree: latitude = \(latitudeOffset) longitude = \(longitudeOffset)")
+        
           let latitudeResult: Double = latitude + latitudeOffset * 180.0/Double.pi
           let longitudeResult: Double = longitude + longitudeOffset * 180.0/Double.pi
           

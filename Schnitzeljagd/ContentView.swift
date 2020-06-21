@@ -81,8 +81,8 @@ struct ContentView : View, CustomUIViewDelegate {
             
             #if !targetEnvironment(simulator)
             if data.screenState == .PLACE_SCHNITZEL_AR {
-                ARDisplayView().padding(.top, -15).padding(.bottom, -90)
-                    PlaceSchnitzelUIView(delegate: self)
+                ARDisplayView().padding(.top, -15).padding(.bottom, -200)
+                PlaceSchnitzelUIView(delegate: self)
             } else if data.screenState == .SEARCH_SCHNITZEL_MAP {
                 SearchMapView().frame(maxHeight: .infinity).padding(.top, -15)
                 SearchMapUIView(delegate: self)
@@ -128,7 +128,7 @@ struct ContentView : View, CustomUIViewDelegate {
                               if distanceToSchnitzel == nil {
                                         return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00)
                               }
-                              let blue: Double = distanceToSchnitzel! / 80.0
+                              let blue: Double = distanceToSchnitzel! / (NumberEnum.regionRadius.rawValue*2)
                               let red: Double = 1.0 - blue
                               return Color(red: red, green: 0.0, blue: blue, opacity: 1.00)
                     default: return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00) //darkgreen
