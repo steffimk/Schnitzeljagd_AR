@@ -40,6 +40,8 @@ struct MapView: UIViewRepresentable {
         uiView.removeAnnotations(uiView.annotations)
         for schnitzel in loadedData.loadedSchnitzel {
             let annotation = schnitzel.annotationWithRegion
+            let actualSchnitzel = MKPointAnnotation(__coordinate: annotation.actualLocation)
+            uiView.addAnnotation(actualSchnitzel)
             uiView.addAnnotation(annotation)
             uiView.addOverlay(annotation.circle)
 //            DataModel.shared.locationManager.startMonitoring(for: annotation.region)
