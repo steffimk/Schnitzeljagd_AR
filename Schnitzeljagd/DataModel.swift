@@ -34,7 +34,14 @@ final class DataModel: ObservableObject {
     //AR
     @Published var arView: ARView!
 
-    @Published var screenState: ScreenState
+    @Published var screenState: ScreenState {
+        didSet {
+            if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
+                && (screenState != .SEARCH_SCHNITZEL_MAP || screenState == .SEARCH_SCHNITZEL_AR) {
+                self.loadedData.currentSchnitzelJagd!.saveTime()
+            }
+        }
+    }
     @Published var save: Bool = true
     @IBOutlet weak var snapshotThumbnail: UIImageView!
     

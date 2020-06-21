@@ -17,15 +17,37 @@ class SchnitzelJagd : Hashable {
     
     var annotationWithRegion: AnnotationWithRegion
     var timePassed: Int
+    var couldUpdateTime: Bool
     
     init(id: String, ownerId: String, annotation: AnnotationWithRegion) {
         self.schnitzelId = id
         self.ownerId = ownerId
         self.annotationWithRegion = annotation
         self.timePassed = 0
+        self.couldUpdateTime = false
     }
     
-    // TODO: Get time and status before starting new Jagd
+    func readyForSearch() -> Bool {
+        return couldUpdateTime && !self.annotationWithRegion.isOwned && DataModel.shared.currentRegions.contains(self.annotationWithRegion.region)
+    }
+    
+    func loadInformation() {
+        let userID = Auth.auth().currentUser?.uid
+        DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? Dictionary<String,Any>
+            let finalTime = value?["FinalTime"] as? Int
+            if finalTime != nil { return } // Schnitzel already found by user
+            self.timePassed = value?["CurrentDuration"] as? Int ?? self.timePassed
+            self.couldUpdateTime = true
+          }) { (error) in
+            print(error.localizedDescription)
+        }
+    }
+    
+    func saveTime() {
+        let userID = Auth.auth().currentUser?.uid
+        DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("CurrentDuration").setValue(timePassed)
+    }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(schnitzelId)
@@ -98,7 +120,7 @@ class LoadedData : ObservableObject {
             let value = snapshot.value as? Dictionary<String, Dictionary<String, Any>>
             if value != nil {
                 for (key, element) in value! {
-                    if element.count > 4 {
+                    if element.count > 4 && !self.getSchnitzelWithId(id: key).hasSchnitzel{
                         let schnitzelId = key
                         let userId = element["User"] as? String ?? ""
                         let title = element["Titel"] as? String ?? "Title not loaded"
@@ -139,7 +161,9 @@ class LoadedData : ObservableObject {
     func setCurrentSchnitzelJagd(annotation: AnnotationWithRegion) {
         for schnitzel in loadedSchnitzel {
             if schnitzel.annotationWithRegion == annotation {
-                currentSchnitzelJagd = schnitzel
+                self.currentSchnitzelJagd = schnitzel
+                schnitzel.couldUpdateTime = false
+                schnitzel.loadInformation()
                 return
             }
         }
