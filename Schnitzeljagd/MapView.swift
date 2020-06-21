@@ -46,10 +46,6 @@ struct MapView: UIViewRepresentable {
         }
     }
     
-    static func dismantleUIView(_ uiView: MKMapView, coordinator: ()) {
-        DataModel.shared.locationManager.stopUpdatingLocation()
-    }
-    
     func startLocationServices() {
         DataModel.shared.locationManager.desiredAccuracy = kCLLocationAccuracyBest // Accuracy of location - keep as low as possible to minimize power consumption
         DataModel.shared.locationManager.pausesLocationUpdatesAutomatically = true
@@ -61,7 +57,6 @@ struct MapView: UIViewRepresentable {
 struct SearchMapView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> MKMapView {
-        startLocationServices()
         let mapView = MKMapView(frame: .zero)
         mapView.delegate = DataModel.shared.mapViewDelegate
         mapView.showsCompass = true
@@ -74,16 +69,6 @@ struct SearchMapView: UIViewRepresentable {
         print("SearchMapView updated")
         let shownRegion = MKCoordinateRegion(center: schnitzelAnnotation.coordinate, latitudinalMeters: CLLocationDistance(exactly: 200)!, longitudinalMeters: CLLocationDistance(exactly: 200)!)
         uiView.setRegion(uiView.regionThatFits(shownRegion), animated: true)
-    }
-    
-    static func dismantleUIView(_ uiView: MKMapView, coordinator: ()) {
-        DataModel.shared.locationManager.stopUpdatingLocation()
-    }
-    
-    func startLocationServices(){
-        DataModel.shared.locationManager.desiredAccuracy = kCLLocationAccuracyBest // Accuracy of location - keep as low as possible to minimize power consumption
-        DataModel.shared.locationManager.pausesLocationUpdatesAutomatically = true
-        DataModel.shared.locationManager.startUpdatingLocation()
     }
     
 }

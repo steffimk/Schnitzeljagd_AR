@@ -10,10 +10,21 @@ import SwiftUI
 
 #if !targetEnvironment(simulator)
 
-struct PlaceSchnitzelUIView: View {
+protocol CustomUIView {}
+
+protocol CustomUIViewDelegate {
+    func customUIView(_ customUIView: CustomUIView, changeBackgroundColor: Bool, distance: Double?)
+}
+
+struct PlaceSchnitzelUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
     @State var title: String = "Titel des neuen Schnitzels" // TODO
     @State var description: String = "Beschreibung der Schnitzeljagd" // TODO
+    var delegate: CustomUIViewDelegate?
+    
+    init (delegate: ContentView){
+        self.delegate = delegate
+    }
     
     var body: some View {
         HStack {
@@ -40,8 +51,13 @@ struct PlaceSchnitzelUIView: View {
     }
 }
 
-struct MapUIView: View {
+struct MapUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
+    var delegate: CustomUIViewDelegate?
+    
+    init (delegate: ContentView){
+        self.delegate = delegate
+    }
     
     var body: some View {
         HStack {
@@ -56,9 +72,14 @@ struct MapUIView: View {
 
 }
 
-struct SearchMapUIView: View {
+struct SearchMapUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
+    var delegate: CustomUIViewDelegate?
+    
+    init (delegate: ContentView){
+        self.delegate = delegate
+    }
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -68,6 +89,10 @@ struct SearchMapUIView: View {
                  .onReceive(timer) { _ in
                     self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
                     self.timePassed += 1
+                    if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
+                        let currentDistance = self.data.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel()
+                        self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
+                    }
              }.font(.headline)
               .padding(8)
               .foregroundColor(.white)
@@ -84,9 +109,14 @@ struct SearchMapUIView: View {
 
 }
 
-struct SearchARUIView: View {
+struct SearchARUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
+    var delegate: CustomUIViewDelegate?
+    
+    init (delegate: ContentView){
+        self.delegate = delegate
+    }
        
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -96,12 +126,17 @@ struct SearchARUIView: View {
                  .onReceive(timer) { _ in
                     self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
                     self.timePassed += 1
+                    if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
+                        let currentDistance = self.data.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel()
+                        self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
+                    }
              }.font(.headline)
               .padding(8)
               .foregroundColor(.white)
             Spacer()
             Button(action: {
                 self.data.screenState = .SEARCH_SCHNITZEL_MAP
+                self.delegate?.customUIView(self, changeBackgroundColor: true, distance: nil)
             }) {
                 Text(TextEnum.searchMap.rawValue)
                     .fontWeight(.bold)

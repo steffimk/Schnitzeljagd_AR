@@ -26,9 +26,6 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
                     if removal != nil { print("User exited region \(region.identifier)") }
                 }
             }
-        } else if data.screenState == .SEARCH_SCHNITZEL_MAP || data.screenState == .SEARCH_SCHNITZEL_AR {
-            let annotation = data.loadedData.currentSchnitzelJagd!.annotationWithRegion
-            annotation.updatedDistance = locations.last!.distance(from: CLLocation(latitude: annotation.actualLocation.latitude, longitude: annotation.actualLocation.longitude))
         }
     }
     

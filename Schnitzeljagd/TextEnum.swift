@@ -37,10 +37,11 @@ enum TextEnum: String {
 
 enum NumberEnum: Double {
     
-    case regionRadius = 80
-    
+    case regionRadius = 80.0
     /** Buffer of exiting a region to prevent flimmering in meters */
-    case regionBuffer = 5
-    case offsetBuffer = 3
+    case regionBuffer = 5.0
+    case offsetBuffer = 3.0
+    /** Color is updated after this amount of seconds*/
+    case delay = 4.0
     
 }

@@ -39,9 +39,14 @@ class SchnitzelJagd : Hashable {
             if finalTime != nil { return } // Schnitzel already found by user
             self.timePassed = value?["CurrentDuration"] as? Int ?? self.timePassed
             self.couldUpdateTime = true
+            print("data loaded - search can start/continue")
           }) { (error) in
             print(error.localizedDescription)
         }
+    }
+    
+    func determineDistanceToSchnitzel() -> Double {
+        return DataModel.shared.location!.distance(from: CLLocation(latitude: annotationWithRegion.actualLocation.latitude, longitude: annotationWithRegion.actualLocation.longitude))
     }
     
     func saveTime() {
@@ -65,7 +70,6 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
     var title: String?
     var subtitle: String?
     var isOwned: Bool
-    var updatedDistance: CLLocationDistance?
     let region: CLCircularRegion
     let circle: MKCircle
     
@@ -120,7 +124,7 @@ class LoadedData : ObservableObject {
             let value = snapshot.value as? Dictionary<String, Dictionary<String, Any>>
             if value != nil {
                 for (key, element) in value! {
-                    if element.count > 4 && !self.getSchnitzelWithId(id: key).hasSchnitzel{
+                    if !self.getSchnitzelWithId(id: key).hasSchnitzel && element.keys.contains("User") && element.keys.contains("Titel") && element.keys.contains("Description") && element.keys.contains("Location") && element.keys.contains("RegionCenter"){
                         let schnitzelId = key
                         let userId = element["User"] as? String ?? ""
                         let title = element["Titel"] as? String ?? "Title not loaded"
@@ -133,13 +137,13 @@ class LoadedData : ObservableObject {
                         let centerLon = regionCenter?["longitude"] ?? 0.0
                         // TODO: Maybe only add Schnitzel when not more than x kilometers away
                         print("Loaded Schnitzel \(title) \(description) with Id \(schnitzelId) and coordinates \(lat) + \(lon) from user \(userId)")
-                        
+
                         let coordinateAnnotation = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
                         let coordinateSchnitzel = CLLocationCoordinate2D(latitude: lat, longitude: lon)
                         let schnitzelAnnotation = AnnotationWithRegion(actualLocation: coordinateSchnitzel, center: coordinateAnnotation, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: schnitzelId, title: title, subtitle: description, isOwned: userId == currentUserId)
-                        
+
                         let schnitzel = SchnitzelJagd(id: schnitzelId, ownerId: userId, annotation: schnitzelAnnotation)
-                        
+
                         self.loadedSchnitzel.insert(schnitzel)
                     }
                 }

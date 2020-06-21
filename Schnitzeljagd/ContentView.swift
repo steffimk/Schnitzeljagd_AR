@@ -11,21 +11,26 @@ import RealityKit
 import MapKit
 
 
-struct ContentView : View {
+struct ContentView : View, CustomUIViewDelegate {
+
     @EnvironmentObject var data: DataModel
     @EnvironmentObject var session: SessionStore
     @State private var showUserMenu = false
+    @State var backgroundColor: Color = Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00)
           
     func getUser () {
           session.listen()
     }
-          
+               
     var body: some View {
           Group {
               if (session.session != nil){
         VStack {
           HStack {
-                    Button(action: { self.data.screenState = .MENU_MAP }){
+                    Button(action: {
+                              self.data.screenState = .MENU_MAP
+                              self.backgroundColor = ContentView.getBackgroundColor(distanceToSchnitzel: nil)
+                    }){
                   Image(systemName: "house").foregroundColor(.white).font(Font.system(.title))
               }
               Spacer()
@@ -77,19 +82,19 @@ struct ContentView : View {
             #if !targetEnvironment(simulator)
             if data.screenState == .PLACE_SCHNITZEL_AR {
                 ARDisplayView().padding(.top, -15).padding(.bottom, -90)
-                PlaceSchnitzelUIView()
+                    PlaceSchnitzelUIView(delegate: self)
             } else if data.screenState == .SEARCH_SCHNITZEL_MAP {
                 SearchMapView().frame(maxHeight: .infinity).padding(.top, -15)
-                SearchMapUIView()
+                SearchMapUIView(delegate: self)
             } else if data.screenState == .MENU_MAP {
                 MapView().frame(maxHeight: .infinity).padding(.top, -15)
-                MapUIView()
+                MapUIView(delegate: self)
             } else {
                 ARDisplayView().padding(.top, -15).padding(.bottom, -90) // TODO: custom ARView for SearchSchnitzelAR
-                SearchARUIView()
+                SearchARUIView(delegate: self)
           }
             #endif
-        }.background(getBackgroundColor())
+        }.background(self.backgroundColor)
           .alert(isPresented: $data.showStartSearchAlert) {
                   Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
                         primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
@@ -109,13 +114,21 @@ struct ContentView : View {
 
     }
           
-          func getBackgroundColor() -> Color {
-                    switch data.screenState{
+          func customUIView(_ customUIView: CustomUIView, changeBackgroundColor: Bool, distance: Double?) {
+                if changeBackgroundColor {
+                    self.backgroundColor = ContentView.getBackgroundColor(distanceToSchnitzel: distance)
+                    print("Changed background color to : \(self.backgroundColor)")
+                }
+          }
+           
+          
+          static func getBackgroundColor(distanceToSchnitzel: Double?) -> Color {
+                    switch DataModel.shared.screenState{
                     case .SEARCH_SCHNITZEL_MAP, .SEARCH_SCHNITZEL_AR:
-                              guard let dist = data.loadedData.currentSchnitzelJagd?.annotationWithRegion.updatedDistance! else {
-                                        return Color.orange
+                              if distanceToSchnitzel == nil {
+                                        return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00)
                               }
-                              let blue: Double = dist / 80.0
+                              let blue: Double = distanceToSchnitzel! / 80.0
                               let red: Double = 1.0 - blue
                               return Color(red: red, green: 0.0, blue: blue, opacity: 1.00)
                     default: return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00) //darkgreen
