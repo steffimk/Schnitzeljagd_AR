@@ -95,18 +95,6 @@ struct ContentView : View, CustomUIViewDelegate {
           }
             #endif
         }.background(self.backgroundColor)
-          .alert(isPresented: $data.showStartSearchAlert) {
-                  Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
-                        primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
-                              if self.data.loadedData.currentSchnitzelJagd!.readyForSearch() {
-                                        DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
-                              }
-                              DataModel.shared.showStartSearchAlert = false
-                        }),
-                        secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
-                            DataModel.shared.showStartSearchAlert = false
-                        }))
-        }
               } else {
                     SignInView()
               }

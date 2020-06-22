@@ -37,7 +37,7 @@ final class DataModel: ObservableObject {
     @Published var screenState: ScreenState {
         didSet {
             if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
-                && (screenState != .SEARCH_SCHNITZEL_MAP || screenState == .SEARCH_SCHNITZEL_AR) {
+                && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
                 self.loadedData.currentSchnitzelJagd!.saveTime()
             }
         }

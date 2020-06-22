@@ -27,12 +27,18 @@ enum TextEnum: String {
     case annotationTitle = "Schnitzel"
     case annotationSubtitle = "Im Umkreis von 80m befindet sich ein Schnitzel"
     
-    // Entered Region
+    // Start Schnitzeljagd Alert
     case alertTitle = "Schnitzeljagd starten"
     case alertMessage = "Möchtest du die Schnitzeljagd annehmen?"
     case alertAccept = "Ja"
     case alertDecline = "Nein"
     
+    // Save Schnitzel Alert
+    case saveAlertTitle = "Schnitzel speichern"
+    case saveAlertAccept = "Speichern"
+    case saveAlertDecline = "Bearbeiten"
+    case schnitzelTitlePlaceholder = "Dein Titel"
+    case schnitzelDescriptionPlaceholder = "Deine Beschreibung"
 }
 
 enum NumberEnum: Double {

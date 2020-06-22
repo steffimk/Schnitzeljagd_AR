@@ -19,8 +19,9 @@ protocol CustomUIViewDelegate {
 struct PlaceSchnitzelUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
     @State var value: CGFloat = 0
-    @State var title: String = "Dein Titel"
-    @State var description: String = "Deine Beschreibung"
+    @State var title: String = ""
+    @State var description: String = ""
+    @State var showSaveAlert: Bool = false
     var delegate: CustomUIViewDelegate?
     
     init (delegate: ContentView){
@@ -31,15 +32,25 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
         HStack {
             if (self.data.save){
                 VStack {
-                    TextField("Titel", text: $title).font(.title).foregroundColor(.white).background(Color.clear).padding(.horizontal, 15)
-                    TextField("Beschreibung", text: $description).font(.callout).foregroundColor(.white).background(Color.clear).padding(.horizontal, 15)
+                    TextField("", text: $title).modifier(TextFieldStyle(font: .title, showPlaceHolder: title.isEmpty, placeholder: TextEnum.schnitzelTitlePlaceholder.rawValue))
+                    TextField("", text: $description).modifier(TextFieldStyle(font: .callout, showPlaceHolder: description.isEmpty, placeholder: TextEnum.schnitzelDescriptionPlaceholder.rawValue))
                     Button(action: {
-                        self.data.saveSchnitzel(title: self.title, description: self.description)
-                        self.data.save = false
+                        self.showSaveAlert = true
+                        print("ShowSaveAlert is: \(self.showSaveAlert)")
                     }) {
                         Text(TextEnum.save.rawValue)
                             .fontWeight(.bold)
                             .modifier(TextModifier(color: .yellow))
+                    }.alert(isPresented: self.$showSaveAlert) {
+                        Alert(title: Text(TextEnum.saveAlertTitle.rawValue), message: Text("Möchtest du ein neues Schnitzel mit Titel \"\(self.title)\" und Beschreibung \"\(self.description)\" erstellen?"),
+                        primaryButton: .default(Text(TextEnum.saveAlertAccept.rawValue), action: {
+                            self.data.saveSchnitzel(title: self.title, description: self.description)
+                            self.data.save = false
+                            self.showSaveAlert = false
+                        }),
+                        secondaryButton: .cancel(Text(TextEnum.saveAlertDecline.rawValue), action: {
+                            self.showSaveAlert = false
+                        }))
                     }
                 }.offset(y: -self.value).animation(.spring()).onAppear {
                     NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) {
@@ -82,6 +93,18 @@ struct MapUIView: View, CustomUIView {
                     .fontWeight(.bold)
                     .modifier(TextModifier())}
         }.padding(7).padding(.top, -10)
+         .alert(isPresented: $data.showStartSearchAlert) {
+            Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
+                  primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
+                    if self.data.loadedData.currentSchnitzelJagd!.readyForSearch() {
+                        DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
+                    }
+                    DataModel.shared.showStartSearchAlert = false
+                  }),
+                  secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
+                    DataModel.shared.showStartSearchAlert = false
+                  }))
+          }
     }
 
 }
@@ -176,6 +199,29 @@ struct TextModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: 40)
                     .stroke(Color.purple, lineWidth: 4)
         )
+    }
+}
+
+struct TextFieldStyle: ViewModifier {
+    var font: Font
+    var showPlaceHolder: Bool
+    var placeholder: String
+
+    func body(content: Content) -> some View {
+        ZStack(alignment: .leading) {
+            if showPlaceHolder {
+                Text(placeholder)
+                .font(font)
+                .foregroundColor(.white)
+                .background(Color.clear)
+                .padding(.horizontal, 15)
+            }
+            content
+            .font(font)
+            .foregroundColor(.white)
+            .background(Color.clear)
+            .padding(.horizontal, 15)
+        }
     }
 }
 
