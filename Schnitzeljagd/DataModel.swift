@@ -143,7 +143,7 @@ final class DataModel: ObservableObject {
            let lat: Double = (locationManager.location?.coordinate.latitude)!
            let lon: Double = (locationManager.location?.coordinate.longitude)!
            let SchnitzelId: String = String(Date().toMillis())
-           let shiftedCoordinates = AnnotationWithRegion.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
+           let shiftedCoordinates = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
         
            //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
            self.ref.child("Schnitzel").child(SchnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])

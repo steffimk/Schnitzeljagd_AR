@@ -87,27 +87,7 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
 
         super.init()
     }
-    
-      static func calculateRandomCenter(latitude: CLLocationDegrees, longitude: CLLocationDegrees, maxOffsetInMeters: Int) -> (latitude: Double, longitude: Double){
 
-          let earthRadius: Double = 6378137
-          
-          let maxOffset = maxOffsetInMeters - Int(NumberEnum.offsetBuffer.rawValue)
-          var xOffset: Int
-          var yOffset: Int
-          repeat {
-              xOffset = Int.random(in: 0...maxOffset*2) - maxOffset
-              yOffset = Int.random(in: 0...maxOffset*2) - maxOffset
-          } while Double(maxOffset) < Double(xOffset*xOffset + yOffset*yOffset).squareRoot()
-
-          let latitudeOffset: Double = Double(xOffset)/earthRadius
-          let longitudeOffset: Double = Double(yOffset)/(earthRadius * cos(Double.pi * latitude/180.0))
-        
-          let latitudeResult: Double = latitude + latitudeOffset * 180.0/Double.pi
-          let longitudeResult: Double = longitude + longitudeOffset * 180.0/Double.pi
-          
-          return (latitude: latitudeResult, longitude: longitudeResult)
-      }
 }
 
 class LoadedData : ObservableObject {

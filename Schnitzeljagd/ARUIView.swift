@@ -122,7 +122,7 @@ struct SearchMapUIView: View, CustomUIView {
 
     var body: some View {
         HStack {
-            Text("Timer: \(timePassed)")
+            Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
                  .onReceive(timer) { _ in
                     self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
                     self.timePassed += 1
@@ -159,7 +159,7 @@ struct SearchARUIView: View, CustomUIView {
     
     var body: some View {
         HStack {
-            Text("Timer: \(timePassed)")
+            Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
                  .onReceive(timer) { _ in
                     self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
                     self.timePassed += 1
