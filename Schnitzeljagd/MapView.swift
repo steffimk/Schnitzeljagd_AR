@@ -138,7 +138,6 @@ class MapViewDelegate : NSObject, MKMapViewDelegate {
         if DataModel.shared.screenState == .MENU_MAP, let annotationWithRegion = view.annotation as? AnnotationWithRegion {
             if !annotationWithRegion.isOwned && DataModel.shared.currentRegions.contains(annotationWithRegion.region) {
                 DataModel.shared.loadedData.setCurrentSchnitzelJagd(annotation: annotationWithRegion)
-                DataModel.shared.showStartSearchAlert = true
               }
         }
         print("Annotation was selected")

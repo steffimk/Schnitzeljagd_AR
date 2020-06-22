@@ -94,12 +94,18 @@ struct MapUIView: View, CustomUIView {
                     .modifier(TextModifier())}
         }.padding(7).padding(.top, -10)
          .alert(isPresented: $data.showStartSearchAlert) {
-            Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
+            let schnitzel = self.data.loadedData.currentSchnitzelJagd!
+            if schnitzel.isFound {
+                return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertFoundMessage.rawValue), dismissButton: .cancel(Text(TextEnum.okay.rawValue)))
+            } else if !schnitzel.couldUpdate {
+                return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertLoadMessage.rawValue), dismissButton: .cancel(Text(TextEnum.dismiss.rawValue)))
+            }
+            return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
                   primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
-                    if self.data.loadedData.currentSchnitzelJagd!.readyForSearch() {
+                    if schnitzel.readyForSearch() {
+                        DataModel.shared.showStartSearchAlert = false
                         DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
                     }
-                    DataModel.shared.showStartSearchAlert = false
                   }),
                   secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
                     DataModel.shared.showStartSearchAlert = false
@@ -112,6 +118,7 @@ struct MapUIView: View, CustomUIView {
 struct SearchMapUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
+    @State var showFoundAlert: Bool = false
     var delegate: CustomUIViewDelegate?
     
     init (delegate: ContentView){
@@ -128,7 +135,12 @@ struct SearchMapUIView: View, CustomUIView {
                     self.timePassed += 1
                     if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
                         let currentDistance = self.data.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel()
+                        print("currentDistance: \(currentDistance)")
                         self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
+                        if currentDistance < NumberEnum.foundRadius.rawValue {
+                            self.showFoundAlert = true
+                            self.timer.upstream.connect().cancel()
+                        }
                     }
              }.font(.headline)
               .padding(8)
@@ -140,8 +152,19 @@ struct SearchMapUIView: View, CustomUIView {
                 Text(TextEnum.searchAR.rawValue)
                     .fontWeight(.bold)
                     .modifier(TextModifier())}
-
         }.padding(7).padding(.top, -10)
+            .alert(isPresented: self.$showFoundAlert) {
+                let schnitzel = self.data.loadedData.currentSchnitzelJagd!
+                schnitzel.found()
+                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(schnitzel.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
+                         primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
+                            self.showFoundAlert = false
+                            self.data.screenState = .MENU_MAP
+                         }),
+                         secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
+                            self.showFoundAlert = false
+                         }))
+        }
     }
 
 }
@@ -149,6 +172,7 @@ struct SearchMapUIView: View, CustomUIView {
 struct SearchARUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
+    @State var showFoundAlert: Bool = false
     var delegate: CustomUIViewDelegate?
     
     init (delegate: ContentView){
@@ -165,7 +189,12 @@ struct SearchARUIView: View, CustomUIView {
                     self.timePassed += 1
                     if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
                         let currentDistance = self.data.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel()
+                        print("currentDistance: \(currentDistance)")
                         self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
+                        if currentDistance < NumberEnum.foundRadius.rawValue {
+                            self.showFoundAlert = true
+                            self.timer.upstream.connect().cancel()
+                        }
                     }
              }.font(.headline)
               .padding(8)
@@ -180,6 +209,18 @@ struct SearchARUIView: View, CustomUIView {
                     .modifier(TextModifier(color: .green))
             }
         }.padding(7).padding(.top, -10)
+            .alert(isPresented: self.$showFoundAlert) {
+                let schnitzel = self.data.loadedData.currentSchnitzelJagd!
+                schnitzel.found()
+                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(schnitzel.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
+                         primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
+                            self.showFoundAlert = false
+                            self.data.screenState = .MENU_MAP
+                         }),
+                         secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
+                            self.showFoundAlert = false
+                         }))
+        }
     }
 }
 

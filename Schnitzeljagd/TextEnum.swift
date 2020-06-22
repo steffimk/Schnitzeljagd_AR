@@ -20,8 +20,11 @@ enum TextEnum: String {
     case searchAR = "AR Modus"
     case searchMap = "Kartenansicht"
     case menuMap =  "Jagd beenden"
-    case save = "save"
-    case load = "load"
+    
+    case save = "Save"
+    case load = "Load"
+    case dismiss = "Abbrechen"
+    case okay = "Okay"
     
     // MapView Messages
     case annotationTitle = "Schnitzel"
@@ -30,6 +33,8 @@ enum TextEnum: String {
     // Start Schnitzeljagd Alert
     case alertTitle = "Schnitzeljagd starten"
     case alertMessage = "Möchtest du die Schnitzeljagd annehmen?"
+    case alertLoadMessage = "Schnitzel wird gebraten! Wir bitten um etwas Geduld..."
+    case alertFoundMessage = "Du hast dieses Schnitzel bereits gefunden!"
     case alertAccept = "Ja"
     case alertDecline = "Nein"
     
@@ -39,13 +44,20 @@ enum TextEnum: String {
     case saveAlertDecline = "Bearbeiten"
     case schnitzelTitlePlaceholder = "Dein Titel"
     case schnitzelDescriptionPlaceholder = "Deine Beschreibung"
+    
+    // Found Schnitzel Alert
+    case foundAlertTitle = "Schnitzeljagd gewonnen"
+    case foundAlertAccept = "Zum Menü"
+    case foundAlertDecline = "Hier bleiben"
 }
 
 enum NumberEnum: Double {
     
     case regionRadius = 80.0
+    /** Radius around actual position of Schnitzel in which Schnitzel counts as found*/
+    case foundRadius = 5.0
     /** Buffer of exiting a region to prevent flimmering in meters */
-    case regionBuffer = 5.0
+    case regionBuffer = 6.0
     case offsetBuffer = 4.0
     /** Color is updated after this amount of seconds*/
     case delay = 3.0

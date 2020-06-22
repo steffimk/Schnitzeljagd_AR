@@ -17,18 +17,21 @@ class SchnitzelJagd : Hashable {
     
     var annotationWithRegion: AnnotationWithRegion
     var timePassed: Int
-    var couldUpdateTime: Bool
+    var couldUpdate: Bool
+    
+    var isFound: Bool
     
     init(id: String, ownerId: String, annotation: AnnotationWithRegion) {
         self.schnitzelId = id
         self.ownerId = ownerId
         self.annotationWithRegion = annotation
         self.timePassed = 0
-        self.couldUpdateTime = false
+        self.couldUpdate = false
+        self.isFound = false
     }
     
     func readyForSearch() -> Bool {
-        return couldUpdateTime && !self.annotationWithRegion.isOwned && DataModel.shared.currentRegions.contains(self.annotationWithRegion.region)
+        return self.couldUpdate && !self.isFound && !self.annotationWithRegion.isOwned && DataModel.shared.currentRegions.contains(self.annotationWithRegion.region)
     }
     
     func loadInformation() {
@@ -36,9 +39,11 @@ class SchnitzelJagd : Hashable {
         DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
             let value = snapshot.value as? Dictionary<String,Any>
             let finalTime = value?["FinalTime"] as? Int
-            if finalTime != nil { return } // Schnitzel already found by user
+            if finalTime != nil {
+                self.isFound = true
+                return
+            }
             self.timePassed = value?["CurrentDuration"] as? Int ?? self.timePassed
-            self.couldUpdateTime = true
             print("data loaded - search can start/continue")
           }) { (error) in
             print(error.localizedDescription)
@@ -50,8 +55,18 @@ class SchnitzelJagd : Hashable {
     }
     
     func saveTime() {
-        let userID = Auth.auth().currentUser?.uid
-        DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("CurrentDuration").setValue(timePassed)
+        if !self.isFound {
+            let userID = Auth.auth().currentUser?.uid
+            DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("CurrentDuration").setValue(timePassed)
+        }
+    }
+    
+    func found() {
+        if !self.isFound {
+            self.isFound = true
+            let userID = Auth.auth().currentUser?.uid
+            DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("FinalTime").setValue(timePassed)
+        }
     }
     
     func hash(into hasher: inout Hasher) {
@@ -150,9 +165,9 @@ class LoadedData : ObservableObject {
         for schnitzel in loadedSchnitzel {
             if schnitzel.annotationWithRegion == annotation {
                 self.currentSchnitzelJagd = schnitzel
-                schnitzel.couldUpdateTime = false
+                schnitzel.couldUpdate = false
                 schnitzel.loadInformation()
-                return
+                DataModel.shared.showStartSearchAlert = true
             }
         }
     }
