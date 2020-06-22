@@ -30,7 +30,7 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
     
     var body: some View {
         HStack {
-            if (self.data.save){
+//            if (self.data.save){
                 VStack {
                     TextField("", text: $title).modifier(TextFieldStyle(font: .title, showPlaceHolder: title.isEmpty, placeholder: TextEnum.schnitzelTitlePlaceholder.rawValue))
                     TextField("", text: $description).modifier(TextFieldStyle(font: .callout, showPlaceHolder: description.isEmpty, placeholder: TextEnum.schnitzelDescriptionPlaceholder.rawValue))
@@ -45,8 +45,8 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
                         Alert(title: Text(TextEnum.saveAlertTitle.rawValue), message: Text("Möchtest du ein neues Schnitzel mit Titel \"\(self.title)\" und Beschreibung \"\(self.description)\" erstellen?"),
                         primaryButton: .default(Text(TextEnum.saveAlertAccept.rawValue), action: {
                             self.data.saveSchnitzel(title: self.title, description: self.description)
-                            self.data.save = false
                             self.showSaveAlert = false
+                            self.data.screenState = .MENU_MAP
                         }),
                         secondaryButton: .cancel(Text(TextEnum.saveAlertDecline.rawValue), action: {
                             self.showSaveAlert = false
@@ -62,16 +62,16 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
                         _ in self.value = 0
                     }
                 }
-            } else {
-                Button(action: {
-                    self.data.loadSchnitzel()
-                    self.data.save = true
-                }){
-                    Text(TextEnum.load.rawValue)
-                        .fontWeight(.bold)
-                        .modifier(TextModifier(color: .gray))
-                }
-            }
+//            } else {
+//                Button(action: {
+//                    self.data.loadSchnitzel()
+//                    self.data.save = true
+//                }){
+//                    Text(TextEnum.load.rawValue)
+//                        .fontWeight(.bold)
+//                        .modifier(TextModifier(color: .gray))
+//                }
+//            }
             }.padding(7).padding(.top, -10)
     }
 }

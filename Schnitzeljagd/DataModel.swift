@@ -42,7 +42,6 @@ final class DataModel: ObservableObject {
             }
         }
     }
-    @Published var save: Bool = true
     @IBOutlet weak var snapshotThumbnail: UIImageView!
     
     // MARK: - Location

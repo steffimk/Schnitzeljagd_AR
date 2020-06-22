@@ -129,7 +129,6 @@ struct ContentView : View, CustomUIViewDelegate {
                     }
           }
           
-          
 }
 
 #if DEBUG
