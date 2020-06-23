@@ -44,7 +44,8 @@ class SchnitzelJagd : Hashable {
                 return
             }
             self.timePassed = value?["CurrentDuration"] as? Int ?? self.timePassed
-            print("data loaded - search can start/continue")
+            self.couldUpdate = true
+            print("data loaded - time passed: \(self.timePassed), isFound: \(self.isFound)")
           }) { (error) in
             print(error.localizedDescription)
         }

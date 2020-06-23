@@ -23,9 +23,9 @@ struct MapView: UIViewRepresentable {
         DataModel.shared.loadedData.observeAndLoadSchnitzelAnnotations()
         
         // TODO: Following is just for testing
-//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1664, longitude: 11.5858) // Leo
-//        let coordinateCenterSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
-        let coordinateSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
+        let coordinateSchnitzel = CLLocationCoordinate2D(latitude: 48.1664, longitude: 11.5858) // Leo
+//        let coordinateSchnitzel = CLLocationCoordinate2D(latitude: 48.1508, longitude: 11.5803) // LMU
+//        let coordinateSchnitzel = CLLocationCoordinate2D(latitude: 48.3868, longitude: 9.9500) // Söflingen
         let shifting = StaticFunctions.calculateRandomCenter(latitude: coordinateSchnitzel.latitude, longitude: coordinateSchnitzel.longitude, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
         let center = CLLocationCoordinate2D(latitude: shifting.latitude, longitude: shifting.longitude)
         let schnitzelLMUAnnotation = AnnotationWithRegion(actualLocation: coordinateSchnitzel, center: center, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: "HC Region", isOwned: false)
