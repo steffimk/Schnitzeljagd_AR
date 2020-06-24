@@ -14,21 +14,11 @@ import UIKit
 import CoreLocation
 import Firebase
 
-extension ARWorldMap {
-    #if !targetEnvironment(simulator)
-    var snapshotAnchor: SnapshotAnchor? {
-        return anchors.compactMap { $0 as? SnapshotAnchor }.first
-    }
-    #endif
-}
-
 extension Date {
     func toMillis() -> Int64! {
         return Int64(self.timeIntervalSince1970 * 1000)
     }
 }
-
-
 
 final class DataModel: ObservableObject {
     static var shared = DataModel() // Singleton
@@ -38,8 +28,10 @@ final class DataModel: ObservableObject {
 
     @Published var screenState: ScreenState
     @Published var save: Bool = true
+    @Published var showAlert: Bool = true
     @Published var schnitzelId: String = ""
     @IBOutlet weak var snapshotThumbnail: UIImageView!
+    @Published var ref: DatabaseReference! = Database.database().reference()
     
     // MARK: - Location
     let locationManager: CLLocationManager = CLLocationManager()
@@ -136,18 +128,23 @@ final class DataModel: ObservableObject {
         }
     }()
 
-    @Published var ref = Database.database().reference()
+    
     @IBAction func saveSchnitzel() {
+        
+        self.showAlert = true
 
         let userID: String = (Auth.auth().currentUser?.uid)!
         let lat: Double = (locationManager.location?.coordinate.latitude)!
         let lon: Double = (locationManager.location?.coordinate.longitude)!
+        //self.ref.child("Schnitzel").childByAutoId()
         self.schnitzelId = String(Date().toMillis())
         
         self.ref.child("Schnitzel").child(self.schnitzelId).child("Location").setValue(["latitude": lat, "longitude": lon])
         self.ref.child("Schnitzel").child(self.schnitzelId).child("User").setValue(userID)
         self.ref.child("Schnitzel").child(self.schnitzelId).child("Titel").setValue("test")
-
+        
+        self.ref.child("Test").setValue("Test return")
+        
         
         arView.session.getCurrentWorldMap { worldMap, error in
             guard let map = worldMap
@@ -159,6 +156,7 @@ final class DataModel: ObservableObject {
 //            map.anchors.append(snapshotAnchor)
             
             do {
+                NSKeyedArchiver.setClassName("ARWorldMap", for: ARWorldMap.self)
                 let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
                 self.ref.child("Schnitzel").child(self.schnitzelId).child("Worldmap").setValue(data.base64EncodedString())
                 //try data.write(to: self.mapSaveURL, options: [.atomic])
@@ -171,57 +169,61 @@ final class DataModel: ObservableObject {
             for anchor in self.arView.scene.anchors {
                 self.arView.scene.removeAnchor(anchor)
             }
+            
         }
     }
     
     // Called opportunistically to verify that map data can be loaded from filesystem.
-    var mapDataFromFile: Data? {
-        var data: Data?
-        let userID: String = (Auth.auth().currentUser?.uid)!
-        self.ref.child("Data").observeSingleEvent(of: .value, with: { (snapshot) in
-            // Get user value
-            let value = snapshot.value as? NSDictionary
-            let d = value?[userID] as? String ?? ""
-            data=d.data(using: .utf8)
-        })
-        
-        //return data
-        return try? Data(contentsOf: mapSaveURL)
-    }
+//    var mapDataFromFile: Data? {
+//        var data: Data?
+//        let userID: String = (Auth.auth().currentUser?.uid)!
+//        self.ref.child("Data").observeSingleEvent(of: .value, with: { (snapshot) in
+//            // Get user value
+//            let value = snapshot.value as? NSDictionary
+//            let d = value?[userID] as? String ?? ""
+//            data=d.data(using: .utf8)
+//        })
+//
+//        //return data
+//        return try? Data(contentsOf: mapSaveURL)
+//    }
     
     /// - Tag: RunWithWorldMap
     @IBAction func loadSchnitzel() {
-        
-        /// - Tag: ReadWorldMap
-        let worldMap: ARWorldMap = {
-            var data: Data = Data()
-            ref.child("Schnitzel").child(self.schnitzelId).child("Worldmap").observeSingleEvent(of: .value, with: { (snapshot) in
-                let schnitzelData = snapshot.value as? String
-                data = Data(base64Encoded: schnitzelData!)!
-                print(schnitzelData)
-                print(data)
 
-              }) { (error) in
-                print(error.localizedDescription)
-            }
-            
-            do {
-                guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
-                    else { fatalError("No ARWorldMap in archive.") }
-                return worldMap
-            } catch {
-                fatalError("Can't unarchive ARWorldMap from file data: \(error)")
-            }
-        }()
-        
-        let configuration = self.defaultConfiguration // this app's standard world tracking settings
-        configuration.initialWorldMap = worldMap
-        self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        self.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
+            let schnitzelData = value?["Worldmap"] as? String ?? ""
+            let data = Data(base64Encoded: schnitzelData)!
 
-        isRelocalizingMap = true
-        virtualObjectAnchor = nil
+            /// - Tag: ReadWorldMap
+            let worldMap: ARWorldMap = {
+
+                do {
+                    NSKeyedUnarchiver.setClass(ARWorldMap.self, forClassName: "ARWorldMap")
+                    guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
+                        else { fatalError("No ARWorldMap in archive.") }
+                    return worldMap
+                } catch {
+                    fatalError("Can't unarchive ARWorldMap from file data: \(error)")
+                }
+            }()
+
+            let configuration = self.defaultConfiguration // this app's standard world tracking settings
+            configuration.initialWorldMap = worldMap
+            self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+
+            self.isRelocalizingMap = true
+            self.virtualObjectAnchor = nil
+
+            print("Loaded Schnitzel")
+          }) { (error) in
+            print(error.localizedDescription)
+        }
         
-        print("Loaded Schnitzel")
+        self.ref.child("Test").setValue("Please read")
+        
+        
     }
     
     // MARK: - AR session management

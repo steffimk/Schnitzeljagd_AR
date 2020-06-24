@@ -36,17 +36,17 @@ struct ARUIView: View {
                             .stroke(Color.purple, lineWidth: 4)
                 )
                 
+
                 Button(action: {
                     if self.data.save {
                         self.data.saveSchnitzel()
                         self.data.save = false
-                        
                     }
                     else {
                         self.data.loadSchnitzel()
                         self.data.save = true
                     }
-                }) {
+                }){
                     if data.save {
                         Text(TextEnum.save.rawValue)
                             .fontWeight(.bold)
@@ -74,6 +74,7 @@ struct ARUIView: View {
                                     .stroke(Color.purple, lineWidth: 4)
                         )}
                     }
+
             }
             else {
                 Text(TextEnum.AR.rawValue)
@@ -92,7 +93,9 @@ struct ARUIView: View {
         
         
     }.padding(7).padding(.top, -10)
+        
     }
+        
 }
 
 struct ARUIView_Previews: PreviewProvider {
