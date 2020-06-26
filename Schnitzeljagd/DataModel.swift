@@ -29,6 +29,15 @@ extension Date {
 }
 
 final class DataModel: ObservableObject {
+    @Published var screenState: ScreenState {
+        didSet {
+            if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
+                && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
+                self.loadedData.currentSchnitzelJagd!.saveTime()
+            }
+        }
+    }
+    
     static var shared = DataModel() // Singleton
     
     //AR
@@ -38,14 +47,7 @@ final class DataModel: ObservableObject {
     @Published var showMissingWorldmapAlert: Bool = true
     @Published var hasPlacedSchnitzel:Bool = false
     
-    @Published var screenState: ScreenState {
-        didSet {
-            if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
-                && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
-                self.loadedData.currentSchnitzelJagd!.saveTime()
-            }
-        }
-    }
+
     @IBOutlet weak var snapshotThumbnail: UIImageView!
     
     // MARK: - Location
@@ -64,7 +66,7 @@ final class DataModel: ObservableObject {
         // Initialise the ARView
         arView = ARView(frame: .zero)
         arView.addCoaching()
-        arView.addTapGestureToSceneView()
+        
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
         
@@ -168,9 +170,11 @@ final class DataModel: ObservableObject {
             }
             self.showMissingWorldmapAlert = false
             do {
+                
                 NSKeyedArchiver.setClassName("ARWorldMap", for: ARWorldMap.self)
                 let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
                 self.ref.child("Schnitzel").child(schnitzelId).child("Worldmap").setValue(data.base64EncodedString())
+                //try data.write(to: self.mapSaveURL, options: [.atomic])
                 DispatchQueue.main.async {
                     return print("Saved Schnitzel: \(schnitzelId)")
                 }
@@ -193,61 +197,42 @@ final class DataModel: ObservableObject {
         
         print("locations = \(lat) \(lon), shifted = \(shiftedCoordinates.latitude) \(shiftedCoordinates.longitude)")
         
-        
-        
-        // Add a snapshot image indicating where the map was captured.
-        guard self.arView.session.currentFrame != nil else { return }
-        //               let image = self.arView.snapshot()
-        //               UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        //               print("Saved snapshot")
-        
         self.hasPlacedSchnitzel = false
         
     }
     
-    
-    //    // Called opportunistically to verify that map data can be loaded from filesystem.
-    //    var mapDataFromFile: Data? {
-    //        var data: Data?
-    //        let userID: String = (Auth.auth().currentUser?.uid)!
-    //        self.ref.child("Data").observeSingleEvent(of: .value, with: { (snapshot) in
-    //            // Get user value
-    //            let value = snapshot.value as? NSDictionary
-    //            let d = value?[userID] as? String ?? ""
-    //            data=d.data(using: .utf8)
-    //        })
-    //
-    //        //return data
-    //        return try? Data(contentsOf: mapSaveURL)
-    //    }
-    
     /// - Tag: RunWithWorldMap
     @IBAction func loadSchnitzel() {
+        
+        
+        let schnitzelAnchor = try! Experience.loadSchnitzel()
+        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+        schnitzel!.generateCollisionShapes(recursive: true)
+        //DataModel.shared.arView.installGestures(.all, for: schnitzel!)
+        
+        schnitzelAnchor.position = SIMD3<Float>(0,0,0)
+        self.arView.scene.anchors.append(schnitzelAnchor)
+        //DataModel.shared.hasPlacedSchnitzel = true
+        print(self.arView.scene.findEntity(named: "schnitzel"))
+        
         
         self.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
             let value = snapshot.value as? NSDictionary
             let schnitzelData = value?["Worldmap"] as? String ?? ""
             let data = Data(base64Encoded: schnitzelData)!
             
-            /// - Tag: ReadWorldMap
-            let worldMap: ARWorldMap = {
-                
-                do {
-                    NSKeyedUnarchiver.setClass(ARWorldMap.self, forClassName: "ARWorldMap")
-                    guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
-                        else { fatalError("No ARWorldMap in archive.") }
-                    return worldMap
-                } catch {
-                    fatalError("Can't unarchive ARWorldMap from file data: \(error)")
-                }
-            }()
+            guard let worldMap = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
+            else{fatalError("No ARWorldMap in archive.") }
+            
+            /// - Tag: ReadWorldMa
             
             let configuration = self.defaultConfiguration // this app's standard world tracking settings
             configuration.initialWorldMap = worldMap
-            self.arView.session.run(configuration, options: [.resetTracking])
-            
+            self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
+
+            print(self.arView.scene.findEntity(named: "schnitzel"))
+            self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
             self.isRelocalizingMap = true
-            //self.virtualObjectAnchor = nil
             print(worldMap.anchors)
             
             print("Loaded Schnitzel")
@@ -271,30 +256,13 @@ final class DataModel: ObservableObject {
     @IBAction func resetTracking(_ sender: UIButton?) {
         arView.session.run(defaultConfiguration, options: [.resetTracking, .removeExistingAnchors])
         isRelocalizingMap = false
-        virtualObjectAnchor = nil
+        //virtualObjectAnchor = nil
     }
     
-    var virtualObjectAnchor: ARAnchor?
-    let virtualObjectAnchorName = "virtualObject"
-    
-    let virtualObject = try! Experience.loadSchnitzel()
-    
-    // MARK: - ARSessionDelegate
-    
-    
-    /// - Tag: CheckMappingStatus
-    //   func session(didUpdate frame: CGRect) {
-    //       // Enable Save button only when the mapping status is good and an object has been placed
-    //    switch frame.worldMappingStatus {
-    //       case .extending, .mapped:
-    //        self.saveButtonEnabled =
-    //               virtualObjectAnchor != nil && frame.anchors.contains(virtualObjectAnchor!)
-    //       default:
-    //        self.saveButtonEnabled = false
-    //       }
-    //    print(self.saveButtonEnabled)
-    //
-    //   }
+//    var virtualObjectAnchor: ARAnchor?
+//    let virtualObjectAnchorName = "virtualObject"
+//
+//    let virtualObject = try! Experience.loadSchnitzel()
     
     
     #endif

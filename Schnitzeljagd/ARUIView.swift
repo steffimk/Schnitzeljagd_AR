@@ -109,6 +109,7 @@ struct MapUIView: View, CustomUIView {
         HStack {
             Button(action: {
                 self.data.screenState = .PLACE_SCHNITZEL_AR
+                self.data.arView.addTapGestureToSceneView(screenState: self.data.screenState)
             }) {
                 Text(TextEnum.placeAR.rawValue)
                     .fontWeight(.bold)

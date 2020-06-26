@@ -14,12 +14,14 @@ import ARKit
 
 
 struct ARDisplayView: View {
+    
     var body: some View {
         return ARViewContainer().edgesIgnoringSafeArea(.all)
     }
 }
 
 struct ARViewContainer: UIViewRepresentable {
+    
     
     func makeUIView(context: Context) -> ARView {
         return DataModel.shared.arView
@@ -29,6 +31,8 @@ struct ARViewContainer: UIViewRepresentable {
 }
 
 extension ARView: ARCoachingOverlayViewDelegate {
+    
+    
     func addCoaching() {
         
         let coachingOverlay = ARCoachingOverlayView()
@@ -59,7 +63,6 @@ extension ARView: ARCoachingOverlayViewDelegate {
         let z = translation.columns.3.z
 
         let schnitzelAnchor = try! Experience.loadSchnitzel()
-        
         let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
         schnitzel!.generateCollisionShapes(recursive: true)
         DataModel.shared.arView.installGestures(.all, for: schnitzel!)
@@ -70,11 +73,12 @@ extension ARView: ARCoachingOverlayViewDelegate {
         
     }
 
-    func addTapGestureToSceneView() {
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addSchnitzelToSceneView(withGestureRecognizer:)))
-        self.addGestureRecognizer(tapGestureRecognizer)
-        print("New Schnitzel")
+    func addTapGestureToSceneView(screenState: ScreenState){
+        print(screenState)
+        if screenState == .PLACE_SCHNITZEL_AR {
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addSchnitzelToSceneView(withGestureRecognizer:)))
+            self.addGestureRecognizer(tapGestureRecognizer)
+        }
     }
 }
 
