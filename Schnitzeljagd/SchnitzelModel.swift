@@ -57,16 +57,16 @@ class SchnitzelJagd : Hashable {
     
     func saveTime() {
         if !self.isFound {
-            let userID = Auth.auth().currentUser?.uid
-            DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("CurrentDuration").setValue(timePassed)
+//            let userID = Auth.auth().currentUser?.uid
+//            DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("CurrentDuration").setValue(timePassed)
         }
     }
     
     func found() {
         if !self.isFound {
-            self.isFound = true
-            let userID = Auth.auth().currentUser?.uid
-            DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("FinalTime").setValue(timePassed)
+            //self.isFound = true
+            //let userID = Auth.auth().currentUser?.uid
+            //DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("FinalTime").setValue(timePassed)
         }
     }
     

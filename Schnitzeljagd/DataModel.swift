@@ -33,7 +33,11 @@ final class DataModel: ObservableObject {
     
     //AR
     @Published var arView: ARView!
-
+    @Published var schnitzelId: String = ""
+    @Published var ref: DatabaseReference! = Database.database().reference()
+    @Published var showMissingWorldmapAlert: Bool = true
+    @Published var hasPlacedSchnitzel:Bool = false
+    
     @Published var screenState: ScreenState {
         didSet {
             if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
@@ -135,96 +139,128 @@ final class DataModel: ObservableObject {
             fatalError("Can't get file save URL: \(error.localizedDescription)")
         }
     }()
-
-    @Published var ref = Database.database().reference()
-    @IBAction func saveSchnitzel(title: String, description: String) {
-
-           let userID: String = (Auth.auth().currentUser?.uid)!
-           let lat: Double = (locationManager.location?.coordinate.latitude)!
-           let lon: Double = (locationManager.location?.coordinate.longitude)!
-           let SchnitzelId: String = String(Date().toMillis())
-           let shiftedCoordinates = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
-        
-           //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
-           self.ref.child("Schnitzel").child(SchnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])
-           self.ref.child("Schnitzel").child(SchnitzelId).child("User").setValue(userID)
-           self.ref.child("Schnitzel").child(SchnitzelId).child("Titel").setValue(title)
-           self.ref.child("Schnitzel").child(SchnitzelId).child("Description").setValue(description)
-           self.ref.child("Schnitzel").child(SchnitzelId).child("Location").setValue(["latitude": lat, "longitude": lon])
-
-        print("locations = \(lat) \(lon), shifted = \(shiftedCoordinates.latitude) \(shiftedCoordinates.longitude)")
-           
-           arView.session.getCurrentWorldMap { worldMap, error in
-               guard let map = worldMap
-                   else { return print("Can't get current world map")}
-               
-               // Add a snapshot image indicating where the map was captured.
-               guard self.arView.session.currentFrame != nil else { return }
-//               let image = self.arView.snapshot()
-//               UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-//               print("Saved snapshot")
-
-               do {
-                   let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
-                   self.ref.child("Data").child(userID).setValue(String(decoding: data, as: UTF8.self))
-                   try data.write(to: self.mapSaveURL, options: [.atomic])
-                   DispatchQueue.main.async {
-                       return print("Saved Schnitzel")
-                   }
-               } catch {
-                   fatalError("Can't save map: \(error.localizedDescription)")
-               }
-               worldMap!.anchors.removeAll()
-
-           }
-       }
-
     
-    // Called opportunistically to verify that map data can be loaded from filesystem.
-    var mapDataFromFile: Data? {
-        var data: Data?
-        let userID: String = (Auth.auth().currentUser?.uid)!
-        self.ref.child("Data").observeSingleEvent(of: .value, with: { (snapshot) in
-            // Get user value
-            let value = snapshot.value as? NSDictionary
-            let d = value?[userID] as? String ?? ""
-            data=d.data(using: .utf8)
-        })
+    @IBAction func checkWorldMap(){
+        arView.session.getCurrentWorldMap { worldMap, error in
+            guard let map = worldMap
+                else {
+                    self.showMissingWorldmapAlert = true
+                    return print("Can't get current world map")
+            }
+        }
+        self.showMissingWorldmapAlert = false
         
-        //return data
-        return try? Data(contentsOf: mapSaveURL)
     }
+    
+    @IBAction func saveSchnitzel(title: String, description: String) {
+        
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        let lat: Double = (locationManager.location?.coordinate.latitude)!
+        let lon: Double = (locationManager.location?.coordinate.longitude)!
+        let schnitzelId: String = String(Date().toMillis())
+        let shiftedCoordinates = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
+        
+        arView.session.getCurrentWorldMap { worldMap, error in
+            guard let map = worldMap
+                else {
+                    self.showMissingWorldmapAlert = true
+                    return print("Can't get current world map")
+            }
+            self.showMissingWorldmapAlert = false
+            do {
+                NSKeyedArchiver.setClassName("ARWorldMap", for: ARWorldMap.self)
+                let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
+                self.ref.child("Schnitzel").child(schnitzelId).child("Worldmap").setValue(data.base64EncodedString())
+                DispatchQueue.main.async {
+                    return print("Saved Schnitzel: \(schnitzelId)")
+                }
+            } catch {
+                fatalError("Can't save map: \(error.localizedDescription)")
+            }
+            print(worldMap!.anchors)
+            worldMap!.anchors.removeAll()
+            
+        }
+        
+        //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
+        self.ref.child("Schnitzel").child(schnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])
+        self.ref.child("Schnitzel").child(schnitzelId).child("User").setValue(userID)
+        self.ref.child("Schnitzel").child(schnitzelId).child("Titel").setValue(title)
+        self.ref.child("Schnitzel").child(schnitzelId).child("Description").setValue(description)
+        self.ref.child("Schnitzel").child(schnitzelId).child("Location").setValue(["latitude": lat, "longitude": lon])
+        
+        //self.ref.child("Schnitzel").childByAutoId()
+        
+        print("locations = \(lat) \(lon), shifted = \(shiftedCoordinates.latitude) \(shiftedCoordinates.longitude)")
+        
+        
+        
+        // Add a snapshot image indicating where the map was captured.
+        guard self.arView.session.currentFrame != nil else { return }
+        //               let image = self.arView.snapshot()
+        //               UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        //               print("Saved snapshot")
+        
+        self.hasPlacedSchnitzel = false
+        
+    }
+    
+    
+    //    // Called opportunistically to verify that map data can be loaded from filesystem.
+    //    var mapDataFromFile: Data? {
+    //        var data: Data?
+    //        let userID: String = (Auth.auth().currentUser?.uid)!
+    //        self.ref.child("Data").observeSingleEvent(of: .value, with: { (snapshot) in
+    //            // Get user value
+    //            let value = snapshot.value as? NSDictionary
+    //            let d = value?[userID] as? String ?? ""
+    //            data=d.data(using: .utf8)
+    //        })
+    //
+    //        //return data
+    //        return try? Data(contentsOf: mapSaveURL)
+    //    }
     
     /// - Tag: RunWithWorldMap
     @IBAction func loadSchnitzel() {
         
-        /// - Tag: ReadWorldMap
-        let worldMap: ARWorldMap = {
-            guard let data = mapDataFromFile
-                else { fatalError("Map data should already be verified to exist before Load button is enabled.") }
-            do {
-                guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
-                    else { fatalError("No ARWorldMap in archive.") }
-                return worldMap
-            } catch {
-                fatalError("Can't unarchive ARWorldMap from file data: \(error)")
-            }
-        }()
-        
-        let configuration = self.defaultConfiguration // this app's standard world tracking settings
-        configuration.initialWorldMap = worldMap
-        self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
-
-        isRelocalizingMap = true
-        virtualObjectAnchor = nil
-        
-        print("Loaded Schnitzel")
+        self.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
+            let schnitzelData = value?["Worldmap"] as? String ?? ""
+            let data = Data(base64Encoded: schnitzelData)!
+            
+            /// - Tag: ReadWorldMap
+            let worldMap: ARWorldMap = {
+                
+                do {
+                    NSKeyedUnarchiver.setClass(ARWorldMap.self, forClassName: "ARWorldMap")
+                    guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
+                        else { fatalError("No ARWorldMap in archive.") }
+                    return worldMap
+                } catch {
+                    fatalError("Can't unarchive ARWorldMap from file data: \(error)")
+                }
+            }()
+            
+            let configuration = self.defaultConfiguration // this app's standard world tracking settings
+            configuration.initialWorldMap = worldMap
+            self.arView.session.run(configuration, options: [.resetTracking])
+            
+            self.isRelocalizingMap = true
+            //self.virtualObjectAnchor = nil
+            print(worldMap.anchors)
+            
+            print("Loaded Schnitzel")
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+        self.ref.child("Test").setValue("Please read")
     }
     
     // MARK: - AR session management
     
     var isRelocalizingMap = false
-
+    
     var defaultConfiguration: ARWorldTrackingConfiguration {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
@@ -240,11 +276,29 @@ final class DataModel: ObservableObject {
     
     var virtualObjectAnchor: ARAnchor?
     let virtualObjectAnchorName = "virtualObject"
-
+    
     let virtualObject = try! Experience.loadSchnitzel()
     
+    // MARK: - ARSessionDelegate
+    
+    
+    /// - Tag: CheckMappingStatus
+    //   func session(didUpdate frame: CGRect) {
+    //       // Enable Save button only when the mapping status is good and an object has been placed
+    //    switch frame.worldMappingStatus {
+    //       case .extending, .mapped:
+    //        self.saveButtonEnabled =
+    //               virtualObjectAnchor != nil && frame.anchors.contains(virtualObjectAnchor!)
+    //       default:
+    //        self.saveButtonEnabled = false
+    //       }
+    //    print(self.saveButtonEnabled)
+    //
+    //   }
+    
+    
     #endif
-
+    
 }
 
 enum ScreenState {

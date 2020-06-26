@@ -21,6 +21,7 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
                 if distance <= region.radius {
                     let insertion = data.currentRegions.insert(region)
                     if insertion.inserted { print("User entered region \(region.identifier)") }
+                    data.schnitzelId = region.identifier
                 } else if distance > region.radius + NumberEnum.regionBuffer.rawValue {
                     let removal = data.currentRegions.remove(region)
                     if removal != nil { print("User exited region \(region.identifier)") }

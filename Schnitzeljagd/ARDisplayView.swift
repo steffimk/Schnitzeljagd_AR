@@ -66,6 +66,7 @@ extension ARView: ARCoachingOverlayViewDelegate {
         
         schnitzelAnchor.position = SIMD3<Float>(x,y,z)
         self.scene.anchors.append(schnitzelAnchor)
+        DataModel.shared.hasPlacedSchnitzel = true
         
     }
 

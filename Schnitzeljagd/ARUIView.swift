@@ -22,6 +22,7 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
     @State var title: String = ""
     @State var description: String = ""
     @State var showSaveAlert: Bool = false
+    
     var delegate: CustomUIViewDelegate?
     
     init (delegate: ContentView){
@@ -30,49 +31,69 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
     
     var body: some View {
         HStack {
-//            if (self.data.save){
-                VStack {
-                    TextField("", text: $title).modifier(TextFieldStyle(font: .title, showPlaceHolder: title.isEmpty, placeholder: TextEnum.schnitzelTitlePlaceholder.rawValue))
-                    TextField("", text: $description).modifier(TextFieldStyle(font: .callout, showPlaceHolder: description.isEmpty, placeholder: TextEnum.schnitzelDescriptionPlaceholder.rawValue))
-                    Button(action: {
-                        self.showSaveAlert = true
-                        print("ShowSaveAlert is: \(self.showSaveAlert)")
-                    }) {
-                        Text(TextEnum.save.rawValue)
-                            .fontWeight(.bold)
-                            .modifier(TextModifier(color: .yellow))
-                    }.alert(isPresented: self.$showSaveAlert) {
-                        Alert(title: Text(TextEnum.saveAlertTitle.rawValue), message: Text("Möchtest du ein neues Schnitzel mit Titel \"\(self.title)\" und Beschreibung \"\(self.description)\" erstellen?"),
-                        primaryButton: .default(Text(TextEnum.saveAlertAccept.rawValue), action: {
+            //            if (self.data.save){
+            VStack {
+                TextField("", text: $title).modifier(TextFieldStyle(font: .title, showPlaceHolder: title.isEmpty, placeholder: TextEnum.schnitzelTitlePlaceholder.rawValue))
+                TextField("", text: $description).modifier(TextFieldStyle(font: .callout, showPlaceHolder: description.isEmpty, placeholder: TextEnum.schnitzelDescriptionPlaceholder.rawValue))
+                Button(action: {
+                    self.data.checkWorldMap()
+                    self.showSaveAlert = true
+                    print("ShowSaveAlert is: \(self.showSaveAlert)")
+                    //self.data.showMissingWorldmapAlert
+                    
+                }) {
+                    Text(TextEnum.save.rawValue)
+                        .fontWeight(.bold)
+                        .modifier(TextModifier(color: .yellow))
+                }.alert(isPresented: self.$showSaveAlert) {
+                    if (!self.data.hasPlacedSchnitzel){
+                        return Alert(title: Text("Fehlendes Schnitzel"), message: Text("Bitte platziere erst ein Schnitzel, indem du auf den Bildschirm tippst."),
+                        dismissButton: .default(Text("Schließen"), action: {
+                          self.showSaveAlert = false
+                        }))
+                    } else
+                    if (self.data.showMissingWorldmapAlert)
+                    {
+                        return Alert(title: Text("Fehlende Worldmap"), message: Text("Bewege dein Handy hin und her."),
+                        dismissButton: .default(Text("Schließen"), action: {
+                          self.showSaveAlert = false
+                          self.data.showMissingWorldmapAlert = false
+                        }))
+                    }
+                    else
+                    {
+                    return Alert(title: Text(TextEnum.saveAlertTitle.rawValue), message: Text("Möchtest du ein neues Schnitzel mit Titel \"\(self.title)\" und Beschreibung \"\(self.description)\" erstellen?"),
+                          primaryButton: .default(Text(TextEnum.saveAlertAccept.rawValue), action: {
                             self.data.saveSchnitzel(title: self.title, description: self.description)
                             self.showSaveAlert = false
                             self.data.screenState = .MENU_MAP
-                        }),
-                        secondaryButton: .cancel(Text(TextEnum.saveAlertDecline.rawValue), action: {
+                          }),
+                          secondaryButton: .cancel(Text(TextEnum.saveAlertDecline.rawValue), action: {
                             self.showSaveAlert = false
-                        }))
-                    }
-                }.offset(y: -self.value).animation(.spring()).onAppear {
-                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) {
-                        (notification) in
-                        let value = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
-                        self.value = value.height
-                    }
-                    NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) {
-                        _ in self.value = 0
+                          }))
                     }
                 }
-//            } else {
-//                Button(action: {
-//                    self.data.loadSchnitzel()
-//                    self.data.save = true
-//                }){
-//                    Text(TextEnum.load.rawValue)
-//                        .fontWeight(.bold)
-//                        .modifier(TextModifier(color: .gray))
-//                }
-//            }
-            }.padding(7).padding(.top, -10)
+            }.offset(y: -self.value).animation(.spring()).onAppear {
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) {
+                    (notification) in
+                    let value = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+                    self.value = value.height
+                }
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) {
+                    _ in self.value = 0
+                }
+            }
+            //            } else {
+            //                Button(action: {
+            //                    self.data.loadSchnitzel()
+            //                    self.data.save = true
+            //                }){
+            //                    Text(TextEnum.load.rawValue)
+            //                        .fontWeight(.bold)
+            //                        .modifier(TextModifier(color: .gray))
+            //                }
+            //            }
+        }.padding(7).padding(.top, -10)
     }
 }
 
@@ -93,26 +114,26 @@ struct MapUIView: View, CustomUIView {
                     .fontWeight(.bold)
                     .modifier(TextModifier())}
         }.padding(7).padding(.top, -10)
-         .alert(isPresented: $data.showStartSearchAlert) {
-            let schnitzel = self.data.loadedData.currentSchnitzelJagd!
-            if schnitzel.isFound {
-                return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertFoundMessage.rawValue), dismissButton: .cancel(Text(TextEnum.okay.rawValue)))
-            } else if !schnitzel.couldUpdate {
-                return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertLoadMessage.rawValue), dismissButton: .cancel(Text(TextEnum.dismiss.rawValue)))
-            }
-            return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
-                  primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
-                    if schnitzel.readyForSearch() {
-                        DataModel.shared.showStartSearchAlert = false
-                        DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
-                    }
-                  }),
-                  secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
-                    DataModel.shared.showStartSearchAlert = false
-                  }))
-          }
+            .alert(isPresented: $data.showStartSearchAlert) {
+                let schnitzel = self.data.loadedData.currentSchnitzelJagd!
+                if schnitzel.isFound {
+                    return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertFoundMessage.rawValue), dismissButton: .cancel(Text(TextEnum.okay.rawValue)))
+                } else if !schnitzel.couldUpdate {
+                    return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertLoadMessage.rawValue), dismissButton: .cancel(Text(TextEnum.dismiss.rawValue)))
+                }
+                return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
+                             primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
+                                if schnitzel.readyForSearch() {
+                                    DataModel.shared.showStartSearchAlert = false
+                                    DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
+                                }
+                             }),
+                             secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
+                                DataModel.shared.showStartSearchAlert = false
+                             }))
+        }
     }
-
+    
 }
 
 struct SearchMapUIView: View, CustomUIView {
@@ -126,11 +147,11 @@ struct SearchMapUIView: View, CustomUIView {
     }
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
+    
     var body: some View {
         HStack {
             Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
-                 .onReceive(timer) { _ in
+                .onReceive(timer) { _ in
                     self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
                     self.timePassed += 1
                     if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
@@ -142,12 +163,13 @@ struct SearchMapUIView: View, CustomUIView {
                             self.timer.upstream.connect().cancel()
                         }
                     }
-             }.font(.headline)
-              .padding(8)
-              .foregroundColor(.white)
+            }.font(.headline)
+                .padding(8)
+                .foregroundColor(.white)
             Spacer()
             Button(action: {
                 self.data.screenState = .SEARCH_SCHNITZEL_AR
+                self.data.loadSchnitzel()
             }) {
                 Text(TextEnum.searchAR.rawValue)
                     .fontWeight(.bold)
@@ -157,16 +179,16 @@ struct SearchMapUIView: View, CustomUIView {
                 let schnitzel = self.data.loadedData.currentSchnitzelJagd!
                 schnitzel.found()
                 return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(schnitzel.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
-                         primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
-                            self.showFoundAlert = false
-                            self.data.screenState = .MENU_MAP
-                         }),
-                         secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
-                            self.showFoundAlert = false
-                         }))
+                             primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
+                                self.showFoundAlert = false
+                                self.data.screenState = .MENU_MAP
+                             }),
+                             secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
+                                self.showFoundAlert = false
+                             }))
         }
     }
-
+    
 }
 
 struct SearchARUIView: View, CustomUIView {
@@ -178,13 +200,13 @@ struct SearchARUIView: View, CustomUIView {
     init (delegate: ContentView){
         self.delegate = delegate
     }
-       
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         HStack {
             Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
-                 .onReceive(timer) { _ in
+                .onReceive(timer) { _ in
                     self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
                     self.timePassed += 1
                     if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
@@ -192,13 +214,13 @@ struct SearchARUIView: View, CustomUIView {
                         print("currentDistance: \(currentDistance)")
                         self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
                         if currentDistance < NumberEnum.foundRadius.rawValue {
-                            self.showFoundAlert = true
+                            //self.showFoundAlert = true
                             self.timer.upstream.connect().cancel()
                         }
                     }
-             }.font(.headline)
-              .padding(8)
-              .foregroundColor(.white)
+            }.font(.headline)
+                .padding(8)
+                .foregroundColor(.white)
             Spacer()
             Button(action: {
                 self.data.screenState = .SEARCH_SCHNITZEL_MAP
@@ -213,13 +235,13 @@ struct SearchARUIView: View, CustomUIView {
                 let schnitzel = self.data.loadedData.currentSchnitzelJagd!
                 schnitzel.found()
                 return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(schnitzel.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
-                         primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
-                            self.showFoundAlert = false
-                            self.data.screenState = .MENU_MAP
-                         }),
-                         secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
-                            self.showFoundAlert = false
-                         }))
+                             primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
+                                self.showFoundAlert = false
+                                self.data.screenState = .MENU_MAP
+                             }),
+                             secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
+                                self.showFoundAlert = false
+                             }))
         }
     }
 }
@@ -247,21 +269,21 @@ struct TextFieldStyle: ViewModifier {
     var font: Font
     var showPlaceHolder: Bool
     var placeholder: String
-
+    
     func body(content: Content) -> some View {
         ZStack(alignment: .leading) {
             if showPlaceHolder {
                 Text(placeholder)
+                    .font(font)
+                    .foregroundColor(.white)
+                    .background(Color.clear)
+                    .padding(.horizontal, 15)
+            }
+            content
                 .font(font)
                 .foregroundColor(.white)
                 .background(Color.clear)
                 .padding(.horizontal, 15)
-            }
-            content
-            .font(font)
-            .foregroundColor(.white)
-            .background(Color.clear)
-            .padding(.horizontal, 15)
         }
     }
 }
