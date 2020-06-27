@@ -48,7 +48,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         ref = Database.database().reference()
         
         let contentView = ContentView()
-
+        DataModel.shared.uiViews = UIViews(contentView: contentView)
+        
         // Use a UIHostingController as window root view controller.
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIHostingController(rootView: contentView.environmentObject(DataModel.shared)

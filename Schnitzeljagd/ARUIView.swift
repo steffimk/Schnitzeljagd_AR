@@ -16,6 +16,58 @@ protocol CustomUIViewDelegate {
     func customUIView(_ customUIView: CustomUIView, changeBackgroundColor: Bool, distance: Double?)
 }
 
+class UIViews {
+    
+    private let contentView: ContentView
+    private var placeSchnitzelUIView: PlaceSchnitzelUIView?
+    private var mapUIView: MapUIView?
+    private var searchMapUIView: SearchMapUIView?
+    private var searchARUIView: SearchARUIView?
+    
+    init(contentView: ContentView){
+        self.contentView = contentView
+    }
+    
+    func getPlaceSchnitzelUIView() -> PlaceSchnitzelUIView {
+        if placeSchnitzelUIView == nil {
+            placeSchnitzelUIView = PlaceSchnitzelUIView(delegate: contentView)
+        }
+        return placeSchnitzelUIView!
+    }
+    
+    func getMapUIView() -> MapUIView {
+        if mapUIView == nil {
+            mapUIView = MapUIView(delegate: contentView)
+        }
+        return mapUIView!
+    }
+    
+    func getSearchMapUIView() -> SearchMapUIView {
+        if searchMapUIView == nil {
+            searchMapUIView = SearchMapUIView(delegate: contentView)
+        }
+        return searchMapUIView!
+    }
+    
+    func getSearchARUIView() -> SearchARUIView {
+        if searchARUIView == nil {
+            searchARUIView = SearchARUIView(delegate: contentView)
+        }
+        return searchARUIView!
+    }
+    
+    func refreshAll() {
+        self.placeSchnitzelUIView = PlaceSchnitzelUIView(delegate: contentView)
+        self.mapUIView = MapUIView(delegate: contentView)
+        if self.searchMapUIView != nil {
+            self.searchMapUIView = SearchMapUIView(delegate: contentView)
+        }
+        if self.searchARUIView != nil {
+            self.searchARUIView = SearchARUIView(delegate: contentView)
+        }
+    }
+}
+
 struct PlaceSchnitzelUIView: View, CustomUIView {
     @EnvironmentObject var data: DataModel
     @State var value: CGFloat = 0
@@ -31,7 +83,6 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
     
     var body: some View {
         HStack {
-            //            if (self.data.save){
             VStack {
                 TextField("", text: $title).modifier(TextFieldStyle(font: .title, showPlaceHolder: title.isEmpty, placeholder: TextEnum.schnitzelTitlePlaceholder.rawValue))
                 TextField("", text: $description).modifier(TextFieldStyle(font: .callout, showPlaceHolder: description.isEmpty, placeholder: TextEnum.schnitzelDescriptionPlaceholder.rawValue))
@@ -83,16 +134,6 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
                     _ in self.value = 0
                 }
             }
-            //            } else {
-            //                Button(action: {
-            //                    self.data.loadSchnitzel()
-            //                    self.data.save = true
-            //                }){
-            //                    Text(TextEnum.load.rawValue)
-            //                        .fontWeight(.bold)
-            //                        .modifier(TextModifier(color: .gray))
-            //                }
-            //            }
         }.padding(7).padding(.top, -10)
     }
 }
@@ -138,25 +179,27 @@ struct MapUIView: View, CustomUIView {
 }
 
 struct SearchMapUIView: View, CustomUIView {
+    
     @EnvironmentObject var data: DataModel
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
     @State var showFoundAlert: Bool = false
     var delegate: CustomUIViewDelegate?
+    var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     init (delegate: ContentView){
         self.delegate = delegate
     }
     
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
     var body: some View {
         HStack {
             Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
                 .onReceive(timer) { _ in
-                    self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
+                    if self.schnitzelJagd.isFound { self.timer.upstream.connect().cancel(); return}
+                    self.schnitzelJagd.timePassed += 1
                     self.timePassed += 1
                     if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
-                        let currentDistance = self.data.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel()
+                        let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
                         print("currentDistance: \(currentDistance)")
                         self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
                         if currentDistance < NumberEnum.foundRadius.rawValue {
@@ -177,9 +220,8 @@ struct SearchMapUIView: View, CustomUIView {
                     .modifier(TextModifier())}
         }.padding(7).padding(.top, -10)
             .alert(isPresented: self.$showFoundAlert) {
-                let schnitzel = self.data.loadedData.currentSchnitzelJagd!
-                schnitzel.found()
-                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(schnitzel.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
+                self.schnitzelJagd.found()
+                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
                              primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
                                 self.showFoundAlert = false
                                 self.data.screenState = .MENU_MAP
@@ -197,25 +239,26 @@ struct SearchARUIView: View, CustomUIView {
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
     @State var showFoundAlert: Bool = false
     var delegate: CustomUIViewDelegate?
+    var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     init (delegate: ContentView){
         self.delegate = delegate
     }
     
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
     var body: some View {
         HStack {
             Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
                 .onReceive(timer) { _ in
-                    self.data.loadedData.currentSchnitzelJagd!.timePassed += 1
+                    if self.schnitzelJagd.isFound { self.timer.upstream.connect().cancel(); return}
+                    self.schnitzelJagd.timePassed += 1
                     self.timePassed += 1
                     if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
-                        let currentDistance = self.data.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel()
+                        let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
                         print("currentDistance: \(currentDistance)")
                         self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
                         if currentDistance < NumberEnum.foundRadius.rawValue {
-                            //self.showFoundAlert = true
+                            self.showFoundAlert = true
                             self.timer.upstream.connect().cancel()
                         }
                     }
@@ -233,9 +276,8 @@ struct SearchARUIView: View, CustomUIView {
             }
         }.padding(7).padding(.top, -10)
             .alert(isPresented: self.$showFoundAlert) {
-                let schnitzel = self.data.loadedData.currentSchnitzelJagd!
-                schnitzel.found()
-                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(schnitzel.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
+                self.schnitzelJagd.found()
+                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
                              primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
                                 self.showFoundAlert = false
                                 self.data.screenState = .MENU_MAP

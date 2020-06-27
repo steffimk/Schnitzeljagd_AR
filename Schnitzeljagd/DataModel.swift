@@ -31,6 +31,7 @@ extension Date {
 final class DataModel: ObservableObject {
     @Published var screenState: ScreenState {
         didSet {
+            uiViews!.refreshAll()
             if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
                 && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
                 self.loadedData.currentSchnitzelJagd!.saveTime()
@@ -46,7 +47,8 @@ final class DataModel: ObservableObject {
     @Published var ref: DatabaseReference! = Database.database().reference()
     @Published var showMissingWorldmapAlert: Bool = true
     @Published var hasPlacedSchnitzel:Bool = false
-    
+
+    var uiViews: UIViews?
 
     @IBOutlet weak var snapshotThumbnail: UIImageView!
     
