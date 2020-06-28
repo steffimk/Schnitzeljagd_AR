@@ -10,12 +10,6 @@ import SwiftUI
 
 #if !targetEnvironment(simulator)
 
-protocol CustomUIView {}
-
-protocol CustomUIViewDelegate {
-    func customUIView(_ customUIView: CustomUIView, changeBackgroundColor: Bool, distance: Double?)
-}
-
 class UIViews {
     
     private let contentView: ContentView
@@ -30,56 +24,50 @@ class UIViews {
     
     func getPlaceSchnitzelUIView() -> PlaceSchnitzelUIView {
         if placeSchnitzelUIView == nil {
-            placeSchnitzelUIView = PlaceSchnitzelUIView(delegate: contentView)
+            placeSchnitzelUIView = PlaceSchnitzelUIView()
         }
         return placeSchnitzelUIView!
     }
     
     func getMapUIView() -> MapUIView {
         if mapUIView == nil {
-            mapUIView = MapUIView(delegate: contentView)
+            mapUIView = MapUIView()
         }
         return mapUIView!
     }
     
     func getSearchMapUIView() -> SearchMapUIView {
         if searchMapUIView == nil {
-            searchMapUIView = SearchMapUIView(delegate: contentView)
+            searchMapUIView = SearchMapUIView()
         }
         return searchMapUIView!
     }
     
     func getSearchARUIView() -> SearchARUIView {
         if searchARUIView == nil {
-            searchARUIView = SearchARUIView(delegate: contentView)
+            searchARUIView = SearchARUIView()
         }
         return searchARUIView!
     }
     
     func refreshAll() {
-        self.placeSchnitzelUIView = PlaceSchnitzelUIView(delegate: contentView)
-        self.mapUIView = MapUIView(delegate: contentView)
+        self.placeSchnitzelUIView = PlaceSchnitzelUIView()
+        self.mapUIView = MapUIView()
         if self.searchMapUIView != nil {
-            self.searchMapUIView = SearchMapUIView(delegate: contentView)
+            self.searchMapUIView = SearchMapUIView()
         }
         if self.searchARUIView != nil {
-            self.searchARUIView = SearchARUIView(delegate: contentView)
+            self.searchARUIView = SearchARUIView()
         }
     }
 }
 
-struct PlaceSchnitzelUIView: View, CustomUIView {
+struct PlaceSchnitzelUIView: View {
     @EnvironmentObject var data: DataModel
     @State var value: CGFloat = 0
     @State var title: String = ""
     @State var description: String = ""
     @State var showSaveAlert: Bool = false
-    
-    var delegate: CustomUIViewDelegate?
-    
-    init (delegate: ContentView){
-        self.delegate = delegate
-    }
     
     var body: some View {
         HStack {
@@ -138,13 +126,8 @@ struct PlaceSchnitzelUIView: View, CustomUIView {
     }
 }
 
-struct MapUIView: View, CustomUIView {
+struct MapUIView: View {
     @EnvironmentObject var data: DataModel
-    var delegate: CustomUIViewDelegate?
-    
-    init (delegate: ContentView){
-        self.delegate = delegate
-    }
     
     var body: some View {
         HStack {
@@ -178,18 +161,15 @@ struct MapUIView: View, CustomUIView {
     
 }
 
-struct SearchMapUIView: View, CustomUIView {
+struct SearchMapUIView: View {
     
     @EnvironmentObject var data: DataModel
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
     @State var showFoundAlert: Bool = false
-    var delegate: CustomUIViewDelegate?
+    @State var backgroundColor: Color = Color.blue
+
     var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-    init (delegate: ContentView){
-        self.delegate = delegate
-    }
     
     var body: some View {
         HStack {
@@ -198,14 +178,12 @@ struct SearchMapUIView: View, CustomUIView {
                     if self.schnitzelJagd.isFound { self.timer.upstream.connect().cancel(); return}
                     self.schnitzelJagd.timePassed += 1
                     self.timePassed += 1
-                    if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
-                        let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
-                        print("currentDistance: \(currentDistance)")
-                        self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
-                        if currentDistance < NumberEnum.foundRadius.rawValue {
-                            self.showFoundAlert = true
-                            self.timer.upstream.connect().cancel()
-                        }
+                    let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
+                    self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: currentDistance)
+                    print("currentDistance: \(currentDistance)")
+                    if currentDistance < NumberEnum.foundRadius.rawValue {
+                        self.showFoundAlert = true
+                        self.timer.upstream.connect().cancel()
                     }
             }.font(.headline)
                 .padding(8)
@@ -218,7 +196,7 @@ struct SearchMapUIView: View, CustomUIView {
                 Text(TextEnum.searchAR.rawValue)
                     .fontWeight(.bold)
                     .modifier(TextModifier())}
-        }.padding(7).padding(.top, -10)
+        }.padding(7).background(self.backgroundColor)
             .alert(isPresented: self.$showFoundAlert) {
                 self.schnitzelJagd.found()
                 return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
@@ -234,17 +212,13 @@ struct SearchMapUIView: View, CustomUIView {
     
 }
 
-struct SearchARUIView: View, CustomUIView {
+struct SearchARUIView: View {
     @EnvironmentObject var data: DataModel
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
     @State var showFoundAlert: Bool = false
-    var delegate: CustomUIViewDelegate?
+    @State var backgroundColor: Color = Color.blue
     var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-    init (delegate: ContentView){
-        self.delegate = delegate
-    }
     
     var body: some View {
         HStack {
@@ -253,14 +227,12 @@ struct SearchARUIView: View, CustomUIView {
                     if self.schnitzelJagd.isFound { self.timer.upstream.connect().cancel(); return}
                     self.schnitzelJagd.timePassed += 1
                     self.timePassed += 1
-                    if self.timePassed % Int(NumberEnum.delay.rawValue) == 0 {
-                        let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
-                        print("currentDistance: \(currentDistance)")
-                        self.delegate?.customUIView(self, changeBackgroundColor: true, distance: currentDistance)
-                        if currentDistance < NumberEnum.foundRadius.rawValue {
-                            self.showFoundAlert = true
-                            self.timer.upstream.connect().cancel()
-                        }
+                     let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
+                    self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: currentDistance)
+                    print("currentDistance: \(currentDistance)")
+                    if currentDistance < NumberEnum.foundRadius.rawValue {
+                        self.showFoundAlert = true
+                        self.timer.upstream.connect().cancel()
                     }
             }.font(.headline)
                 .padding(8)
@@ -268,13 +240,12 @@ struct SearchARUIView: View, CustomUIView {
             Spacer()
             Button(action: {
                 self.data.screenState = .SEARCH_SCHNITZEL_MAP
-                self.delegate?.customUIView(self, changeBackgroundColor: true, distance: nil)
             }) {
                 Text(TextEnum.searchMap.rawValue)
                     .fontWeight(.bold)
                     .modifier(TextModifier(color: .green))
             }
-        }.padding(7).padding(.top, -10)
+        }.padding(7).background(self.backgroundColor)
             .alert(isPresented: self.$showFoundAlert) {
                 self.schnitzelJagd.found()
                 return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),

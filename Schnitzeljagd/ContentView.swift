@@ -11,12 +11,11 @@ import RealityKit
 import MapKit
 
 
-struct ContentView : View, CustomUIViewDelegate {
+struct ContentView : View {
 
     @EnvironmentObject var data: DataModel
     @EnvironmentObject var session: SessionStore
     @State private var showUserMenu = false
-    @State var backgroundColor: Color = Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00)
           
     func getUser () {
           session.listen()
@@ -29,7 +28,6 @@ struct ContentView : View, CustomUIViewDelegate {
           HStack {
                     Button(action: {
                               self.data.screenState = .MENU_MAP
-                              self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: nil)
                     }){
                   Image(systemName: "house").foregroundColor(.white).font(Font.system(.title))
               }
@@ -77,37 +75,30 @@ struct ContentView : View, CustomUIViewDelegate {
                     }
                     }.frame(width: 200, height: 100, alignment: .top)
                     }.frame(alignment: .top)
-          }.padding()
+          }.padding().padding(.top, -5)
             
             #if !targetEnvironment(simulator)
             if data.screenState == .PLACE_SCHNITZEL_AR {
-                ARDisplayView().padding(.top, -15).padding(.bottom, -200)
+                ARDisplayView().padding(.top, -20).padding(.bottom, -200)
                 data.uiViews!.getPlaceSchnitzelUIView()
             } else if data.screenState == .SEARCH_SCHNITZEL_MAP {
-                SearchMapView().frame(maxHeight: .infinity).padding(.top, -15)
+                SearchMapView().frame(maxHeight: .infinity).padding(.top, -20).padding(.bottom, -10)
                 data.uiViews!.getSearchMapUIView()
             } else if data.screenState == .MENU_MAP {
-                MapView().frame(maxHeight: .infinity).padding(.top, -15)
+                MapView().frame(maxHeight: .infinity).padding(.top, -20)
                 data.uiViews!.getMapUIView()
             } else {
-                ARDisplayView().padding(.top, -15).padding(.bottom, -90) // TODO: custom ARView for SearchSchnitzelAR
+                ARDisplayView().padding(.top, -20).padding(.bottom, -10) // TODO: custom ARView for SearchSchnitzelAR
                 data.uiViews!.getSearchARUIView()
           }
             #endif
-        }.background(self.backgroundColor)
+        }.background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
               } else {
                     SignInView()
               }
           }.onAppear(perform: getUser)
 
     }
-          
-          func customUIView(_ customUIView: CustomUIView, changeBackgroundColor: Bool, distance: Double?) {
-                if changeBackgroundColor {
-                    self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: distance)
-                    print("Changed background color to : \(self.backgroundColor)")
-                }
-          }
           
 }
 

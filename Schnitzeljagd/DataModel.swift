@@ -13,6 +13,7 @@ import ARKit
 import UIKit
 import CoreLocation
 import Firebase
+import SwiftUI
 
 extension ARWorldMap {
     #if !targetEnvironment(simulator)
@@ -49,7 +50,7 @@ final class DataModel: ObservableObject {
     @Published var hasPlacedSchnitzel:Bool = false
 
     var uiViews: UIViews?
-
+    
     @IBOutlet weak var snapshotThumbnail: UIImageView!
     
     // MARK: - Location
