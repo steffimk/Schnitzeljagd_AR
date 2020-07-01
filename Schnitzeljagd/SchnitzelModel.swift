@@ -21,6 +21,7 @@ class SchnitzelJagd : Hashable {
     var couldUpdate: Bool
     var worldMap: ARWorldMap?
     
+    var failedLoadingWorldMap: Bool
     var isFound: Bool
     
     init(id: String, ownerId: String, annotation: AnnotationWithRegion) {
@@ -29,6 +30,7 @@ class SchnitzelJagd : Hashable {
         self.annotationWithRegion = annotation
         self.timePassed = 0
         self.couldUpdate = false
+        self.failedLoadingWorldMap = false
         self.isFound = false
     }
     
@@ -38,6 +40,7 @@ class SchnitzelJagd : Hashable {
     
     func loadInformation() {
         let userID = Auth.auth().currentUser?.uid
+        // Load time
         DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
             let value = snapshot.value as? Dictionary<String,Any>
             let finalTime = value?["FinalTime"] as? Int
@@ -51,7 +54,29 @@ class SchnitzelJagd : Hashable {
           }) { (error) in
             print(error.localizedDescription)
         }
-        DataModel.shared.ref.child("Schnitzel").
+        
+        loadWorldMap()
+
+    }
+    
+    func loadWorldMap(){
+        
+        DataModel.shared.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
+            let schnitzelData = value?["Worldmap"] as? String ?? ""
+            let data = Data(base64Encoded: schnitzelData)!
+            
+            guard let worldMap = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
+            else{
+                self.failedLoadingWorldMap = true
+                fatalError("No ARWorldMap in archive.")
+            }
+            
+            self.worldMap = worldMap
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
     }
     
     func determineDistanceToSchnitzel() -> Double {

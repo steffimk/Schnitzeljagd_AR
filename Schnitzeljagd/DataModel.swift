@@ -37,6 +37,19 @@ final class DataModel: ObservableObject {
                 && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
                 self.loadedData.currentSchnitzelJagd!.saveTime()
             }
+            if (screenState == .SEARCH_SCHNITZEL_AR || screenState == .PLACE_SCHNITZEL_AR ){
+                for anchor in self.arView.scene.anchors {
+                    self.arView.scene.anchors.remove(anchor)
+                }
+                
+                self.arView.session.getCurrentWorldMap { worldMap, error in
+                    guard let map = worldMap
+                        else {
+                            return print("Can't get current world map")
+                    }
+                    map.anchors.removeAll()
+                }
+            }
         }
     }
     
@@ -45,6 +58,7 @@ final class DataModel: ObservableObject {
     //AR
     @Published var arView: ARView!
     @Published var schnitzelId: String = ""
+    var worldMap: ARWorldMap?
     @Published var ref: DatabaseReference! = Database.database().reference()
     @Published var showMissingWorldmapAlert: Bool = true
     @Published var hasPlacedSchnitzel:Bool = false
@@ -68,7 +82,8 @@ final class DataModel: ObservableObject {
         screenState = ScreenState.MENU_MAP
         // Initialise the ARView
         arView = ARView(frame: .zero)
-        arView.addCoaching()
+//        TODO arView.addCoaching()
+        arView.addTapGestureToSceneView()
         
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
@@ -147,15 +162,11 @@ final class DataModel: ObservableObject {
     }()
     
     @IBAction func checkWorldMap(){
-        arView.session.getCurrentWorldMap { worldMap, error in
-            guard let map = worldMap
-                else {
-                    self.showMissingWorldmapAlert = true
-                    return print("Can't get current world map")
-            }
+        if self.worldMap == nil {
+            self.showMissingWorldmapAlert = true
+        } else {
+            self.showMissingWorldmapAlert = false
         }
-        self.showMissingWorldmapAlert = false
-        
     }
     
     @IBAction func saveSchnitzel(title: String, description: String) {
@@ -176,34 +187,20 @@ final class DataModel: ObservableObject {
 //            fatalError("Can't save anchor: \(error.localizedDescription)")
 //        }
        
-        arView.session.getCurrentWorldMap { worldMap, error in
-            guard let map = worldMap
-                else {
-                    self.showMissingWorldmapAlert = true
-                    return print("Can't get current world map")
-            }
-            self.showMissingWorldmapAlert = false
-            print("Saving worldmap with these anchors: \(map.anchors.description)")
-            do {
-                
-                let schnitzelAnchor = self.arView.scene.findEntity(named: "SchnitzelAnchor")
-                let arAnchor = ARAnchor(name: "SchnitzelARAnchor", transform: schnitzelAnchor!.transformMatrix(relativeTo: nil))
-                worldMap!.anchors.append(arAnchor)
-                
-                NSKeyedArchiver.setClassName("ARWorldMap", for: ARWorldMap.self)
-                let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
-                self.ref.child("Schnitzel").child(schnitzelId).child("Worldmap").setValue(data.base64EncodedString())
+        NSKeyedArchiver.setClassName("ARWorldMap", for: ARWorldMap.self)
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: self.worldMap!, requiringSecureCoding: true)
+            self.ref.child("Schnitzel").child(schnitzelId).child("Worldmap").setValue(data.base64EncodedString())
                 //try data.write(to: self.mapSaveURL, options: [.atomic])
                 DispatchQueue.main.async {
                     return print("Saved Schnitzel: \(schnitzelId)")
-                }
-            } catch {
-                fatalError("Can't save map: \(error.localizedDescription)")
             }
-            print(worldMap!.anchors)
-            worldMap!.anchors.removeAll()
-            
+        } catch {
+            print("Can't save map")
         }
+
+        print(worldMap!.anchors)
+        worldMap!.anchors.removeAll()
         
         //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
         self.ref.child("Schnitzel").child(schnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])
@@ -222,41 +219,33 @@ final class DataModel: ObservableObject {
     
     /// - Tag: RunWithWorldMap
     @IBAction func loadSchnitzel() {
-    
-        self.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
-            let value = snapshot.value as? NSDictionary
-            let schnitzelData = value?["Worldmap"] as? String ?? ""
-            let data = Data(base64Encoded: schnitzelData)!
-            
-            guard let worldMap = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
-            else{fatalError("No ARWorldMap in archive.") }
-            
-            /// - Tag: ReadWorldMa
-            
-            let configuration = self.defaultConfiguration // this app's standard world tracking settings
-            configuration.initialWorldMap = worldMap
-            self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
-            print("MapView anchors: \(worldMap.anchors.description)")
-            for anchor in worldMap.anchors {
-                let newAnchorEntity = AnchorEntity(anchor: anchor)
-                if let anchorName = anchor.name {
-                    if anchorName == "SchnitzelARAnchor" {
-                        newAnchorEntity.addChild(try! Experience.loadSchnitzel())
-                    }
+ 
+        let worldMap = self.loadedData.currentSchnitzelJagd!.worldMap!
+        
+        let configuration = self.defaultConfiguration // this app's standard world tracking settings
+        configuration.initialWorldMap = worldMap
+        self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
+        print("MapView anchors: \(worldMap.anchors.description)")
+        for anchor in worldMap.anchors {
+            let newAnchorEntity = AnchorEntity(anchor: anchor)
+            if let anchorName = anchor.name {
+                if anchorName == "SchnitzelARAnchor" {
+                    let schnitzelExperience = try! Experience.loadSchnitzel()
+                    let schnitzel = schnitzelExperience.schnitzel as? HasCollision
+                    schnitzel!.generateCollisionShapes(recursive: true)
+                    newAnchorEntity.addChild(schnitzelExperience)
                 }
-                self.arView.scene.addAnchor(newAnchorEntity)
             }
-            
-            print("Schnitzel entity in scene: \(String(describing: self.arView.scene.findEntity(named: "schnitzel")))")
-            self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
-            
-            self.isRelocalizingMap = true
-            print(worldMap.anchors)
-            
-            print("Loaded Schnitzel")
-        }) { (error) in
-            print(error.localizedDescription)
+            self.arView.scene.addAnchor(newAnchorEntity)
         }
+
+        print("Schnitzel entity in scene: \(String(describing: self.arView.scene.findEntity(named: "schnitzel")))")
+        self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
+        
+        self.isRelocalizingMap = true
+        print(worldMap.anchors)
+        
+        print("Loaded Schnitzel")
         self.ref.child("Test").setValue("Please read")
     }
     

@@ -55,8 +55,28 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         }
     }
     
+    func handleGestureInSearchMode(withGestureRecognizer recognizer: UIGestureRecognizer){
+        // TODO: geht noch nicht
+        let touchInView = recognizer.location(in: self)
+        guard self.entity (
+            at: touchInView
+            ) != nil else {
+          return
+        }
+        DataModel.shared.loadedData.currentSchnitzelJagd!.found() // TODO: richtig beenden
+        if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR {
+            let uiView = DataModel.shared.uiViews!.getSearchARUIView()
+            uiView.showFoundAlert = true
+            uiView.timer.upstream.connect().cancel()
+        }
+    }
+    
     // Add a Schnitzel by tapping
     @objc func addSchnitzelToSceneView(withGestureRecognizer recognizer: UIGestureRecognizer) {
+        if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR {
+            handleGestureInSearchMode(withGestureRecognizer: recognizer)
+            return
+        }
         for anchor in self.scene.anchors {
             if anchor.name == "SchnitzelAnchor" {
                 self.scene.removeAnchor(anchor)
@@ -90,22 +110,24 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         anchorEntity.addChild(schnitzelExperience)
         self.scene.anchors.append(anchorEntity)
         
-//        DataModel.shared.arView.session.getCurrentWorldMap { worldMap, error in
-//            guard worldMap != nil else { return }
-//            worldMap!.anchors.append(ARAnchor(name: "SchnitzelARAnchor", transform: result!.worldTransform))
-//            print("worldmap: \(worldMap!.anchors.description)")
-//        }
+        DataModel.shared.worldMap = nil
+        DataModel.shared.arView.session.getCurrentWorldMap { worldMap, error in
+            guard worldMap != nil else {
+                print("Keine WorldMap vorhanden")
+                return
+            }
+            worldMap!.anchors.append(ARAnchor(name: "SchnitzelARAnchor", transform: result!.worldTransform))
+            print("worldmap: \(worldMap!.anchors.description)")
+            DataModel.shared.worldMap = worldMap!
+        }
         
         DataModel.shared.hasPlacedSchnitzel = true
         
     }
 
-    func addTapGestureToSceneView(screenState: ScreenState){
-        print(screenState)
-        if screenState == .PLACE_SCHNITZEL_AR {
-            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addSchnitzelToSceneView(withGestureRecognizer:)))
-            self.addGestureRecognizer(tapGestureRecognizer)
-        }
+    func addTapGestureToSceneView(){
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addSchnitzelToSceneView(withGestureRecognizer:)))
+        self.addGestureRecognizer(tapGestureRecognizer)
     }
 }
 
