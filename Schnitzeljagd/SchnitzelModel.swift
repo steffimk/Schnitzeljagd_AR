@@ -9,6 +9,7 @@
 import CoreLocation
 import MapKit
 import Firebase
+import ARKit
 
 class SchnitzelJagd : Hashable {
     
@@ -18,6 +19,7 @@ class SchnitzelJagd : Hashable {
     var annotationWithRegion: AnnotationWithRegion
     var timePassed: Int
     var couldUpdate: Bool
+    var worldMap: ARWorldMap?
     
     var isFound: Bool
     
@@ -49,6 +51,7 @@ class SchnitzelJagd : Hashable {
           }) { (error) in
             print(error.localizedDescription)
         }
+        DataModel.shared.ref.child("Schnitzel").
     }
     
     func determineDistanceToSchnitzel() -> Double {
@@ -94,8 +97,8 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
         self.coordinate = center
         self.title = title
         self.subtitle = subtitle
-        self.isOwned = isOwned
-        
+//        TODO: self.isOwned = isOwned
+        self.isOwned = false
         self.region = CLCircularRegion(center: center, radius: radius, identifier: regionIdentifier)
         self.region.notifyOnEntry = true
         self.region.notifyOnExit = true

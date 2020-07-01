@@ -75,6 +75,7 @@ final class DataModel: ObservableObject {
         
         initLocationServices()
         arView.session.run(config, options: [])
+        arView.session.delegate = arView
     }
     
     func initLocationServices(){
@@ -165,6 +166,16 @@ final class DataModel: ObservableObject {
         let schnitzelId: String = String(Date().toMillis())
         let shiftedCoordinates = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
         
+//        let schnitzelAnchor = arView.scene.findEntity(named: "SchnitzelAnchor")
+//        if schnitzelAnchor == nil { return }
+//        NSKeyedArchiver.setClassName("SchnitzelAnchor", for: Entity.self)
+//        do {
+//            let data = try NSKeyedArchiver.archivedData(withRootObject: schnitzelAnchor!, requiringSecureCoding: true)
+//            self.ref.child("Schnitzel").child(schnitzelId).child("Anchor").setValue(data.base64EncodedString())
+//        } catch {
+//            fatalError("Can't save anchor: \(error.localizedDescription)")
+//        }
+       
         arView.session.getCurrentWorldMap { worldMap, error in
             guard let map = worldMap
                 else {
@@ -172,7 +183,12 @@ final class DataModel: ObservableObject {
                     return print("Can't get current world map")
             }
             self.showMissingWorldmapAlert = false
+            print("Saving worldmap with these anchors: \(map.anchors.description)")
             do {
+                
+                let schnitzelAnchor = self.arView.scene.findEntity(named: "SchnitzelAnchor")
+                let arAnchor = ARAnchor(name: "SchnitzelARAnchor", transform: schnitzelAnchor!.transformMatrix(relativeTo: nil))
+                worldMap!.anchors.append(arAnchor)
                 
                 NSKeyedArchiver.setClassName("ARWorldMap", for: ARWorldMap.self)
                 let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
@@ -206,19 +222,7 @@ final class DataModel: ObservableObject {
     
     /// - Tag: RunWithWorldMap
     @IBAction func loadSchnitzel() {
-        
-        
-        let schnitzelAnchor = try! Experience.loadSchnitzel()
-        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
-        schnitzel!.generateCollisionShapes(recursive: true)
-        //DataModel.shared.arView.installGestures(.all, for: schnitzel!)
-        
-        schnitzelAnchor.position = SIMD3<Float>(0,0,0)
-        self.arView.scene.anchors.append(schnitzelAnchor)
-        //DataModel.shared.hasPlacedSchnitzel = true
-        print(self.arView.scene.findEntity(named: "schnitzel"))
-        
-        
+    
         self.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
             let value = snapshot.value as? NSDictionary
             let schnitzelData = value?["Worldmap"] as? String ?? ""
@@ -232,9 +236,20 @@ final class DataModel: ObservableObject {
             let configuration = self.defaultConfiguration // this app's standard world tracking settings
             configuration.initialWorldMap = worldMap
             self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
-
-            print(self.arView.scene.findEntity(named: "schnitzel"))
+            print("MapView anchors: \(worldMap.anchors.description)")
+            for anchor in worldMap.anchors {
+                let newAnchorEntity = AnchorEntity(anchor: anchor)
+                if let anchorName = anchor.name {
+                    if anchorName == "SchnitzelARAnchor" {
+                        newAnchorEntity.addChild(try! Experience.loadSchnitzel())
+                    }
+                }
+                self.arView.scene.addAnchor(newAnchorEntity)
+            }
+            
+            print("Schnitzel entity in scene: \(String(describing: self.arView.scene.findEntity(named: "schnitzel")))")
             self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
+            
             self.isRelocalizingMap = true
             print(worldMap.anchors)
             

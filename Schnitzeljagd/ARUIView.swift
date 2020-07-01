@@ -182,7 +182,7 @@ struct SearchMapUIView: View {
                     self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: currentDistance)
                     print("currentDistance: \(currentDistance)")
                     if currentDistance < NumberEnum.foundRadius.rawValue {
-                        self.showFoundAlert = true
+//                        TODO self.showFoundAlert = true
                         self.timer.upstream.connect().cancel()
                     }
             }.font(.headline)
@@ -231,7 +231,7 @@ struct SearchARUIView: View {
                     self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: currentDistance)
                     print("currentDistance: \(currentDistance)")
                     if currentDistance < NumberEnum.foundRadius.rawValue {
-                        self.showFoundAlert = true
+//                        TODO self.showFoundAlert = true
                         self.timer.upstream.connect().cancel()
                     }
             }.font(.headline)

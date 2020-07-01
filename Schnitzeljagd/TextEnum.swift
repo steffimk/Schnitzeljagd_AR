@@ -59,7 +59,5 @@ enum NumberEnum: Double {
     /** Buffer of exiting a region to prevent flimmering in meters */
     case regionBuffer = 6.0
     case offsetBuffer = 4.0
-    /** Color is updated after this amount of seconds*/
-    case delay = 3.0
     
 }

@@ -30,7 +30,7 @@ struct ARViewContainer: UIViewRepresentable {
     func updateUIView(_ uiView: ARView, context: Context) {}
 }
 
-extension ARView: ARCoachingOverlayViewDelegate {
+extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     
     
     func addCoaching() {
@@ -40,7 +40,7 @@ extension ARView: ARCoachingOverlayViewDelegate {
         coachingOverlay.session = self.session
         coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        coachingOverlay.goal = .anyPlane
+        coachingOverlay.goal = .horizontalPlane
         self.addSubview(coachingOverlay)
     }
     
@@ -48,27 +48,54 @@ extension ARView: ARCoachingOverlayViewDelegate {
         //Ready to add entities next?
     }
     
+    
+    public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+        for anchor in anchors {
+            print("New Anchor added: \(anchor)")
+        }
+    }
+    
     // Add a Schnitzel by tapping
     @objc func addSchnitzelToSceneView(withGestureRecognizer recognizer: UIGestureRecognizer) {
         for anchor in self.scene.anchors {
-            self.scene.removeAnchor(anchor)
+            if anchor.name == "SchnitzelAnchor" {
+                self.scene.removeAnchor(anchor)
+            }
         }
         let tapLocation = recognizer.location(in: self)
-        let hitTestResults = self.hitTest(tapLocation, types: .existingPlane)
+//        let hitTestResults = self.hitTest(tapLocation, types: .existingPlane)
+        
+        let result = DataModel.shared.arView.raycast(
+          from: tapLocation,
+          allowing: .existingPlaneGeometry, alignment: .horizontal
+        ).first
 
-        guard let hitTestResult = hitTestResults.first else { return }
-        let translation = hitTestResult.worldTransform
-        let x = translation.columns.3.x
-        let y = translation.columns.3.y
-        let z = translation.columns.3.z
+//        guard let hitTestResult = hitTestResults.first else { return }
+//        let translation = hitTestResult.worldTransform
+//        let x = translation.columns.3.x
+//        let y = translation.columns.3.y
+//        let z = translation.columns.3.z
 
-        let schnitzelAnchor = try! Experience.loadSchnitzel()
-        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+        let schnitzelExperience = try! Experience.loadSchnitzel()
+        let schnitzel = schnitzelExperience.schnitzel as? HasCollision
         schnitzel!.generateCollisionShapes(recursive: true)
         DataModel.shared.arView.installGestures(.all, for: schnitzel!)
+//        schnitzelExperience.position = SIMD3<Float>(x,y,z)
+//        self.scene.anchors.append(schnitzelExperience)
         
-        schnitzelAnchor.position = SIMD3<Float>(x,y,z)
-        self.scene.anchors.append(schnitzelAnchor)
+//        let anchorEntity = AnchorEntity(world: SIMD3<Float>(x,y,z))
+        guard result != nil else { return }
+        let anchorEntity = AnchorEntity(raycastResult: result!)
+        anchorEntity.name = "SchnitzelAnchor"
+        anchorEntity.addChild(schnitzelExperience)
+        self.scene.anchors.append(anchorEntity)
+        
+//        DataModel.shared.arView.session.getCurrentWorldMap { worldMap, error in
+//            guard worldMap != nil else { return }
+//            worldMap!.anchors.append(ARAnchor(name: "SchnitzelARAnchor", transform: result!.worldTransform))
+//            print("worldmap: \(worldMap!.anchors.description)")
+//        }
+        
         DataModel.shared.hasPlacedSchnitzel = true
         
     }
