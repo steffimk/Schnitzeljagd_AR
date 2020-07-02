@@ -132,13 +132,22 @@ struct MapUIView: View {
     var body: some View {
         HStack {
             Button(action: {
+                print("Show Scoreboard")
+            })
+                {
+                    Image(systemName: "person.3.fill").foregroundColor(.white).font(Font.system(.title))
+                }
+            .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 0))
+            Spacer()
+            Button(action: {
                 self.data.screenState = .PLACE_SCHNITZEL_AR
                 self.data.arView.addTapGestureToSceneView(screenState: self.data.screenState)
             }) {
                 Text(TextEnum.placeAR.rawValue)
                     .fontWeight(.bold)
                     .modifier(TextModifier())}
-        }.padding(7).padding(.top, -10)
+            }.padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 100))
+        //.padding(7).padding(.top, -10)
             .alert(isPresented: $data.showStartSearchAlert) {
                 let schnitzel = self.data.loadedData.currentSchnitzelJagd!
                 if schnitzel.isFound {
@@ -167,9 +176,13 @@ struct SearchMapUIView: View {
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
     @State var showFoundAlert: Bool = false
     @State var backgroundColor: Color = Color.blue
-
     var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    @State var currentDistance: Int = 0
+    @State var lat: Double = 0.0
+    @State var lon: Double = 0.0
+    @State var direction: String = ""
     
     var body: some View {
         HStack {
@@ -195,21 +208,51 @@ struct SearchMapUIView: View {
             }) {
                 Text(TextEnum.searchAR.rawValue)
                     .fontWeight(.bold)
-                    .modifier(TextModifier())}
-        }.padding(7).background(self.backgroundColor)
+                    .modifier(TextModifier())
+            }
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 60))
             .alert(isPresented: self.$showFoundAlert) {
-                self.schnitzelJagd.found()
-                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
-                             primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
-                                self.showFoundAlert = false
-                                self.data.screenState = .MENU_MAP
-                             }),
-                             secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
-                                self.showFoundAlert = false
-                             }))
-        }
+                    self.schnitzelJagd.found()
+                    return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
+                                 primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
+                                    self.showFoundAlert = false
+                                    self.data.screenState = .MENU_MAP
+                                 }),
+                                 secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
+                                    self.showFoundAlert = false
+                                 }))
+            }
+            Spacer()
+            Button(action: {
+                self.currentDistance = Int (DataModel.shared.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel())
+                self.lat = (self.data.location?.coordinate.latitude)!
+                self.lon = (self.data.location?.coordinate.longitude)!
+                self.direction = StaticFunctions.calculateBearing(latitude: self.lat, longitude: self.lon, latTarget: DataModel.shared.loadedData.currentSchnitzelJagd!.annotationWithRegion.coordinate.latitude, lonTarget: DataModel.shared.loadedData.currentSchnitzelJagd!.annotationWithRegion.coordinate.longitude)
+                self.data.showHint()
+            })
+            {
+                Image(systemName: "lightbulb.fill").foregroundColor(.white).font(Font.system(.title))
+            }
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8))
+            .alert(isPresented: self.$data.showHintAlert) {
+                            switch(self.data.availableHints){
+                            case 3:
+                                return Alert(title: Text("Erster Hinweis:"), message: Text("Das Suchgebiet wurde verkleinert. (TODO)"),
+                                dismissButton: .default(Text("Schließen")))
+                                // Umkreis verkleinern
+                            case 2:
+                                return Alert(title: Text("Zweiter Hinweis:"), message: Text("Gehe nach \(self.direction)"),
+                                dismissButton: .default(Text("Schließen")))
+                            case 1:
+                                return Alert(title: Text("Letzter Hinweis:"), message: Text("Du bist noch \(self.currentDistance) Meter entfernt"),
+                                dismissButton: .default(Text("Schließen")))
+                            default:
+                                return Alert(title: Text("Keine Hinweise mehr verfügbar"),
+                                dismissButton: .default(Text("Schließen")))
+                            }
+                        }
+        }.padding(7).background(self.backgroundColor)
     }
-    
 }
 
 struct SearchARUIView: View {
@@ -220,6 +263,11 @@ struct SearchARUIView: View {
     var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
+    @State var currentDistance: Int = 0
+    @State var lat: Double = 0.0
+    @State var lon: Double = 0.0
+    @State var direction: String = ""
+    
     var body: some View {
         HStack {
             Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
@@ -227,7 +275,7 @@ struct SearchARUIView: View {
                     if self.schnitzelJagd.isFound { self.timer.upstream.connect().cancel(); return}
                     self.schnitzelJagd.timePassed += 1
                     self.timePassed += 1
-                     let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
+                    let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
                     self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: currentDistance)
                     print("currentDistance: \(currentDistance)")
                     if currentDistance < NumberEnum.foundRadius.rawValue {
@@ -240,23 +288,55 @@ struct SearchARUIView: View {
             Spacer()
             Button(action: {
                 self.data.screenState = .SEARCH_SCHNITZEL_MAP
-            }) {
+            })
+            {
                 Text(TextEnum.searchMap.rawValue)
                     .fontWeight(.bold)
                     .modifier(TextModifier(color: .green))
             }
-        }.padding(7).background(self.backgroundColor)
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 60))
             .alert(isPresented: self.$showFoundAlert) {
-                self.schnitzelJagd.found()
-                return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
-                             primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
-                                self.showFoundAlert = false
-                                self.data.screenState = .MENU_MAP
-                             }),
-                             secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
-                                self.showFoundAlert = false
-                             }))
-        }
+                    self.schnitzelJagd.found()
+                    return Alert(title: Text(TextEnum.foundAlertTitle.rawValue), message: Text("Glückwunsch! Du hast das Schnitzel \(self.schnitzelJagd.annotationWithRegion.title!) gefunden!\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: self.timePassed)),
+                                 primaryButton: .default(Text(TextEnum.foundAlertAccept.rawValue), action: {
+                                    self.showFoundAlert = false
+                                    self.data.screenState = .MENU_MAP
+                                 }),
+                                 secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
+                                    self.showFoundAlert = false
+                                 }))
+            }
+            Spacer()
+            Button(action: {
+                self.currentDistance = Int (DataModel.shared.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel())
+                self.lat = (self.data.location?.coordinate.latitude)!
+                self.lon = (self.data.location?.coordinate.longitude)!
+                self.direction = StaticFunctions.calculateBearing(latitude: self.lat, longitude: self.lon, latTarget: DataModel.shared.loadedData.currentSchnitzelJagd!.annotationWithRegion.coordinate.latitude, lonTarget: DataModel.shared.loadedData.currentSchnitzelJagd!.annotationWithRegion.coordinate.longitude)
+                self.data.showHint()
+            })
+            {
+                Image(systemName: "lightbulb.fill").foregroundColor(.white).font(Font.system(.title))
+            }
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8))
+            .alert(isPresented: self.$data.showHintAlert) {
+                            switch(self.data.availableHints){
+                            case 3:
+                                return Alert(title: Text("Erster Hinweis:"), message: Text("Der Suchradius wurde verkleinert. Wechsel zur Kartenansicht, um das neue Suchgebiet zu sehen. (TODO)"),
+                                dismissButton: .default(Text("Schließen")))
+                                // Umkreis verkleinern
+                            case 2:
+                                return Alert(title: Text("Zweiter Hinweis:"), message: Text("Gehe nach \(self.direction)"),
+                                dismissButton: .default(Text("Schließen")))
+                            case 1:
+                                return Alert(title: Text("Letzter Hinweis:"), message: Text("Du bist noch \(self.currentDistance) Meter entfernt"),
+                                dismissButton: .default(Text("Schließen")))
+                            default:
+                                return Alert(title: Text("Keine Hinweise mehr verfügbar"),
+                                dismissButton: .default(Text("Schließen")))
+                            }
+                        }
+            
+        }.padding(7).background(self.backgroundColor)
     }
 }
 

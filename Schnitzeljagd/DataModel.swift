@@ -47,6 +47,8 @@ final class DataModel: ObservableObject {
     @Published var schnitzelId: String = ""
     @Published var ref: DatabaseReference! = Database.database().reference()
     @Published var showMissingWorldmapAlert: Bool = true
+    @Published var showHintAlert: Bool = false
+    @Published var availableHints: Int = 0
     @Published var hasPlacedSchnitzel:Bool = false
 
     var uiViews: UIViews?
@@ -68,7 +70,7 @@ final class DataModel: ObservableObject {
         screenState = ScreenState.MENU_MAP
         // Initialise the ARView
         arView = ARView(frame: .zero)
-        arView.addCoaching()
+        //arView.addCoaching()
         
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
@@ -242,7 +244,22 @@ final class DataModel: ObservableObject {
         }) { (error) in
             print(error.localizedDescription)
         }
-        self.ref.child("Test").setValue("Please read")
+        //self.ref.child("Test").setValue("Please read")
+    }
+    
+    @IBAction func showHint(){
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        self.ref.child("Jagd").child(userID).child(self.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
+            self.availableHints = snapshot.value as! Int
+            self.availableHints -= 1
+            if(self.availableHints < 0){
+                self.availableHints = 0
+            }
+            self.ref.child("Jagd").child(userID).child(self.schnitzelId).child("Hints").setValue(self.availableHints)
+            self.showHintAlert = true
+        }) { (error) in
+            print(error.localizedDescription)
+        }
     }
     
     // MARK: - AR session management

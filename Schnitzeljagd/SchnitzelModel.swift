@@ -19,6 +19,8 @@ class SchnitzelJagd : Hashable {
     var timePassed: Int
     var couldUpdate: Bool
     
+    var score: Int
+    
     var isFound: Bool
     
     init(id: String, ownerId: String, annotation: AnnotationWithRegion) {
@@ -28,6 +30,7 @@ class SchnitzelJagd : Hashable {
         self.timePassed = 0
         self.couldUpdate = false
         self.isFound = false
+        self.score = 0
     }
     
     func readyForSearch() -> Bool {
@@ -43,10 +46,25 @@ class SchnitzelJagd : Hashable {
                 self.isFound = true
                 return
             }
+            let availableHints = value?["Hints"] as? Int
+            if (availableHints == nil){
+                DataModel.shared.ref.child("Jagd").child(userID!).child(self.schnitzelId).child("Hints").setValue(4)
+            }
             self.timePassed = value?["CurrentDuration"] as? Int ?? self.timePassed
             self.couldUpdate = true
             print("data loaded - time passed: \(self.timePassed), isFound: \(self.isFound)")
           }) { (error) in
+            print(error.localizedDescription)
+        }
+        DataModel.shared.ref.child("Jagd").child(userID!).observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? Dictionary<String,Any>
+            let score = value?["Score"] as? Int
+                if (score == nil){
+                    DataModel.shared.ref.child("Jagd").child(userID!).child("Score").setValue(self.score)
+                } else {
+                    self.score = score!
+            }
+            }) { (error) in
             print(error.localizedDescription)
         }
     }
@@ -62,11 +80,20 @@ class SchnitzelJagd : Hashable {
         }
     }
     
+    func setHints(){
+        if !self.isFound {
+            let userID = Auth.auth().currentUser?.uid
+            DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("Hints").setValue(4)
+        }
+    }
+    
     func found() {
         if !self.isFound {
             self.isFound = true
             let userID = Auth.auth().currentUser?.uid
             DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("FinalTime").setValue(timePassed)
+            let score = self.score + Int(powf(Float(M_E), Float(1/timePassed))) * 20000
+            DataModel.shared.ref.child("Jagd").child(userID!).child("Score").setValue(score)
         }
     }
     

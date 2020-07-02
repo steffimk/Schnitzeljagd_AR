@@ -47,25 +47,25 @@ struct ContentView : View {
                     VStack{
                     Text("\(self.session.session?.email ?? "Schnitzel")" )
                               
-                    Divider()
-                              
-                    NavigationLink(destination: ContentView()) {
-                        Text("Found Schnitzel")
-                            .foregroundColor(Color.gray)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .padding(8)
-                    .frame(minWidth: 0, maxWidth: 200)
-                    
-                    Divider()
-                              
-                    NavigationLink(destination: ContentView()) {
-                        Text("User Settings")
-                            .foregroundColor(Color.gray)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .padding(8)
-                    .frame(minWidth: 0, maxWidth: 200)
+//                    Divider()
+//
+//                    NavigationLink(destination: ContentView()) {
+//                        Text("Found Schnitzel")
+//                            .foregroundColor(Color.gray)
+//                    }
+//                    .buttonStyle(PlainButtonStyle())
+//                    .padding(8)
+//                    .frame(minWidth: 0, maxWidth: 200)
+//
+//                    Divider()
+//
+//                    NavigationLink(destination: ContentView()) {
+//                        Text("User Settings")
+//                            .foregroundColor(Color.gray)
+//                    }
+//                    .buttonStyle(PlainButtonStyle())
+//                    .padding(8)
+//                    .frame(minWidth: 0, maxWidth: 200)
                     
                     Divider()
                     
