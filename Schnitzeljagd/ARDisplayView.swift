@@ -89,10 +89,14 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     }
     
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        switch (frame.camera.trackingState, frame.worldMappingStatus) {
-        case (.limited(.relocalizing), _) where DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR:
-            print("trying to relocalize world map")
-        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("not relocalizing") }
+        switch (frame.camera.trackingState) {
+        case .limited(_:)(.relocalizing) :
+            print("Camera trying to reconcile world map")
+        case .limited(_:)(.initializing) :
+            print("Camera initializing relocation")
+        case .normal :
+            print("Camera in normal tracking state ")
+        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("Camera not relocalizing") }
         }
     }
     
@@ -122,7 +126,9 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     }
     
     func resetTracking() {
-        self.session.run(defaultConfiguration, options: [.resetTracking, .removeExistingAnchors])
+        print("Resetting tracking")
+        let config = self.session.configuration ?? self.defaultConfiguration
+        self.session.run(config, options: [.resetTracking, .removeExistingAnchors])
     }
     
     func handleGestureInSearchMode(withGestureRecognizer recognizer: UIGestureRecognizer){
@@ -196,10 +202,10 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
 
         let worldMap = DataModel.shared.loadedData.currentSchnitzelJagd!.worldMap!
 
-        self.session.pause()
         let configuration = self.defaultConfiguration
-        configuration.initialWorldMap = worldMap
         self.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
+        configuration.initialWorldMap = worldMap
+        print("camera should be reconciling")
 
         print("WorldMap anchors: \(worldMap.anchors.description)")
         for anchor in worldMap.anchors {
