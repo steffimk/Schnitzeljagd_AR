@@ -24,7 +24,7 @@ struct SignUpView : View {
         session.signUp(email: email, password: password) { (result, error) in
             self.loading = false
             if error != nil {
-                print("\(error)")
+                print("\(String(describing: error))")
                 self.error = true
             } else {
                 self.email = ""
@@ -52,7 +52,7 @@ struct SignUpView : View {
                 .foregroundColor(.white)
                 .padding()
                 .frame(width: 250, height: 30, alignment: .center)
-                Text("At least 8 characters required.").font(.footnote).foregroundColor(Color.gray)
+                Text("At least 8 characters required.").font(.footnote).foregroundColor(Color.white)
                 .padding()
                 }.padding(.horizontal)
             
@@ -71,24 +71,24 @@ struct SignUpView : View {
                 .disabled(loading)
                 .padding(5)
                 .foregroundColor(.white)
-                .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
+                .background(Color.blue)
                 .overlay(
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00), lineWidth: 5)
+                    .stroke(Color.blue, lineWidth: 5)
                 )
                    // alignment: Spacer()
             
         }
             .frame(width: 300, height: 300, alignment: .top)
-            .background(Color.blue)
+            .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
             //.overlay(
             //    RoundedRectangle(cornerRadius: 20)
             //        .stroke(Color.white, lineWidth: 15)
             //)
         }
         .frame(width: 500, height: 800, alignment: .center)
-        .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 0))
-        .foregroundColor(.blue)
+        .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1))
+        .foregroundColor(.white)
         
     }
     
@@ -124,56 +124,66 @@ struct SignInView : View {
         NavigationView {
         ZStack {
             VStack {
-                
+                Text("Schnitzeljagd")
+                    .font(.largeTitle)
+                    .padding(.horizontal)
+                    .padding(.top, -180)
+                    .foregroundColor(.white)
+                Text("Starte dein AR-Schnitzelerlebnis")
+                    .font(.body)
+                    .padding(.horizontal)
+                    .padding(.top, -130)
+                    .foregroundColor(.white)
+
                 Text("Log in")
-                .font(.title)
-                .padding(.horizontal)
-                .foregroundColor(.white)
-                
+                    .font(.title)
+                    .padding(.horizontal)
+                    .foregroundColor(.white)
+
                 TextField("Email", text: $email)
                     .foregroundColor(.white)
                     .padding(.all)
                     .frame(width: 250, height: 30, alignment: .center)
-                
-                    
+
                 SecureField("Password", text: $password)
-                .foregroundColor(.white)
-                .padding()
-                .frame(width: 250, height: 30, alignment: .center)
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(width: 250, height: 30, alignment: .center)
                 if (error) {
                     Text("Invalid Credentials").padding(3)
-                    .font(.footnote).foregroundColor(Color.gray)
+                    .font(.footnote).foregroundColor(Color.white)
                 }
+                
                 Button(action: signIn) {
                     Text("Sign in")
                 }
-                .frame(minWidth: 0, maxWidth: 60)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 3)
-                .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00), lineWidth: 8)
-                )
-                    NavigationLink(destination: SignUpView()) {
-                        Text("Sign up")
-                            .foregroundColor(Color.gray)
-                    }
+                    .frame(minWidth: 0, maxWidth: 60)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 3)
+                    .background(Color.blue)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.blue, lineWidth: 8)
+                    )
+                
+                NavigationLink(destination: SignUpView()) {
+                    Text("Sign up")
+                        .foregroundColor(Color.white)
+                }
                     .buttonStyle(PlainButtonStyle())
                     .padding(8)
                     .frame(minWidth: 0, maxWidth: 100)
                 
-                
             }
             .frame(width: 300, height: 250, alignment: .top)
-            .background(Color.blue)
+            .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00))
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.blue, lineWidth: 15)
+                    .stroke(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00), lineWidth: 15)
             )
         }
         .frame(width: 500, height: 1000, alignment: .center)
-        .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 0))
+        .background(Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1))
         .foregroundColor(.white)
 
     }

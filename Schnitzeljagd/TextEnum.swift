@@ -44,6 +44,8 @@ enum TextEnum: String {
     case saveAlertDecline = "Bearbeiten"
     case schnitzelTitlePlaceholder = "Dein Titel"
     case schnitzelDescriptionPlaceholder = "Deine Beschreibung"
+    case isSavingTitle = "Speichervorgang"
+    case isSavingMessage = "Dein Schnitzel wird paniert. Bitte habe einen Moment Geduld."
     
     // Found Schnitzel Alert
     case foundAlertTitle = "Schnitzeljagd gewonnen"

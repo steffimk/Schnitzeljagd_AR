@@ -15,21 +15,33 @@ import CoreLocation
 import Firebase
 import SwiftUI
 
-extension ARWorldMap {
-    #if !targetEnvironment(simulator)
-    var snapshotAnchor: SnapshotAnchor? {
-        return anchors.compactMap { $0 as? SnapshotAnchor }.first
-    }
-    #endif
-}
-
-extension Date {
-    func toMillis() -> Int64! {
-        return Int64(self.timeIntervalSince1970 * 1000)
-    }
-}
-
 final class DataModel: ObservableObject {
+    
+    static var shared = DataModel() // Singleton
+    
+    // Firebase
+    @Published var ref: DatabaseReference! = Database.database().reference()
+    
+    // AR
+    @Published var arView: ARView!
+    var worldMap: ARWorldMap?
+    @Published var showMissingWorldmapAlert: Bool = true
+    @Published var hasPlacedSchnitzel: Bool = false
+    var isTakingSnapshot: Bool = false
+    var schnitzelARAnchor: ARAnchor?
+    
+    // UI
+    var uiViews: UIViews?
+
+    // Map + Location related
+    let locationManager: CLLocationManager = CLLocationManager()
+    let locationDelegate: LocationDelegate = LocationDelegate()
+    @Published var location: CLLocation?
+    let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
+    @Published var showStartSearchAlert: Bool = false
+    var currentRegions: Set<CLRegion> = Set<CLRegion>()
+    var loadedData: LoadedData = LoadedData()
+    
     @Published var screenState: ScreenState {
         didSet {
             uiViews!.refreshAll()
@@ -37,7 +49,8 @@ final class DataModel: ObservableObject {
                 && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
                 self.loadedData.currentSchnitzelJagd!.saveTime()
             }
-            if (screenState == .SEARCH_SCHNITZEL_AR || screenState == .PLACE_SCHNITZEL_AR ){
+            if ((screenState == .SEARCH_SCHNITZEL_AR || screenState == .PLACE_SCHNITZEL_AR)
+                && oldValue != .SEARCH_SCHNITZEL_MAP ){
                 for anchor in self.arView.scene.anchors {
                     self.arView.scene.anchors.remove(anchor)
                 }
@@ -53,44 +66,19 @@ final class DataModel: ObservableObject {
         }
     }
     
-    static var shared = DataModel() // Singleton
-    
-    //AR
-    @Published var arView: ARView!
-    @Published var schnitzelId: String = ""
-    var worldMap: ARWorldMap?
-    @Published var ref: DatabaseReference! = Database.database().reference()
-    @Published var showMissingWorldmapAlert: Bool = true
-    @Published var hasPlacedSchnitzel:Bool = false
-
-    var uiViews: UIViews?
-    
-    @IBOutlet weak var snapshotThumbnail: UIImageView!
-    
-    // MARK: - Location
-    let locationManager: CLLocationManager = CLLocationManager()
-    let locationDelegate: LocationDelegate = LocationDelegate()
-    @Published var location: CLLocation?
-    let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
-    @Published var showStartSearchAlert: Bool = false
-    var currentRegions: Set<CLRegion> = Set<CLRegion>()
-    var loadedData: LoadedData = LoadedData()
-    
     #if !targetEnvironment(simulator)
-    // MARK: - Initialise the ARView
+    // MARK: - Initialise DataModel
     init() {
         screenState = ScreenState.MENU_MAP
         // Initialise the ARView
         arView = ARView(frame: .zero)
-//        TODO arView.addCoaching()
         arView.addTapGestureToSceneView()
+        arView.session.delegate = arView
         
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
         
         initLocationServices()
-        arView.session.run(config, options: [])
-        arView.session.delegate = arView
     }
     
     func initLocationServices(){
@@ -102,176 +90,7 @@ final class DataModel: ObservableObject {
         }
         self.locationManager.stopUpdatingLocation()
     }
-    
-    
-    // MARK: - ARSessionObserver
-    @IBOutlet weak var sessionInfoLabel: UILabel!
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay.
-        sessionInfoLabel.text = "Session was interrupted"
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required.
-        sessionInfoLabel.text = "Session interruption ended"
-    }
-    
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        sessionInfoLabel.text = "Session failed: \(error.localizedDescription)"
-        guard error is ARError else { return }
-        
-        let errorWithInfo = error as NSError
-        let messages = [
-            errorWithInfo.localizedDescription,
-            errorWithInfo.localizedFailureReason,
-            errorWithInfo.localizedRecoverySuggestion
-        ]
-        
-        // Remove optional error messages.
-        let errorMessage = messages.compactMap({ $0 }).joined(separator: "\n")
-        
-        DispatchQueue.main.async {
-            // Present an alert informing about the error that has occurred.
-            let alertController = UIAlertController(title: "The AR session failed.", message: errorMessage, preferredStyle: .alert)
-            let restartAction = UIAlertAction(title: "Restart Session", style: .default) { _ in
-                alertController.dismiss(animated: true, completion: nil)
-                self.resetTracking(nil)
-            }
-            alertController.addAction(restartAction)
-            //self.present(alertController, animated: true, completion: nil)
-        }
-    }
-    
-    func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
-        return true
-    }
-    
-    // MARK: - Persistence: Saving and Loading
-    lazy var mapSaveURL: URL = {
-        do {
-            return try FileManager.default
-                .url(for: .documentDirectory,
-                     in: .userDomainMask,
-                     appropriateFor: nil,
-                     create: true)
-                .appendingPathComponent("map.arexperience")
-        } catch {
-            fatalError("Can't get file save URL: \(error.localizedDescription)")
-        }
-    }()
-    
-    @IBAction func checkWorldMap(){
-        if self.worldMap == nil {
-            self.showMissingWorldmapAlert = true
-        } else {
-            self.showMissingWorldmapAlert = false
-        }
-    }
-    
-    @IBAction func saveSchnitzel(title: String, description: String) {
-        
-        let userID: String = (Auth.auth().currentUser?.uid)!
-        let lat: Double = (locationManager.location?.coordinate.latitude)!
-        let lon: Double = (locationManager.location?.coordinate.longitude)!
-        let schnitzelId: String = String(Date().toMillis())
-        let shiftedCoordinates = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
-        
-//        let schnitzelAnchor = arView.scene.findEntity(named: "SchnitzelAnchor")
-//        if schnitzelAnchor == nil { return }
-//        NSKeyedArchiver.setClassName("SchnitzelAnchor", for: Entity.self)
-//        do {
-//            let data = try NSKeyedArchiver.archivedData(withRootObject: schnitzelAnchor!, requiringSecureCoding: true)
-//            self.ref.child("Schnitzel").child(schnitzelId).child("Anchor").setValue(data.base64EncodedString())
-//        } catch {
-//            fatalError("Can't save anchor: \(error.localizedDescription)")
-//        }
-       
-        NSKeyedArchiver.setClassName("ARWorldMap", for: ARWorldMap.self)
-        do {
-            let data = try NSKeyedArchiver.archivedData(withRootObject: self.worldMap!, requiringSecureCoding: true)
-            self.ref.child("Schnitzel").child(schnitzelId).child("Worldmap").setValue(data.base64EncodedString())
-                //try data.write(to: self.mapSaveURL, options: [.atomic])
-                DispatchQueue.main.async {
-                    return print("Saved Schnitzel: \(schnitzelId)")
-            }
-        } catch {
-            print("Can't save map")
-        }
 
-        print(worldMap!.anchors)
-        worldMap!.anchors.removeAll()
-        
-        //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
-        self.ref.child("Schnitzel").child(schnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])
-        self.ref.child("Schnitzel").child(schnitzelId).child("User").setValue(userID)
-        self.ref.child("Schnitzel").child(schnitzelId).child("Titel").setValue(title)
-        self.ref.child("Schnitzel").child(schnitzelId).child("Description").setValue(description)
-        self.ref.child("Schnitzel").child(schnitzelId).child("Location").setValue(["latitude": lat, "longitude": lon])
-        
-        //self.ref.child("Schnitzel").childByAutoId()
-        
-        print("locations = \(lat) \(lon), shifted = \(shiftedCoordinates.latitude) \(shiftedCoordinates.longitude)")
-        
-        self.hasPlacedSchnitzel = false
-        
-    }
-    
-    /// - Tag: RunWithWorldMap
-    @IBAction func loadSchnitzel() {
- 
-        let worldMap = self.loadedData.currentSchnitzelJagd!.worldMap!
-        
-        let configuration = self.defaultConfiguration // this app's standard world tracking settings
-        configuration.initialWorldMap = worldMap
-        self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
-        print("MapView anchors: \(worldMap.anchors.description)")
-        for anchor in worldMap.anchors {
-            let newAnchorEntity = AnchorEntity(anchor: anchor)
-            if let anchorName = anchor.name {
-                if anchorName == "SchnitzelARAnchor" {
-                    let schnitzelExperience = try! Experience.loadSchnitzel()
-                    let schnitzel = schnitzelExperience.schnitzel as? HasCollision
-                    schnitzel!.generateCollisionShapes(recursive: true)
-                    newAnchorEntity.addChild(schnitzelExperience)
-                }
-            }
-            self.arView.scene.addAnchor(newAnchorEntity)
-        }
-
-        print("Schnitzel entity in scene: \(String(describing: self.arView.scene.findEntity(named: "schnitzel")))")
-        self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
-        
-        self.isRelocalizingMap = true
-        print(worldMap.anchors)
-        
-        print("Loaded Schnitzel")
-        self.ref.child("Test").setValue("Please read")
-    }
-    
-    // MARK: - AR session management
-    
-    var isRelocalizingMap = false
-    
-    var defaultConfiguration: ARWorldTrackingConfiguration {
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = .horizontal
-        configuration.environmentTexturing = .automatic
-        return configuration
-    }
-    
-    @IBAction func resetTracking(_ sender: UIButton?) {
-        arView.session.run(defaultConfiguration, options: [.resetTracking, .removeExistingAnchors])
-        isRelocalizingMap = false
-        //virtualObjectAnchor = nil
-    }
-    
-//    var virtualObjectAnchor: ARAnchor?
-//    let virtualObjectAnchorName = "virtualObject"
-//
-//    let virtualObject = try! Experience.loadSchnitzel()
-    
-    
     #endif
     
 }
@@ -283,4 +102,10 @@ enum ScreenState {
     case SEARCH_SCHNITZEL_AR
     case PLACE_SCHNITZEL_AR
     
+}
+
+extension Date {
+    func toMillis() -> Int64! {
+        return Int64(self.timeIntervalSince1970 * 1000)
+    }
 }

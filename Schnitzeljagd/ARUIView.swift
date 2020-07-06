@@ -75,41 +75,40 @@ struct PlaceSchnitzelUIView: View {
                 TextField("", text: $title).modifier(TextFieldStyle(font: .title, showPlaceHolder: title.isEmpty, placeholder: TextEnum.schnitzelTitlePlaceholder.rawValue))
                 TextField("", text: $description).modifier(TextFieldStyle(font: .callout, showPlaceHolder: description.isEmpty, placeholder: TextEnum.schnitzelDescriptionPlaceholder.rawValue))
                 Button(action: {
-                    self.data.checkWorldMap()
+                    self.data.arView.checkWorldMap()
                     self.showSaveAlert = true
                     print("ShowSaveAlert is: \(self.showSaveAlert)")
-                    //self.data.showMissingWorldmapAlert
-                    
                 }) {
                     Text(TextEnum.save.rawValue)
                         .fontWeight(.bold)
                         .modifier(TextModifier(color: .yellow))
                 }.alert(isPresented: self.$showSaveAlert) {
-                    if (!self.data.hasPlacedSchnitzel){
+                    if (!self.data.hasPlacedSchnitzel) {
                         return Alert(title: Text("Fehlendes Schnitzel"), message: Text("Bitte platziere erst ein Schnitzel, indem du auf den Bildschirm tippst."),
                         dismissButton: .default(Text("Schließen"), action: {
                           self.showSaveAlert = false
                         }))
-                    } else
-                    if (self.data.showMissingWorldmapAlert)
-                    {
+                    } else if (self.data.showMissingWorldmapAlert) {
                         return Alert(title: Text("Fehlende Worldmap"), message: Text("Bewege dein Handy hin und her."),
                         dismissButton: .default(Text("Schließen"), action: {
                           self.showSaveAlert = false
                           self.data.showMissingWorldmapAlert = false
                         }))
-                    }
-                    else
-                    {
-                    return Alert(title: Text(TextEnum.saveAlertTitle.rawValue), message: Text("Möchtest du ein neues Schnitzel mit Titel \"\(self.title)\" und Beschreibung \"\(self.description)\" erstellen?"),
-                          primaryButton: .default(Text(TextEnum.saveAlertAccept.rawValue), action: {
-                            self.data.saveSchnitzel(title: self.title, description: self.description)
-                            self.showSaveAlert = false
-                            self.data.screenState = .MENU_MAP
-                          }),
-                          secondaryButton: .cancel(Text(TextEnum.saveAlertDecline.rawValue), action: {
-                            self.showSaveAlert = false
-                          }))
+                    } else if (self.data.isTakingSnapshot) { // Time to take screenshot
+                        return Alert(title: Text(TextEnum.isSavingTitle.rawValue), message: Text(TextEnum.isSavingMessage.rawValue),
+                                dismissButton: .default(Text(TextEnum.dismiss.rawValue), action: {
+                                self.showSaveAlert = true
+                              }))
+                    } else {
+                        return Alert(title: Text(TextEnum.saveAlertTitle.rawValue), message: Text("Möchtest du ein neues Schnitzel mit Titel \"\(self.title)\" und Beschreibung \"\(self.description)\" erstellen?"),
+                        primaryButton: .default(Text(TextEnum.saveAlertAccept.rawValue), action: {
+                          self.data.arView.saveSchnitzel(title: self.title, description: self.description)
+                          self.showSaveAlert = true
+                          self.data.isTakingSnapshot = true
+                        }),
+                        secondaryButton: .cancel(Text(TextEnum.saveAlertDecline.rawValue), action: {
+                          self.showSaveAlert = false
+                        }))
                     }
                 }
             }.offset(y: -self.value).animation(.spring()).onAppear {
@@ -190,7 +189,7 @@ struct SearchMapUIView: View {
             Spacer()
             Button(action: {
                 if self.schnitzelJagd.worldMap != nil {
-                    self.data.loadSchnitzel()
+                    self.data.arView.loadSchnitzel()
                     self.data.screenState = .SEARCH_SCHNITZEL_AR
                 } else {
                     if self.schnitzelJagd.failedLoadingWorldMap {

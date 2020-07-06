@@ -14,30 +14,26 @@ import RealityKit
 /// - Tag: SnapshotAnchor
 class SnapshotAnchor: ARAnchor {
     
-    let imageData: Data
-    convenience init?(capturing view: ARView) {
-        guard let frame = view.session.currentFrame
-            else { return nil }
+    var imageData: Data?
+    
+    init(capturing view: ARView) {
+        super.init(name: "snapshot", transform: view.cameraTransform.matrix)
         
-        let image = CIImage(cvPixelBuffer: frame.capturedImage)
-        let orientation = CGImagePropertyOrientation(rawValue: UInt32(UIDevice.current.orientation.rawValue))!
-        
-        let context = CIContext(options: [.useSoftwareRenderer: false])
-        guard let data = context.jpegRepresentation(of: image.oriented(orientation),
-                                                    colorSpace: CGColorSpaceCreateDeviceRGB(),
-                                                    options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.7])
-            else { return nil }
-        
-        self.init(imageData: data, transform: frame.camera.transform)
     }
     
-    init(imageData: Data, transform: float4x4) {
-        self.imageData = imageData
-        super.init(name: "snapshot", transform: transform)
+    func retrieveImage(capturing view: ARView, _ handler: @escaping (Data?) -> ()){
+        view.snapshot(saveToHDR: false) { (image) in
+            guard image != nil else {
+                handler(nil)
+                return
+            }
+            let data = image!.jpegData(compressionQuality: 0.5)
+            self.imageData = data
+            handler(data)
+        }
     }
     
     required init(anchor: ARAnchor) {
-        self.imageData = (anchor as! SnapshotAnchor).imageData
         super.init(anchor: anchor)
     }
     

@@ -24,6 +24,8 @@ class SchnitzelJagd : Hashable {
     var failedLoadingWorldMap: Bool
     var isFound: Bool
     
+    var snapshot: UIImage?
+    
     init(id: String, ownerId: String, annotation: AnnotationWithRegion) {
         self.schnitzelId = id
         self.ownerId = ownerId
@@ -69,7 +71,16 @@ class SchnitzelJagd : Hashable {
             guard let worldMap = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
             else{
                 self.failedLoadingWorldMap = true
-                fatalError("No ARWorldMap in archive.")
+                print("No ARWorldMap in archive.")
+                return
+            }
+    
+            if let snapshot = worldMap.snapshotAnchor?.imageData,
+                let snapshotThumbnail = UIImage(data: snapshot) {
+                self.snapshot = snapshotThumbnail
+                worldMap.anchors.removeAll(where: { $0 is SnapshotAnchor })
+            } else {
+                print("Snapshot was not loaded for schnitzel with id \(self.schnitzelId)")
             }
             
             self.worldMap = worldMap

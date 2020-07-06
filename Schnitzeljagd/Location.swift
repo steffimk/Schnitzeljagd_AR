@@ -21,7 +21,6 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
                 if distance <= region.radius {
                     let insertion = data.currentRegions.insert(region)
                     if insertion.inserted { print("User entered region \(region.identifier)") }
-                    data.schnitzelId = region.identifier
                 } else if distance > region.radius + NumberEnum.regionBuffer.rawValue {
                     let removal = data.currentRegions.remove(region)
                     if removal != nil { print("User exited region \(region.identifier)") }
@@ -73,7 +72,7 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus){
         switch(status){
         case .notDetermined:
-            print("Location authorization not determined") // ask user to determine auth status
+            print("Location authorization not determined")
             manager.stopUpdatingLocation()
         case .restricted:
             print("Location authorization restricted")

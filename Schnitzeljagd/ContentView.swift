@@ -88,7 +88,7 @@ struct ContentView : View {
                 MapView().frame(maxHeight: .infinity).padding(.top, -20)
                 data.uiViews!.getMapUIView()
             } else {
-                ARDisplayView().padding(.top, -20).padding(.bottom, -10) // TODO: custom ARView for SearchSchnitzelAR
+                ARDisplayView().padding(.top, -20).padding(.bottom, -10)
                 data.uiViews!.getSearchARUIView()
           }
             #endif
