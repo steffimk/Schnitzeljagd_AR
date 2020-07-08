@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 #if !targetEnvironment(simulator)
 
@@ -143,10 +144,17 @@ struct MapUIView: View {
                 self.data.screenState = .PLACE_SCHNITZEL_AR
                 self.data.arView.addTapGestureToSceneView(screenState: self.data.screenState)
             }) {
-                Text(TextEnum.placeAR.rawValue)
+                if self.data.isVeggie {
+                    Text(TextEnum.placeARMais.rawValue)
                     .fontWeight(.bold)
-                    .modifier(TextModifier())}
-            }.padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 100))
+                    .modifier(TextModifier())
+                } else {
+                Text(TextEnum.placeARSchnitzel.rawValue)
+                    .fontWeight(.bold)
+                    .modifier(TextModifier())
+                }
+            }
+        }.padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 100))
         //.padding(7).padding(.top, -10)
             .alert(isPresented: $data.showStartSearchAlert) {
                 let schnitzel = self.data.loadedData.currentSchnitzelJagd!
@@ -237,6 +245,8 @@ struct SearchMapUIView: View {
             .alert(isPresented: self.$data.showHintAlert) {
                             switch(self.data.availableHints){
                             case 3:
+//                                let circle = MKCircle(center: (DataModel.shared.loadedData.currentSchnitzelJagd?.annotationWithRegion.coordinate)!, radius: 10)
+//                                DataModel.shared.v.addOverlay(circle)
                                 return Alert(title: Text("Erster Hinweis:"), message: Text("Das Suchgebiet wurde verkleinert. (TODO)"),
                                 dismissButton: .default(Text("Schließen")))
                                 // Umkreis verkleinern
@@ -321,6 +331,8 @@ struct SearchARUIView: View {
             .alert(isPresented: self.$data.showHintAlert) {
                             switch(self.data.availableHints){
                             case 3:
+//                                let circle = MKCircle(center: (DataModel.shared.loadedData.currentSchnitzelJagd?.annotationWithRegion.coordinate)!, radius: 10)
+//                                DataModel.shared.v.addOverlay(circle)
                                 return Alert(title: Text("Erster Hinweis:"), message: Text("Der Suchradius wurde verkleinert. Wechsel zur Kartenansicht, um das neue Suchgebiet zu sehen. (TODO)"),
                                 dismissButton: .default(Text("Schließen")))
                                 // Umkreis verkleinern
@@ -347,15 +359,15 @@ struct TextModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.headline)
-            .padding(8)
+            .padding(12)
             .background(color)
             .cornerRadius(40)
             .foregroundColor(.white)
             .padding(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 40)
-                    .stroke(Color.purple, lineWidth: 4)
-        )
+//            .overlay(
+//                RoundedRectangle(cornerRadius: 40)
+//                    .stroke(Color.purple, lineWidth: 4)
+//        )
     }
 }
 

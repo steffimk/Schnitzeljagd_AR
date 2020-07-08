@@ -62,13 +62,21 @@ extension ARView: ARCoachingOverlayViewDelegate {
         let y = translation.columns.3.y
         let z = translation.columns.3.z
 
-        let schnitzelAnchor = try! Experience.loadSchnitzel()
-        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
-        schnitzel!.generateCollisionShapes(recursive: true)
-        DataModel.shared.arView.installGestures(.all, for: schnitzel!)
-        
-        schnitzelAnchor.position = SIMD3<Float>(x,y,z)
-        self.scene.anchors.append(schnitzelAnchor)
+        if DataModel.shared.isVeggie {
+            let schnitzelAnchor = try! Experience.loadCorn()
+            let schnitzel = schnitzelAnchor.corn as? HasCollision
+            schnitzel!.generateCollisionShapes(recursive: true)
+            DataModel.shared.arView.installGestures(.all, for: schnitzel!)
+            schnitzelAnchor.position = SIMD3<Float>(x,y,z)
+            self.scene.anchors.append(schnitzelAnchor)
+        } else {
+            let schnitzelAnchor = try! Experience.loadSchnitzel()
+            let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+            schnitzel!.generateCollisionShapes(recursive: true)
+            DataModel.shared.arView.installGestures(.all, for: schnitzel!)
+            schnitzelAnchor.position = SIMD3<Float>(x,y,z)
+            self.scene.anchors.append(schnitzelAnchor)
+        }
         DataModel.shared.hasPlacedSchnitzel = true
         
     }

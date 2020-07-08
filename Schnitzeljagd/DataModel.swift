@@ -11,6 +11,7 @@ import Combine
 import RealityKit
 import ARKit
 import UIKit
+import MapKit
 import CoreLocation
 import Firebase
 import SwiftUI
@@ -49,7 +50,12 @@ final class DataModel: ObservableObject {
     @Published var showMissingWorldmapAlert: Bool = true
     @Published var showHintAlert: Bool = false
     @Published var availableHints: Int = 0
+    @Published var smallRadius: Bool = false
     @Published var hasPlacedSchnitzel:Bool = false
+    
+    @Published var v: MKMapView!
+    
+    @Published var isVeggie: Bool = false
 
     var uiViews: UIViews?
     
@@ -209,16 +215,24 @@ final class DataModel: ObservableObject {
     /// - Tag: RunWithWorldMap
     @IBAction func loadSchnitzel() {
         
+        if self.isVeggie{
+            let schnitzelAnchor = try! Experience.loadCorn()
+            let schnitzel = schnitzelAnchor.corn as? HasCollision
+            schnitzel!.generateCollisionShapes(recursive: true)
+            schnitzelAnchor.position = SIMD3<Float>(0,0,0)
+            self.arView.scene.anchors.append(schnitzelAnchor)
+            print(self.arView.scene.findEntity(named: "corn"))
+        } else {
+            let schnitzelAnchor = try! Experience.loadSchnitzel()
+            let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+            schnitzel!.generateCollisionShapes(recursive: true)
+            schnitzelAnchor.position = SIMD3<Float>(0,0,0)
+            self.arView.scene.anchors.append(schnitzelAnchor)
+            print(self.arView.scene.findEntity(named: "schnitzel"))
+        }
         
-        let schnitzelAnchor = try! Experience.loadSchnitzel()
-        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
-        schnitzel!.generateCollisionShapes(recursive: true)
-        //DataModel.shared.arView.installGestures(.all, for: schnitzel!)
-        
-        schnitzelAnchor.position = SIMD3<Float>(0,0,0)
-        self.arView.scene.anchors.append(schnitzelAnchor)
         //DataModel.shared.hasPlacedSchnitzel = true
-        print(self.arView.scene.findEntity(named: "schnitzel"))
+        
         
         
         self.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -235,8 +249,13 @@ final class DataModel: ObservableObject {
             configuration.initialWorldMap = worldMap
             self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
 
-            print(self.arView.scene.findEntity(named: "schnitzel"))
-            self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
+            if self.isVeggie {
+                print(self.arView.scene.findEntity(named: "corn"))
+                self.arView.scene.findEntity(named: "corn")?.isEnabled = true
+            } else {
+                print(self.arView.scene.findEntity(named: "schnitzel"))
+                self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
+            }
             self.isRelocalizingMap = true
             print(worldMap.anchors)
             

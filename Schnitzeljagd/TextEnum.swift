@@ -16,7 +16,8 @@ enum TextEnum: String {
     // Basic Messages
     case appTitle = "Schnitzeljagd"
     case AR = "AR"
-    case placeAR = "Neues Schnitzel"
+    case placeARSchnitzel = "Neues Schnitzel"
+    case placeARMais = "Neuer Maiskolben"
     case searchAR = "AR Modus"
     case searchMap = "Kartenansicht"
     case menuMap =  "Jagd beenden"
@@ -54,6 +55,7 @@ enum TextEnum: String {
 enum NumberEnum: Double {
     
     case regionRadius = 80.0
+    case regionRadiusSmall = 40.0
     /** Radius around actual position of Schnitzel in which Schnitzel counts as found*/
     case foundRadius = 5.0
     /** Buffer of exiting a region to prevent flimmering in meters */

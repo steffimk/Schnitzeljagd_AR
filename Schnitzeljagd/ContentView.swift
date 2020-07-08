@@ -16,6 +16,7 @@ struct ContentView : View {
     @EnvironmentObject var data: DataModel
     @EnvironmentObject var session: SessionStore
     @State private var showUserMenu = false
+    @State private var isVeggie = false
           
     func getUser () {
           session.listen()
@@ -57,7 +58,12 @@ struct ContentView : View {
 //                    .padding(8)
 //                    .frame(minWidth: 0, maxWidth: 200)
 //
-//                    Divider()
+                    Divider()
+                              
+                              Toggle(isOn: self.$data.isVeggie) {
+                                  //UIImage(named: "corn")
+                                  Text("Vegetarier")
+                              }.padding()
 //
 //                    NavigationLink(destination: ContentView()) {
 //                        Text("User Settings")
