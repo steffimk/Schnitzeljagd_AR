@@ -96,7 +96,6 @@ class MapViewDelegate : NSObject, MKMapViewDelegate {
             }
             else {
                 let newAnnotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                newAnnotationView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
                 annotationView = newAnnotationView
             }
             if let annotationView = annotationView {

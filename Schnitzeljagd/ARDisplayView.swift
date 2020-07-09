@@ -26,7 +26,7 @@ struct ARDisplayView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             ARViewContainer().edgesIgnoringSafeArea(.all)
-            if ( DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR && self.snapshotThumbnail != nil ) {
+            if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR && self.snapshotThumbnail != nil {
                 Image(uiImage: self.snapshotThumbnail!)
                     .resizable()
                     .scaledToFit()
@@ -35,6 +35,7 @@ struct ARDisplayView: View {
             }
         }
     }
+    
 }
 
 struct ARViewContainer: UIViewRepresentable {
@@ -89,15 +90,15 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     }
     
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        switch (frame.camera.trackingState) {
-        case .limited(_:)(.relocalizing) :
-            print("Camera trying to reconcile world map")
-        case .limited(_:)(.initializing) :
-            print("Camera initializing relocation")
-        case .normal :
-            print("Camera in normal tracking state ")
-        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("Camera not relocalizing") }
-        }
+//        switch (frame.camera.trackingState) {
+//        case .limited(_:)(.relocalizing) :
+//            print("Camera trying to reconcile world map")
+//        case .limited(_:)(.initializing) :
+//            print("Camera initializing relocation")
+//        case .normal :
+//            print("Camera in normal tracking state ")
+//        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("Camera not relocalizing") }
+//        }
     }
     
     public func session(_ session: ARSession, didFailWithError error: Error) {
@@ -121,7 +122,6 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
                 self.resetTracking()
             }
             alertController.addAction(restartAction)
-            //self.present(alertController, animated: true, completion: nil)
         }
     }
     
@@ -142,6 +142,7 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         DataModel.shared.loadedData.currentSchnitzelJagd!.found() // TODO: richtig beenden
         if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR {
             let uiView = DataModel.shared.uiViews!.getSearchARUIView()
+            uiView.showAlert = true
             uiView.showFoundAlert = true
             uiView.timer.upstream.connect().cancel()
         }
@@ -154,7 +155,7 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
             return
         }
         for anchor in self.scene.anchors {
-            if anchor.name == "SchnitzelAnchor" {
+            if anchor.name == TextEnum.schnitzelAnchorEntity.rawValue {
                 self.scene.removeAnchor(anchor)
             }
         }
@@ -182,11 +183,11 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         
         let anchorEntity = AnchorEntity(world: SIMD3<Float>(x,y,z))
         
-        anchorEntity.name = "SchnitzelAnchor"
+        anchorEntity.name = TextEnum.schnitzelAnchorEntity.rawValue
         anchorEntity.addChild(schnitzelExperience)
         self.scene.anchors.append(anchorEntity)
         
-        DataModel.shared.schnitzelARAnchor = ARAnchor(name: "SchnitzelARAnchor", transform: translation)
+        DataModel.shared.schnitzelARAnchor = ARAnchor(name: TextEnum.schnitzelARAnchor.rawValue, transform: translation)
         self.session.add(anchor: DataModel.shared.schnitzelARAnchor!)
         
         DataModel.shared.hasPlacedSchnitzel = true
@@ -208,10 +209,15 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         print("camera should be reconciling")
 
         print("WorldMap anchors: \(worldMap.anchors.description)")
+        
+        for anchor in self.scene.anchors {
+            self.scene.removeAnchor(anchor)
+        }
+        
         for anchor in worldMap.anchors {
             let newAnchorEntity = AnchorEntity(anchor: anchor)
             if let anchorName = anchor.name {
-                if anchorName == "SchnitzelARAnchor" {
+                if anchorName == TextEnum.schnitzelARAnchor.rawValue {
                     let translation = anchor.transform.columns.3
                     let schnitzelExperience = try! Experience.loadSchnitzel()
                     schnitzelExperience.position = SIMD3<Float>(translation.x, translation.y, translation.z)
@@ -223,8 +229,8 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
             self.scene.addAnchor(newAnchorEntity)
         }
 
-        print("Schnitzel entity in scene: \(String(describing: self.scene.findEntity(named: "schnitzel")))")
-        self.scene.findEntity(named: "schnitzel")?.isEnabled = true
+        print("Schnitzel entity in scene: \(String(describing: self.scene.findEntity(named: TextEnum.schnitzelEntity.rawValue)))")
+        self.scene.findEntity(named: TextEnum.schnitzelEntity.rawValue)?.isEnabled = true
 
         print("Loaded Schnitzel")
     }
@@ -276,6 +282,20 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
             dataModel.hasPlacedSchnitzel = false
         }
         
+    }
+    
+    func loadHelperSchnitzel() {
+        let schnitzel = self.scene.findEntity(named: TextEnum.schnitzelEntity.rawValue)
+        if let schnitzelEntity = schnitzel, let anchor = schnitzelEntity.anchor {
+            self.scene.removeAnchor(anchor)
+        }
+        let plane = AnchorEntity(plane:
+        .horizontal, classification: .table,
+                     minimumBounds: [1.0, 1.0])
+
+        self.scene.addAnchor(plane)
+        let schnitzelExperience = try! Experience.loadSchnitzel()
+        plane.addChild(schnitzelExperience)
     }
     
     func checkWorldMap(){

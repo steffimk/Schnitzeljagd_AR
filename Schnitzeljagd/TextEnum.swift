@@ -18,13 +18,18 @@ enum TextEnum: String {
     case AR = "AR"
     case placeAR = "Neues Schnitzel"
     case searchAR = "AR Modus"
-    case searchMap = "Kartenansicht"
+    case searchMap = "Karte"
     case menuMap =  "Jagd beenden"
     
-    case save = "Save"
-    case load = "Load"
+    //Subtitles
+    case searchMapSubtitle = "Achte auf das Farbfeedback"
+    case searchARSubtitle = "Lade das Schnitzel in deine Welt"
+    
+    case save = "Speichern"
+    case load = "Laden"
     case dismiss = "Abbrechen"
     case okay = "Okay"
+    case close = "Schließen"
     
     // MapView Messages
     case annotationTitle = "Schnitzel"
@@ -40,7 +45,6 @@ enum TextEnum: String {
     
     // Save Schnitzel Alert
     case saveAlertTitle = "Schnitzel speichern"
-    case saveAlertAccept = "Speichern"
     case saveAlertDecline = "Bearbeiten"
     case schnitzelTitlePlaceholder = "Dein Titel"
     case schnitzelDescriptionPlaceholder = "Deine Beschreibung"
@@ -51,6 +55,19 @@ enum TextEnum: String {
     case foundAlertTitle = "Schnitzeljagd gewonnen"
     case foundAlertAccept = "Zum Menü"
     case foundAlertDecline = "Hier bleiben"
+    
+    // Missing Schnitzel Alert
+    case missingAlertTitle = "Fehlendes Schnitzel"
+    case missingAlertMessage = "Bitte platziere erst ein Schnitzel, indem du auf den Bildschirm tippst."
+    
+    // Missing WorldMapAlert
+    case noWorldMapAlertTitel = "Umgebung scannen"
+    case noWorldMapAlertMessage = "Bewege dein Handy langsam hin un her"
+    
+    // Names of anchors and entities in AR
+    case schnitzelAnchorEntity = "SchnitzelAnchor"
+    case schnitzelARAnchor = "SchnitzelARAnchor"
+    case schnitzelEntity = "schnitzel"
 }
 
 enum NumberEnum: Double {

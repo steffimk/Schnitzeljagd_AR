@@ -39,6 +39,7 @@ final class DataModel: ObservableObject {
     @Published var location: CLLocation?
     let mapViewDelegate: MapViewDelegate? = MapViewDelegate()
     @Published var showStartSearchAlert: Bool = false
+    @Published var showAnnotationInfoAlert: Bool = false
     var currentRegions: Set<CLRegion> = Set<CLRegion>()
     var loadedData: LoadedData = LoadedData()
     
@@ -49,36 +50,26 @@ final class DataModel: ObservableObject {
                 && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
                 self.loadedData.currentSchnitzelJagd!.saveTime()
             }
-            if ((screenState == .SEARCH_SCHNITZEL_AR || screenState == .PLACE_SCHNITZEL_AR)
-                && oldValue != .SEARCH_SCHNITZEL_MAP ){
-                for anchor in self.arView.scene.anchors {
-                    self.arView.scene.anchors.remove(anchor)
-                }
-                
-                self.arView.session.getCurrentWorldMap { worldMap, error in
-                    guard let map = worldMap
-                        else {
-                            return print("Can't get current world map")
-                    }
-                    map.anchors.removeAll()
-                }
+            if screenState != oldValue {
+                initNewARView()
             }
         }
     }
     
     #if !targetEnvironment(simulator)
+    
     // MARK: - Initialise DataModel
     init() {
         screenState = ScreenState.MENU_MAP
-        // Initialise the ARView
-        arView = ARView(frame: .zero)
-        arView.addTapGestureToSceneView()
-        arView.session.delegate = arView
-        
-        let config = ARWorldTrackingConfiguration()
-        config.planeDetection = .horizontal
-        
+        initNewARView()
         initLocationServices()
+    }
+    
+    func initNewARView() {
+        let newArView = ARView(frame: .zero)
+        newArView.addTapGestureToSceneView()
+        newArView.session.delegate = arView
+        self.arView = newArView
     }
     
     func initLocationServices(){

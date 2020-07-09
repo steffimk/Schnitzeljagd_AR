@@ -26,24 +26,38 @@ struct ContentView : View {
                if (self.session.session != nil){
                VStack {
                     HStack {
-                         Button(action: {
-                              self.data.screenState = .MENU_MAP
-                         }){
+                         Button(action: { self.data.screenState = .MENU_MAP}){
                               Image(systemName: "house").foregroundColor(.white).font(Font.system(.title))
                          }
                          Spacer()
-                         Text(TextEnum.appTitle.rawValue)
-                              .font(.title)
-                              .fontWeight(.bold)
-                              .foregroundColor(.white)
+                         VStack {
+                              if (self.data.screenState == .MENU_MAP || self.data.screenState == .PLACE_SCHNITZEL_AR){
+                                   Text(self.title)
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
+                              } else {
+                                   Text(self.title)
+                                        .font(.system(size: 22))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
+                                   Text(self.subtitle)
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                        .lineLimit(2)
+                                        .multilineTextAlignment(.center)
+                              }
+                          }
                           Spacer()
                           Button(action: {self.showUserMenu.toggle()}){
                               Image(systemName: "person.crop.circle").foregroundColor(.white).font(Font.system(.largeTitle))
                           }.popover(isPresented: self.$showUserMenu,arrowEdge: .top) {
-                              PopOver(contentView: self)
+                               PopOver(contentView: self)
                          }.frame(alignment: .top)
                     }.padding().padding(.top, -5)
-                                                  
+                                        
                     #if !targetEnvironment(simulator)
                     if self.data.screenState == .PLACE_SCHNITZEL_AR {
                          ARDisplayView().padding(.top, -20).padding(.bottom, -200)
@@ -67,7 +81,25 @@ struct ContentView : View {
                UIApplication.shared.endEditing()
           }
      }
+      
+          var title: String {
+                    switch(DataModel.shared.screenState){
+                    case .SEARCH_SCHNITZEL_MAP:
+                         return data.loadedData.currentSchnitzelJagd?.annotationWithRegion.title ?? TextEnum.appTitle.rawValue
+                    case .SEARCH_SCHNITZEL_AR:
+                         return data.loadedData.currentSchnitzelJagd?.annotationWithRegion.title ?? TextEnum.appTitle.rawValue
+                    default: return TextEnum.appTitle.rawValue
+                    }
+          }
           
+          var subtitle: String {
+                    switch(DataModel.shared.screenState){
+                    case .SEARCH_SCHNITZEL_MAP:
+                         return data.loadedData.currentSchnitzelJagd?.annotationWithRegion.subtitle ?? TextEnum.searchMapSubtitle.rawValue
+                    default:
+                         return data.loadedData.currentSchnitzelJagd?.annotationWithRegion.subtitle ?? TextEnum.searchARSubtitle.rawValue
+                    }
+          }
 }
 
 struct PopOver : View {
