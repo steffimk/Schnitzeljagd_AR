@@ -32,6 +32,7 @@ enum TextEnum: String {
     case dismiss = "Abbrechen"
     case okay = "Okay"
     case close = "Schließen"
+    case found = "Jagd beendet!"
     
     // MapView Messages
     case annotationTitle = "Schnitzel"

@@ -217,6 +217,9 @@ struct SearchMapUIView: View {
             }.font(.headline)
                 .padding(8)
                 .foregroundColor(.white)
+            if self.schnitzelJagd.isFound {
+                Text(TextEnum.found.rawValue).fontWeight(.bold).font(.headline).padding(8).foregroundColor(.white)
+            }
             Spacer()
             Button(action: {
                 self.switchToSearchARMode()
@@ -310,6 +313,9 @@ struct SearchARUIView: View {
             }.font(.headline)
                 .padding(8)
                 .foregroundColor(.white)
+            if self.schnitzelJagd.isFound {
+                Text(TextEnum.found.rawValue).fontWeight(.bold).font(.headline).padding(8).foregroundColor(.white)
+            }
             Spacer()
             if !self.schnitzelJagd.isFound {
                 Button(action: {
