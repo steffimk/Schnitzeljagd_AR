@@ -171,6 +171,15 @@ enum ScreenState {
     
 }
 
+enum HelperState {
+    
+    case HELPER_INIT
+    case HELPER_REQUESTED
+    case HELPER_LOADING
+    case HELPER_SUGGESTED
+    
+}
+
 extension Date {
     func toMillis() -> Int64! {
         return Int64(self.timeIntervalSince1970 * 1000)

@@ -113,7 +113,7 @@ class SchnitzelJagd : Hashable {
     }
     
     func determineDistanceToSchnitzel() -> Double {
-        return DataModel.shared.location!.distance(from: CLLocation(latitude: annotationWithRegion.actualLocation.latitude, longitude: annotationWithRegion.actualLocation.longitude))
+        return DataModel.shared.locationManager.location!.distance(from: CLLocation(latitude: annotationWithRegion.actualLocation.latitude, longitude: annotationWithRegion.actualLocation.longitude))
     }
     
     func saveTime() {
