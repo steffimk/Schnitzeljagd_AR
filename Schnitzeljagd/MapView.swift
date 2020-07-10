@@ -51,12 +51,16 @@ struct SearchMapView: UIViewRepresentable {
         let mapView = MKMapView(frame: .zero)
         mapView.delegate = DataModel.shared.mapViewDelegate
         mapView.showsCompass = true
+        DataModel.shared.getAvailableHints()
         return mapView
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
         let schnitzelAnnotation = DataModel.shared.loadedData.currentSchnitzelJagd!.annotationWithRegion
         uiView.addOverlay(schnitzelAnnotation.circle)
+        if(DataModel.shared.showSmallerCircle){
+            uiView.addOverlay(schnitzelAnnotation.circleSmall)
+        }
         print("SearchMapView updated")
         let shownRegion = MKCoordinateRegion(center: schnitzelAnnotation.coordinate, latitudinalMeters: CLLocationDistance(exactly: 200)!, longitudinalMeters: CLLocationDistance(exactly: 200)!)
         uiView.setRegion(uiView.regionThatFits(shownRegion), animated: true)

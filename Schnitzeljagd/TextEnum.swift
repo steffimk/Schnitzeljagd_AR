@@ -15,6 +15,7 @@ enum TextEnum: String {
     
     // Basic Messages
     case appTitle = "Schnitzeljagd"
+    case scoreboard = "Highscores"
     case AR = "AR"
     case placeARSchnitzel = "Neues Schnitzel"
     case placeARMais = "Neuer Maiskolben"

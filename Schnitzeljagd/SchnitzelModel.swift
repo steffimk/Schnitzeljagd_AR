@@ -135,7 +135,7 @@ class SchnitzelJagd : Hashable {
             self.isFound = true
             let userID = Auth.auth().currentUser?.uid
             DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).child("FinalTime").setValue(timePassed)
-            let score = self.score + Int(powf(Float(M_E), Float(1/timePassed))) * 20000
+            let score = self.score + Int(powf(Float(M_E), Float(1/timePassed))) * 2000
             DataModel.shared.ref.child("Jagd").child(userID!).child("Score").setValue(score)
         }
     }
@@ -158,6 +158,7 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
     var isOwned: Bool
     let region: CLCircularRegion
     let circle: MKCircle
+    let circleSmall: MKCircle
     
     init(actualLocation: CLLocationCoordinate2D, center: CLLocationCoordinate2D, radius: CLLocationDistance, regionIdentifier: String, title: String = TextEnum.annotationTitle.rawValue, subtitle: String = TextEnum.annotationSubtitle.rawValue, isOwned: Bool) {
         self.actualLocation = actualLocation
@@ -170,6 +171,7 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
         self.region.notifyOnEntry = true
         self.region.notifyOnExit = true
         self.circle = MKCircle(center: center, radius: radius)
+        self.circleSmall = MKCircle(center: center, radius: radius/2)
 
         super.init()
     }
@@ -205,7 +207,8 @@ class LoadedData : ObservableObject {
                         let regionCenter = element["RegionCenter"] as? Dictionary<String, CLLocationDegrees>
                         let centerLat = regionCenter?["latitude"] ?? 0.0
                         let centerLon = regionCenter?["longitude"] ?? 0.0
-                        // TODO: Maybe only add Schnitzel when not more than x kilometers away
+                        
+                        // TODO: Only add Schnitzel when not more than x kilometers away to improve schnitzel management
                         print("Loaded Schnitzel \(title) \(description) with Id \(schnitzelId) and coordinates \(lat) + \(lon) from user \(userId)")
 
                         let coordinateAnnotation = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)

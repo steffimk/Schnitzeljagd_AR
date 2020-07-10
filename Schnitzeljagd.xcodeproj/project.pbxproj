@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01C2EF1DB8A4FDB4408B112A /* Pods_SchnitzeljagdTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE56678F334E7C04E6F86FF2 /* Pods_SchnitzeljagdTests.framework */; };
 		158AE64A3F3086966C88DCFD /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BAF08E32A1ECAFDBF964E7C /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework */; };
+		8447665424B8453700E5AB70 /* ScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447665324B8453700E5AB70 /* ScoreboardView.swift */; };
 		8466F078248D9F4F00EAAC12 /* SnapshotAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */; };
 		84D8BBF3247E4ED4006990B4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */; };
 		84D8BBF5247E6893006990B4 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8BBF4247E6893006990B4 /* SessionStore.swift */; };
@@ -54,6 +55,7 @@
 		2898B0EDE1EFCBC8AAF211D0 /* Pods-SchnitzeljagdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchnitzeljagdTests.release.xcconfig"; path = "Target Support Files/Pods-SchnitzeljagdTests/Pods-SchnitzeljagdTests.release.xcconfig"; sourceTree = "<group>"; };
 		5A81267970F94FD8D8091719 /* Pods-SchnitzeljagdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchnitzeljagdTests.debug.xcconfig"; path = "Target Support Files/Pods-SchnitzeljagdTests/Pods-SchnitzeljagdTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6BAF08E32A1ECAFDBF964E7C /* Pods_Schnitzeljagd_SchnitzeljagdUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Schnitzeljagd_SchnitzeljagdUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8447665324B8453700E5AB70 /* ScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreboardView.swift; sourceTree = "<group>"; };
 		8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotAnchor.swift; sourceTree = "<group>"; };
 		84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		84D8BBF4247E6893006990B4 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				84DA523B247D2911006546B6 /* ARDisplayView.swift */,
 				84DA5208247D2796006546B6 /* AppDelegate.swift */,
 				84DA520A247D2796006546B6 /* ContentView.swift */,
+				8447665324B8453700E5AB70 /* ScoreboardView.swift */,
 				84DA5238247D2860006546B6 /* DataModel.swift */,
 				84DA520C247D2796006546B6 /* Experience.rcproject */,
 				84DA520E247D2797006546B6 /* Assets.xcassets */,
@@ -492,6 +495,7 @@
 				84DA520B247D2796006546B6 /* ContentView.swift in Sources */,
 				A27BD61C2487FB19006D286F /* Location.swift in Sources */,
 				A2D93E7924A0EC3100DAA99A /* StaticFunctions.swift in Sources */,
+				8447665424B8453700E5AB70 /* ScoreboardView.swift in Sources */,
 				A27BD6222488259C006D286F /* TextEnum.swift in Sources */,
 				84DA5239247D2860006546B6 /* DataModel.swift in Sources */,
 				84DA5209247D2796006546B6 /* AppDelegate.swift in Sources */,

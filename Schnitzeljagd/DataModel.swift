@@ -38,8 +38,10 @@ final class DataModel: ObservableObject {
     @Published var showHintAlert: Bool = false
     @Published var availableHints: Int = 0
     @Published var smallRadius: Bool = false
-
-    // Map + Location related
+    @Published var showSmallerCircle: Bool = false
+    @Published var userScores: [UserScore] = [UserScore]()
+    
+    // MARK: - Location
     let locationManager: CLLocationManager = CLLocationManager()
     let locationDelegate: LocationDelegate = LocationDelegate()
     @Published var location: CLLocation?
@@ -54,6 +56,7 @@ final class DataModel: ObservableObject {
     @Published var isVeggie: Bool = false
     @Published var screenState: ScreenState {
         didSet {
+            self.loadScores()
             uiViews!.refreshAll()
             if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
                 && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
@@ -91,14 +94,39 @@ final class DataModel: ObservableObject {
         self.locationManager.stopUpdatingLocation()
     }
     
+    func getAvailableHints(){
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        
+        self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
+        self.availableHints = snapshot.value as! Int
+            
+        if(self.availableHints < 4){
+            self.showSmallerCircle = true
+        }
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+    }
+    
     @IBAction func showHint(){
         let userID: String = (Auth.auth().currentUser?.uid)!
+        
         self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
+
             self.availableHints = snapshot.value as! Int
+            print(self.loadedData.currentSchnitzelJagd!.schnitzelId)
+            print(self.availableHints)
             self.availableHints -= 1
+            if(self.availableHints < 4){
+                self.showSmallerCircle = true
+            } else {
+                self.showSmallerCircle = false
+            }
             if(self.availableHints < 0){
                 self.availableHints = 0
             }
+            print(self.availableHints)
             self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").setValue(self.availableHints)
             self.showHintAlert = true
         }) { (error) in
@@ -106,8 +134,31 @@ final class DataModel: ObservableObject {
         }
     }
     
+    struct UserScore: Identifiable {
+      var id: String = UUID().uuidString
+      var user: String
+      var score: Int
+    }
+    @IBAction func loadScores(){
+        DataModel.shared.ref.child("Jagd").observe(DataEventType.value, with: { (snapshot) in
+            let value = snapshot.value as? Dictionary<String, Dictionary<String, Any>>
+            if value != nil {
+                self.userScores = []
+                for (key, element) in value! {
+                    if(element["Score"] != nil){
+                        let userScore = UserScore(id: key, user: element["Username"] as! String, score: element["Score"] as! Int)
+                        self.userScores.append(userScore)
+                    }
+                }
+                self.userScores = self.userScores.sorted(by: { $0.score > $1.score })
+            }
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+        
+    }
     #endif
-    
 }
 
 enum ScreenState {
@@ -116,6 +167,7 @@ enum ScreenState {
     case SEARCH_SCHNITZEL_MAP
     case SEARCH_SCHNITZEL_AR
     case PLACE_SCHNITZEL_AR
+    case SCOREBOARD
     
 }
 

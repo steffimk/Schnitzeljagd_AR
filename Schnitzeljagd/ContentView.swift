@@ -69,6 +69,8 @@ struct ContentView : View {
                     } else if self.data.screenState == .MENU_MAP {
                          MapView().frame(maxHeight: .infinity).padding(.top, -20)
                          self.data.uiViews!.getMapUIView()
+                    } else if data.screenState == .SCOREBOARD {
+                         ScoreboardView()
                     } else {
                          ARDisplayView().padding(.top, -20).padding(.bottom, -10)
                          self.data.uiViews!.getSearchARUIView()
@@ -89,6 +91,8 @@ struct ContentView : View {
                          return data.loadedData.currentSchnitzelJagd?.annotationWithRegion.title ?? TextEnum.appTitle.rawValue
                     case .SEARCH_SCHNITZEL_AR:
                          return data.loadedData.currentSchnitzelJagd?.annotationWithRegion.title ?? TextEnum.appTitle.rawValue
+                    case .SCOREBOARD:
+                         return TextEnum.scoreboard.rawValue
                     default: return TextEnum.appTitle.rawValue
                     }
           }
