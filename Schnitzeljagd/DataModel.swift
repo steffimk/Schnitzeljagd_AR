@@ -11,6 +11,7 @@ import Combine
 import RealityKit
 import ARKit
 import UIKit
+import MapKit
 import CoreLocation
 import Firebase
 import SwiftUI
@@ -32,6 +33,11 @@ final class DataModel: ObservableObject {
     
     // UI
     var uiViews: UIViews?
+    
+    // Hints
+    @Published var showHintAlert: Bool = false
+    @Published var availableHints: Int = 0
+    @Published var smallRadius: Bool = false
 
     // Map + Location related
     let locationManager: CLLocationManager = CLLocationManager()
@@ -42,7 +48,10 @@ final class DataModel: ObservableObject {
     @Published var showAnnotationInfoAlert: Bool = false
     var currentRegions: Set<CLRegion> = Set<CLRegion>()
     var loadedData: LoadedData = LoadedData()
+    @Published var v: MKMapView!
     
+    // State
+    @Published var isVeggie: Bool = false
     @Published var screenState: ScreenState {
         didSet {
             uiViews!.refreshAll()
@@ -81,7 +90,22 @@ final class DataModel: ObservableObject {
         }
         self.locationManager.stopUpdatingLocation()
     }
-
+    
+    @IBAction func showHint(){
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
+            self.availableHints = snapshot.value as! Int
+            self.availableHints -= 1
+            if(self.availableHints < 0){
+                self.availableHints = 0
+            }
+            self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").setValue(self.availableHints)
+            self.showHintAlert = true
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+    }
+    
     #endif
     
 }

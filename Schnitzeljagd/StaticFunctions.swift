@@ -58,4 +58,31 @@ final class StaticFunctions {
         }
     }
     
+    static func calculateBearing(latitude: CLLocationDegrees, longitude: CLLocationDegrees, latTarget: CLLocationDegrees, lonTarget: CLLocationDegrees) -> String {
+        
+        let x = cos(latTarget*Double.pi/180) * sin(abs((lonTarget-longitude)*Double.pi/180))
+        let y = cos(latitude*Double.pi/180) * sin(latTarget*Double.pi/180) - sin(latitude*Double.pi/180) * cos(latTarget*Double.pi/180) * cos(abs(lonTarget - longitude)*Double.pi/180)
+        
+        let atan = atan2(x, y)
+        
+        let degree = atan * 180/Double.pi
+        
+        if(degree >= 22.5 && degree < 67.5){
+            return("Nordosten")
+        } else if(degree >= 67.5 && degree < 112.5){
+            return("Osten")
+        } else if(degree >= 112.5 && degree < 157.5){
+            return("Südosten")
+        } else if(degree >= 157.5 && degree < 202.5){
+            return("Süden")
+        } else if(degree >= 202.5 && degree < 247.5){
+            return("Südwesten")
+        } else if(degree >= 247.5 && degree < 292.5){
+            return("Westen")
+        } else if(degree >= 292.5 && degree < 337.5){
+            return("Nordwesten")
+        } else {
+            return("Norden")
+        }
+    }
 }

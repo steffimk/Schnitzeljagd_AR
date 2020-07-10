@@ -18,6 +18,7 @@ struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         startLocationServices()
         let mapView = MKMapView(frame: .zero)
+//        DataModel.shared.v = mapView
         mapView.delegate = DataModel.shared.mapViewDelegate
         mapView.showsCompass = true
         DataModel.shared.loadedData.observeAndLoadSchnitzelAnnotations()
@@ -63,7 +64,6 @@ struct SearchMapView: UIViewRepresentable {
 //        let actualSchnitzel = MKPointAnnotation(__coordinate: schnitzelAnnotation.actualLocation)
 //        uiView.addAnnotation(actualSchnitzel)
     }
-    
 }
 
 class MapViewDelegate : NSObject, MKMapViewDelegate {
@@ -83,10 +83,20 @@ class MapViewDelegate : NSObject, MKMapViewDelegate {
             var imageName: String
             var identifier: String
             if annotationWithRegion.isOwned {
-                imageName = "fleisch_bw"
+                if DataModel.shared.isVeggie == true {
+                    imageName = "corn_bw"
+                }
+                else {
+                    imageName = "fleisch_bw"
+                }
                 identifier = schnitzelBWViewIdentifier
             } else {
-                imageName = "fleisch"
+                if DataModel.shared.isVeggie == true {
+                    imageName = "corn"
+                }
+                else {
+                    imageName = "fleisch"
+                }
                 identifier = schnitzelViewIdentifier
             }
             var annotationView: MKAnnotationView?

@@ -90,15 +90,15 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     }
     
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        switch (frame.camera.trackingState) {
-        case .limited(_:)(.relocalizing) :
-            print("Camera trying to reconcile world map")
-        case .limited(_:)(.initializing) :
-            print("Camera initializing")
-        case .normal :
-            print("Camera in normal tracking state ")
-        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("Camera not relocalizing") }
-        }
+//        switch (frame.camera.trackingState) {
+//        case .limited(_:)(.relocalizing) :
+//            print("Camera trying to reconcile world map")
+//        case .limited(_:)(.initializing) :
+//            print("Camera initializing")
+//        case .normal :
+//            print("Camera in normal tracking state ")
+//        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("Camera not relocalizing") }
+//        }
     }
     
     public func session(_ session: ARSession, didFailWithError error: Error) {
@@ -110,19 +110,8 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
             errorWithInfo.localizedFailureReason,
             errorWithInfo.localizedRecoverySuggestion
         ]
+        print(messages.compactMap({ $0 }).joined(separator: "\n"))
         
-        // Remove optional error messages.
-        let errorMessage = messages.compactMap({ $0 }).joined(separator: "\n")
-        
-        DispatchQueue.main.async {
-            // Present an alert informing about the error that has occurred.
-            let alertController = UIAlertController(title: "The AR session failed.", message: errorMessage, preferredStyle: .alert)
-            let restartAction = UIAlertAction(title: "Restart Session", style: .default) { _ in
-                alertController.dismiss(animated: true, completion: nil)
-                self.resetTracking()
-            }
-            alertController.addAction(restartAction)
-        }
     }
     
     func resetTracking() {
@@ -154,11 +143,9 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
             handleGestureInSearchMode(withGestureRecognizer: recognizer)
             return
         }
-        for anchor in self.scene.anchors {
-            if anchor.name == TextEnum.schnitzelAnchorEntity.rawValue {
-                self.scene.removeAnchor(anchor)
-            }
-        }
+        
+        self.removeSchnitzelAndCornInScene()
+        
         if DataModel.shared.schnitzelARAnchor != nil {
             self.session.remove(anchor: DataModel.shared.schnitzelARAnchor!)
         }
@@ -171,25 +158,31 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         let x = translation.columns.3.x
         let y = translation.columns.3.y
         let z = translation.columns.3.z
-
-        let schnitzelExperience = try! Experience.loadSchnitzel()
-        let schnitzel = schnitzelExperience.schnitzel as? HasCollision
-        schnitzel!.generateCollisionShapes(recursive: true)
-        DataModel.shared.arView.installGestures(.all, for: schnitzel!)
-        schnitzelExperience.position = SIMD3<Float>(x,y,z)
         
+        if DataModel.shared.isVeggie {
+            let schnitzelAnchor = try! Experience.loadCorn()
+            schnitzelAnchor.name = TextEnum.schnitzelAnchorEntity.rawValue
+            let corn = schnitzelAnchor.corn as? HasCollision
+            corn!.generateCollisionShapes(recursive: true)
+            DataModel.shared.arView.installGestures(.all, for: corn!)
+            schnitzelAnchor.position = SIMD3<Float>(x,y,z)
+            self.scene.addAnchor(schnitzelAnchor)
+        } else {
+            let schnitzelAnchor = try! Experience.loadSchnitzel()
+            schnitzelAnchor.name = TextEnum.schnitzelAnchorEntity.rawValue
+            let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+            schnitzel!.generateCollisionShapes(recursive: true)
+            DataModel.shared.arView.installGestures(.all, for: schnitzel!)
+            schnitzelAnchor.position = SIMD3<Float>(x,y,z)
+            self.scene.addAnchor(schnitzelAnchor)
+        }
+        
+        // Remove planes that are showed to help place the schnitzel
         DataModel.shared.arView.debugOptions = []
-        self.scene.anchors.append(schnitzelExperience)
-        
-        let anchorEntity = AnchorEntity(world: SIMD3<Float>(x,y,z))
-        
-        anchorEntity.name = TextEnum.schnitzelAnchorEntity.rawValue
-        anchorEntity.addChild(schnitzelExperience)
-        self.scene.anchors.append(anchorEntity)
         
         DataModel.shared.schnitzelARAnchor = ARAnchor(name: TextEnum.schnitzelARAnchor.rawValue, transform: translation)
         self.session.add(anchor: DataModel.shared.schnitzelARAnchor!)
-        
+    
         DataModel.shared.hasPlacedSchnitzel = true
         
     }
@@ -218,19 +211,28 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
             let newAnchorEntity = AnchorEntity(anchor: anchor)
             if let anchorName = anchor.name {
                 if anchorName == TextEnum.schnitzelARAnchor.rawValue {
-                    let translation = anchor.transform.columns.3
-                    let schnitzelExperience = try! Experience.loadSchnitzel()
-                    schnitzelExperience.position = SIMD3<Float>(translation.x, translation.y, translation.z)
-                    let schnitzel = schnitzelExperience.schnitzel as? HasCollision
-                    schnitzel!.generateCollisionShapes(recursive: true)
-                    self.scene.addAnchor(schnitzelExperience)
+                    if DataModel.shared.isVeggie {
+                        let schnitzelAnchor = try! Experience.loadCorn()
+                        schnitzelAnchor.name = TextEnum.schnitzelAnchorEntity.rawValue
+                        schnitzelAnchor.transform.matrix = anchor.transform
+                        let schnitzel = schnitzelAnchor.corn as? HasCollision
+                        schnitzel!.generateCollisionShapes(recursive: true)
+                        self.scene.addAnchor(schnitzelAnchor)
+                        print(self.scene.findEntity(named: TextEnum.cornEntity.rawValue)?.debugDescription ?? "No Corn in Scene")
+                    } else {
+                        let schnitzelAnchor = try! Experience.loadSchnitzel()
+                        schnitzelAnchor.name = TextEnum.schnitzelAnchorEntity.rawValue
+                        schnitzelAnchor.transform.matrix = anchor.transform
+                        let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
+                        schnitzel!.generateCollisionShapes(recursive: true)
+                        self.scene.addAnchor(schnitzelAnchor)
+                        print(self.scene.findEntity(named: TextEnum.schnitzelEntity.rawValue)?.debugDescription ?? "No Schnitzel in Scene")
+                    }
+
                 }
             }
             self.scene.addAnchor(newAnchorEntity)
         }
-
-        print("Schnitzel entity in scene: \(String(describing: self.scene.findEntity(named: TextEnum.schnitzelEntity.rawValue)))")
-        self.scene.findEntity(named: TextEnum.schnitzelEntity.rawValue)?.isEnabled = true
 
         print("Loaded Schnitzel")
     }
@@ -285,17 +287,22 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     }
     
     func loadHelperSchnitzel() {
-        let schnitzel = self.scene.findEntity(named: TextEnum.schnitzelEntity.rawValue)
-        if let schnitzelEntity = schnitzel, let anchor = schnitzelEntity.anchor {
-            self.scene.removeAnchor(anchor)
+        
+        self.removeSchnitzelAndCornInScene()
+        
+        if DataModel.shared.isVeggie {
+            
+            let cornExperience = try! Experience.loadCorn()
+            cornExperience.name = TextEnum.schnitzelAnchorEntity.rawValue
+            cornExperience.position = SIMD3<Float>(0, 0, 0)
+            self.scene.addAnchor(cornExperience)
+            return
         }
-        let plane = AnchorEntity(plane:
-        .horizontal, classification: .table,
-                     minimumBounds: [1.0, 1.0])
-
-        self.scene.addAnchor(plane)
+        
         let schnitzelExperience = try! Experience.loadSchnitzel()
-        plane.addChild(schnitzelExperience)
+        schnitzelExperience.name = TextEnum.schnitzelAnchorEntity.rawValue
+        schnitzelExperience.position = SIMD3<Float>(0, 0, 0)
+        self.scene.addAnchor(schnitzelExperience)
     }
     
     func checkWorldMap(){
@@ -306,6 +313,15 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
                 return
             }
             DataModel.shared.showMissingWorldmapAlert = false
+        }
+    }
+    
+    func removeSchnitzelAndCornInScene() {
+        
+        for anchor in self.scene.anchors {
+            if anchor.name == TextEnum.schnitzelAnchorEntity.rawValue {
+                self.scene.removeAnchor(anchor)
+            }
         }
     }
     
