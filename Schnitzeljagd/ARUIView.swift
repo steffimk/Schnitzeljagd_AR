@@ -209,7 +209,9 @@ struct SearchMapUIView: View {
     
     var body: some View {
         HStack {
-            Text("Timer: " + StaticFunctions.formatTime(seconds: timePassed))
+            Image(systemName: "hourglass").foregroundColor(.white).font(Font.system(.title))
+                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: -10))
+            Text(StaticFunctions.formatTime(seconds: timePassed))
                 .onReceive(timer) { _ in
                     if self.schnitzelJagd.isFound { self.timer.upstream.connect().cancel(); return}
                     self.schnitzelJagd.timePassed += 1
@@ -235,7 +237,6 @@ struct SearchMapUIView: View {
                     .fontWeight(.bold)
                     .modifier(TextModifier())
             }
-            Spacer()
             Button(action: {
                 self.currentDistance = Int (DataModel.shared.loadedData.currentSchnitzelJagd!.determineDistanceToSchnitzel())
                 self.lat = (self.data.location?.coordinate.latitude)!
@@ -285,6 +286,8 @@ struct SearchARUIView: View {
     
     var body: some View {
         HStack {
+            Image(systemName: "hourglass").foregroundColor(.white).font(Font.system(.title))
+                 .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: -10))
             Text(StaticFunctions.formatTime(seconds: timePassed))
                 .onReceive(timer) { _ in
                     if self.schnitzelJagd.isFound { self.timer.upstream.connect().cancel(); return}
@@ -378,7 +381,7 @@ struct TextModifier: ViewModifier {
             .background(color)
             .cornerRadius(40)
             .foregroundColor(.white)
-            .padding(8)
+            .padding(4)
             .overlay(
                 RoundedRectangle(cornerRadius: 40)
                     .stroke(Color.purple, lineWidth: 4)
