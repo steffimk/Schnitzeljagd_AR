@@ -166,30 +166,30 @@ struct MapUIView: View {
             .alert(isPresented: $data.showStartSearchAlert) {
                 let schnitzel = self.data.loadedData.currentSchnitzelJagd!
                 if schnitzel.isFound {
-                    return Alert(title: Text(self.schnitzelTitle), message: Text(TextEnum.alertFoundMessage.rawValue), dismissButton: .cancel(Text(TextEnum.okay.rawValue)))
+                    return Alert(title: Text(self.schnitzelTitle), message: Text(TextEnum.alertFoundMessage.rawValue + "\nBenötigte Zeit: " + StaticFunctions.formatTime(seconds: schnitzel.timePassed)), dismissButton: .cancel(Text(TextEnum.okay.rawValue)))
                 } else if !schnitzel.couldUpdate {
                     return Alert(title: Text(self.schnitzelTitle), message: Text(TextEnum.alertLoadMessage.rawValue), dismissButton: .cancel(Text(TextEnum.dismiss.rawValue)))
                 }
                 return Alert(title: Text(TextEnum.alertTitle.rawValue), message: Text(TextEnum.alertMessage.rawValue),
                              primaryButton: .default(Text(TextEnum.alertAccept.rawValue), action: {
                                 if schnitzel.readyForSearch() {
-                                    DataModel.shared.showStartSearchAlert = false
-                                    DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
-                                    DataModel.shared.getAvailableHints()
-                                    print(DataModel.shared.availableHints)
+                                    self.data.showStartSearchAlert = false
+                                    self.data.screenState = .SEARCH_SCHNITZEL_MAP
+                                    self.data.getAvailableHints()
+                                    print(self.data.availableHints)
                                 }
                              }),
                              secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
-                                DataModel.shared.showStartSearchAlert = false
+                                self.data.showStartSearchAlert = false
                              }))
         }
     }
     
     var schnitzelTitle: String {
-        DataModel.shared.loadedData.currentSchnitzelJagd?.annotationWithRegion.title ?? TextEnum.appTitle.rawValue
+        self.data.loadedData.currentSchnitzelJagd?.annotationWithRegion.title ?? TextEnum.appTitle.rawValue
     }
     var schnitzelSubtitle: String {
-        DataModel.shared.loadedData.currentSchnitzelJagd?.annotationWithRegion.subtitle ?? ""
+        self.data.loadedData.currentSchnitzelJagd?.annotationWithRegion.subtitle ?? ""
     }
     
 }
@@ -283,7 +283,6 @@ struct SearchARUIView: View {
     @State var timePassed = DataModel.shared.loadedData.currentSchnitzelJagd!.timePassed
     @State var showFoundAlert: Bool = false
     @State var backgroundColor: Color = Color.blue
-    @State var showHelperAlert: Bool = false
     @State var helperState: HelperState = .HELPER_INIT
     
     var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
@@ -307,10 +306,10 @@ struct SearchARUIView: View {
                 .foregroundColor(.white)
             Spacer()
             Button(action: {
-                self.showHelperAlert = true
+                self.data.showHelperAlert = true
             }){
                 Image("fleisch").renderingMode(.original)
-            }.alert(isPresented: self.$showHelperAlert) {
+            }.alert(isPresented: self.$data.showHelperAlert) {
                 return self.helperSchnitzelAlert
             }
             Button(action: {
@@ -365,14 +364,13 @@ struct SearchARUIView: View {
                 self.data.arView.loadHelperSchnitzel()
                 self.schnitzelJagd.found()
                 self.helperState = .HELPER_LOADING
-                self.showHelperAlert = true
             }), secondaryButton: .cancel(Text(TextEnum.dismiss.rawValue)))
-        case .HELPER_SUGGESTED:
-            return Alert(title: Text(TextEnum.helperAlertTitle.rawValue), message: Text(TextEnum.helperSuggested.rawValue), dismissButton: .default(Text(TextEnum.okay.rawValue), action: {
-                self.helperState = .HELPER_REQUESTED
-            }))
+//        case .HELPER_SUGGESTED:
+//            return Alert(title: Text(TextEnum.helperAlertTitle.rawValue), message: Text(TextEnum.helperSuggested.rawValue), dismissButton: .default(Text(TextEnum.okay.rawValue), action: {
+//                self.helperState = .HELPER_REQUESTED
+//            }))
         case .HELPER_LOADING:
-            return Alert(title: Text(TextEnum.helperAlertTitle.rawValue), message: Text(TextEnum.helperLoading.rawValue), dismissButton: .default(Text(TextEnum.okay.rawValue)))
+            return Alert(title: Text(TextEnum.helperAlertTitle.rawValue), message: Text(TextEnum.helperLoading.rawValue), dismissButton: .default(Text(TextEnum.okay.rawValue), action: { self.helperState = .HELPER_DONE }))
         default:
             return Alert(title: Text(TextEnum.helperAlertTitle.rawValue), message: Text(TextEnum.helperNotAvailable.rawValue), dismissButton: .default(Text(TextEnum.okay.rawValue)))
         }
@@ -392,6 +390,9 @@ struct SearchARUIView: View {
     func handleTimerFired() {
         if self.schnitzelJagd.isFound {
             self.timer.upstream.connect().cancel()
+            if helperState == .HELPER_LOADING {
+                self.data.showHelperAlert = true
+            }
             return
         }
         self.schnitzelJagd.timePassed += 1
@@ -400,8 +401,7 @@ struct SearchARUIView: View {
         self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: currentDistance)
         print("currentDistance: \(currentDistance)")
         if currentDistance < NumberEnum.foundRadius.rawValue && helperState == .HELPER_INIT {
-            self.helperState = .HELPER_SUGGESTED
-            self.showHelperAlert = true
+            self.helperState = .HELPER_REQUESTED
         }
     }
     
