@@ -293,6 +293,7 @@ struct SearchARUIView: View {
     @State var showFoundAlert: Bool = false
     @State var backgroundColor: Color = Color.blue
     @State var helperState: HelperState = .HELPER_INIT
+    @State var showReloadAlert: Bool = false
     
     var schnitzelJagd = DataModel.shared.loadedData.currentSchnitzelJagd!
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -326,11 +327,14 @@ struct SearchARUIView: View {
                     return self.helperSchnitzelAlert
                 }
                 Button(action: {
+                    self.showReloadAlert = true
                     DataModel.shared.arView.loadSchnitzel()
                 }){
                     Image(systemName: "arrow.clockwise.circle")
                         .foregroundColor(.white).font(Font.system(.largeTitle))
-                }.padding(8)
+                }.padding(8).alert(isPresented: self.$showReloadAlert){
+                    return self.reloadAlert
+                }
             }
             Button(action: {
                 self.data.screenState = .SEARCH_SCHNITZEL_MAP
@@ -399,6 +403,10 @@ struct SearchARUIView: View {
               secondaryButton: .cancel(Text(TextEnum.foundAlertDecline.rawValue), action: {
                 self.showFoundAlert = false
               }))
+    }
+    
+    var reloadAlert: Alert {
+        Alert(title: Text(TextEnum.reloadAlertTitle.rawValue), message: Text(TextEnum.reloadAlertMessage.rawValue), dismissButton: .default(Text(TextEnum.close.rawValue)))
     }
     
     func handleTimerFired() {

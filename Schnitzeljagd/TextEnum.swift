@@ -59,6 +59,10 @@ enum TextEnum: String {
     case foundAlertAccept = "Zum Menü"
     case foundAlertDecline = "Hier bleiben"
     
+    // Reload World Map Alert
+    case reloadAlertTitle = "Reloaden der WorldMap"
+    case reloadAlertMessage = "Die AR-Erkennung wird zurückgesetzt und ein neuer Versuch, das Schnitzel zu laden, wird gestartet."
+    
     // Load Helper Schnitzel Alert
     case helperAlertTitle = "Schnitzel manuell laden"
     case helperAlertMessage = "Das Schnitzel erscheint nicht, obwohl du die richtige Stelle gefunden hast? Dann lade es jetzt manuell."
