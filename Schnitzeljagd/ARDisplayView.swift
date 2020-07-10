@@ -19,7 +19,7 @@ struct ARDisplayView: View {
     
     var snapshotThumbnail: UIImage?
     
-    init(){
+    init() {
         self.snapshotThumbnail = DataModel.shared.loadedData.currentSchnitzelJagd?.snapshot
     }
     
@@ -90,15 +90,15 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     }
     
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-//        switch (frame.camera.trackingState) {
-//        case .limited(_:)(.relocalizing) :
-//            print("Camera trying to reconcile world map")
-//        case .limited(_:)(.initializing) :
-//            print("Camera initializing relocation")
-//        case .normal :
-//            print("Camera in normal tracking state ")
-//        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("Camera not relocalizing") }
-//        }
+        switch (frame.camera.trackingState) {
+        case .limited(_:)(.relocalizing) :
+            print("Camera trying to reconcile world map")
+        case .limited(_:)(.initializing) :
+            print("Camera initializing")
+        case .normal :
+            print("Camera in normal tracking state ")
+        default: if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR { print("Camera not relocalizing") }
+        }
     }
     
     public func session(_ session: ARSession, didFailWithError error: Error) {
@@ -131,7 +131,7 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         self.session.run(config, options: [.resetTracking, .removeExistingAnchors])
     }
     
-    func handleGestureInSearchMode(withGestureRecognizer recognizer: UIGestureRecognizer){
+    func handleGestureInSearchMode(withGestureRecognizer recognizer: UIGestureRecognizer) {
         // TODO: geht noch nicht
         let touchInView = recognizer.location(in: self)
         guard self.entity (
@@ -204,7 +204,7 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         let worldMap = DataModel.shared.loadedData.currentSchnitzelJagd!.worldMap!
 
         let configuration = self.defaultConfiguration
-        self.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
+        self.session.run(configuration, options: [.resetTracking, .removeExistingAnchors, .resetSceneReconstruction] )
         configuration.initialWorldMap = worldMap
         print("camera should be reconciling")
 

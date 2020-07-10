@@ -40,22 +40,22 @@ final class StaticFunctions {
     }
     
     static func getBackgroundColor(distanceToSchnitzel: Double?) -> Color {
-              switch DataModel.shared.screenState{
-              case .SEARCH_SCHNITZEL_MAP, .SEARCH_SCHNITZEL_AR:
-                        if distanceToSchnitzel == nil {
-                                  return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00)
-                        } else if distanceToSchnitzel! <= NumberEnum.regionRadius.rawValue/3 {
-                                  let blue: Double = distanceToSchnitzel! / (NumberEnum.regionRadius.rawValue/3)
-                                  let red: Double = 1.0 - blue
-                                  return Color(red: red, green: 0.0, blue: blue, opacity: 1.00)
-                        } else {
-                                  let green: Double = distanceToSchnitzel! / (NumberEnum.regionRadius.rawValue*2)
-                                  let blue: Double = 1.0 - green
-                                  return Color(red: 0.0, green: green, blue: blue, opacity: 1.00)
-                        }
-                        
-              default: return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00) //darkgreen
-              }
+        switch DataModel.shared.screenState{
+        case .SEARCH_SCHNITZEL_MAP, .SEARCH_SCHNITZEL_AR:
+            if distanceToSchnitzel == nil {
+                return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00)
+            } else if distanceToSchnitzel! <= NumberEnum.regionRadius.rawValue/3 {
+                let blue: Double = distanceToSchnitzel! / (NumberEnum.regionRadius.rawValue/3)
+                let red: Double = 1.0 - blue
+                return Color(red: red, green: 0.0, blue: blue, opacity: 1.00)
+            } else {
+                let green: Double = distanceToSchnitzel! / (NumberEnum.regionRadius.rawValue*2)
+                let blue: Double = 1.0 - green
+                return Color(red: 0.0, green: green, blue: blue, opacity: 1.00)
+            }
+            
+        default: return Color(red: 0.18, green: 0.52, blue: 0.03, opacity: 1.00) //darkgreen
+        }
     }
     
 }

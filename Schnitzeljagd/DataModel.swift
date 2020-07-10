@@ -68,7 +68,7 @@ final class DataModel: ObservableObject {
     func initNewARView() {
         let newArView = ARView(frame: .zero)
         newArView.addTapGestureToSceneView()
-        newArView.session.delegate = arView
+        newArView.session.delegate = newArView
         self.arView = newArView
     }
     
