@@ -18,6 +18,7 @@ class UIViews {
     private var mapUIView: MapUIView?
     private var searchMapUIView: SearchMapUIView?
     private var searchARUIView: SearchARUIView?
+    private var scoreboardView: ScoreboardView?
     
     init(contentView: ContentView){
         self.contentView = contentView
@@ -51,6 +52,13 @@ class UIViews {
         return searchARUIView!
     }
     
+    func getScoreboardView() -> ScoreboardView {
+        if scoreboardView == nil {
+            scoreboardView = ScoreboardView()
+        }
+        return scoreboardView!
+    }
+    
     func refreshAll() {
         self.placeSchnitzelUIView = PlaceSchnitzelUIView()
         self.mapUIView = MapUIView()
@@ -59,6 +67,9 @@ class UIViews {
         }
         if self.searchARUIView != nil {
             self.searchARUIView = SearchARUIView()
+        }
+        if self.scoreboardView != nil {
+            self.scoreboardView = ScoreboardView()
         }
     }
 }
@@ -133,10 +144,11 @@ struct MapUIView: View {
     var body: some View {
         HStack {
             Button(action: {
-                print("Show Scoreboard")
+                self.data.screenState = .SCOREBOARD
+                
             })
                 {
-                    Image(systemName: "person.3.fill").foregroundColor(.white).font(Font.system(.title))
+                    Image("trophy").renderingMode(.original).resizable().frame(width: 40.0, height: 40.0).padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0))
                 }
             .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 0))
             Spacer()
@@ -168,6 +180,8 @@ struct MapUIView: View {
                                 if schnitzel.readyForSearch() {
                                     DataModel.shared.showStartSearchAlert = false
                                     DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
+                                    DataModel.shared.getAvailableHints()
+                                    print(DataModel.shared.availableHints)
                                 }
                              }),
                              secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {
@@ -245,9 +259,7 @@ struct SearchMapUIView: View {
             .alert(isPresented: self.$data.showHintAlert) {
                             switch(self.data.availableHints){
                             case 3:
-//                                let circle = MKCircle(center: (DataModel.shared.loadedData.currentSchnitzelJagd?.annotationWithRegion.coordinate)!, radius: 10)
-//                                DataModel.shared.v.addOverlay(circle)
-                                return Alert(title: Text("Erster Hinweis:"), message: Text("Das Suchgebiet wurde verkleinert. (TODO)"),
+                                return Alert(title: Text("Erster Hinweis:"), message: Text("Das Suchgebiet wurde verkleinert"),
                                 dismissButton: .default(Text("Schließen")))
                                 // Umkreis verkleinern
                             case 2:
@@ -331,9 +343,7 @@ struct SearchARUIView: View {
             .alert(isPresented: self.$data.showHintAlert) {
                             switch(self.data.availableHints){
                             case 3:
-//                                let circle = MKCircle(center: (DataModel.shared.loadedData.currentSchnitzelJagd?.annotationWithRegion.coordinate)!, radius: 10)
-//                                DataModel.shared.v.addOverlay(circle)
-                                return Alert(title: Text("Erster Hinweis:"), message: Text("Der Suchradius wurde verkleinert. Wechsel zur Kartenansicht, um das neue Suchgebiet zu sehen. (TODO)"),
+                                return Alert(title: Text("Erster Hinweis:"), message: Text("Der Suchradius wurde verkleinert. Wechsel zur Kartenansicht, um das neue Suchgebiet zu sehen"),
                                 dismissButton: .default(Text("Schließen")))
                                 // Umkreis verkleinern
                             case 2:
@@ -364,10 +374,10 @@ struct TextModifier: ViewModifier {
             .cornerRadius(40)
             .foregroundColor(.white)
             .padding(8)
-//            .overlay(
-//                RoundedRectangle(cornerRadius: 40)
-//                    .stroke(Color.purple, lineWidth: 4)
-//        )
+            .overlay(
+                RoundedRectangle(cornerRadius: 40)
+                    .stroke(Color.purple, lineWidth: 4)
+        )
     }
 }
 

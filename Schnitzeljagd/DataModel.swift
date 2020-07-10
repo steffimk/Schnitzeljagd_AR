@@ -33,6 +33,7 @@ extension Date {
 final class DataModel: ObservableObject {
     @Published var screenState: ScreenState {
         didSet {
+            self.loadScores()
             uiViews!.refreshAll()
             if (oldValue == .SEARCH_SCHNITZEL_MAP || oldValue == .SEARCH_SCHNITZEL_AR)
                 && (screenState != .SEARCH_SCHNITZEL_MAP || screenState != .SEARCH_SCHNITZEL_AR) {
@@ -51,6 +52,7 @@ final class DataModel: ObservableObject {
     @Published var showHintAlert: Bool = false
     @Published var availableHints: Int = 0
     @Published var smallRadius: Bool = false
+    @Published var showSmallerCircle: Bool = false
     @Published var hasPlacedSchnitzel:Bool = false
     
     @Published var v: MKMapView!
@@ -60,6 +62,8 @@ final class DataModel: ObservableObject {
     var uiViews: UIViews?
     
     @IBOutlet weak var snapshotThumbnail: UIImageView!
+    
+    @Published var userScores: [UserScore] = [UserScore]()
     
     // MARK: - Location
     let locationManager: CLLocationManager = CLLocationManager()
@@ -76,7 +80,6 @@ final class DataModel: ObservableObject {
         screenState = ScreenState.MENU_MAP
         // Initialise the ARView
         arView = ARView(frame: .zero)
-        //arView.addCoaching()
         
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = .horizontal
@@ -172,6 +175,7 @@ final class DataModel: ObservableObject {
         let lon: Double = (locationManager.location?.coordinate.longitude)!
         let schnitzelId: String = String(Date().toMillis())
         let shiftedCoordinates = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
+        let shiftedCoordinatesSmall = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadiusSmall.rawValue))
         
         arView.session.getCurrentWorldMap { worldMap, error in
             guard let map = worldMap
@@ -199,6 +203,7 @@ final class DataModel: ObservableObject {
         
         //self.ref.child("URL").child(userID).setValue(self.mapSaveURL.absoluteString)
         self.ref.child("Schnitzel").child(schnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])
+        self.ref.child("Schnitzel").child(schnitzelId).child("RegionCenterSmall").setValue(["latitude": shiftedCoordinatesSmall.latitude, "longitude": shiftedCoordinatesSmall.longitude])
         self.ref.child("Schnitzel").child(schnitzelId).child("User").setValue(userID)
         self.ref.child("Schnitzel").child(schnitzelId).child("Titel").setValue(title)
         self.ref.child("Schnitzel").child(schnitzelId).child("Description").setValue(description)
@@ -221,19 +226,13 @@ final class DataModel: ObservableObject {
             schnitzel!.generateCollisionShapes(recursive: true)
             schnitzelAnchor.position = SIMD3<Float>(0,0,0)
             self.arView.scene.anchors.append(schnitzelAnchor)
-            print(self.arView.scene.findEntity(named: "corn"))
         } else {
             let schnitzelAnchor = try! Experience.loadSchnitzel()
             let schnitzel = schnitzelAnchor.schnitzel as? HasCollision
             schnitzel!.generateCollisionShapes(recursive: true)
             schnitzelAnchor.position = SIMD3<Float>(0,0,0)
             self.arView.scene.anchors.append(schnitzelAnchor)
-            print(self.arView.scene.findEntity(named: "schnitzel"))
         }
-        
-        //DataModel.shared.hasPlacedSchnitzel = true
-        
-        
         
         self.ref.child("Schnitzel").child(self.schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
             let value = snapshot.value as? NSDictionary
@@ -250,10 +249,8 @@ final class DataModel: ObservableObject {
             self.arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors] )
 
             if self.isVeggie {
-                print(self.arView.scene.findEntity(named: "corn"))
                 self.arView.scene.findEntity(named: "corn")?.isEnabled = true
             } else {
-                print(self.arView.scene.findEntity(named: "schnitzel"))
                 self.arView.scene.findEntity(named: "schnitzel")?.isEnabled = true
             }
             self.isRelocalizingMap = true
@@ -263,22 +260,70 @@ final class DataModel: ObservableObject {
         }) { (error) in
             print(error.localizedDescription)
         }
-        //self.ref.child("Test").setValue("Please read")
+    }
+    
+    func getAvailableHints(){
+        let userID: String = (Auth.auth().currentUser?.uid)!
+        
+        self.ref.child("Jagd").child(userID).child(self.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
+        self.availableHints = snapshot.value as! Int
+            
+        if(self.availableHints < 4){
+            self.showSmallerCircle = true
+        }
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
     }
     
     @IBAction func showHint(){
         let userID: String = (Auth.auth().currentUser?.uid)!
+        
         self.ref.child("Jagd").child(userID).child(self.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
             self.availableHints = snapshot.value as! Int
+            print(self.schnitzelId)
+            print(self.availableHints)
             self.availableHints -= 1
+            if(self.availableHints < 4){
+                self.showSmallerCircle = true
+            } else {
+                self.showSmallerCircle = false
+            }
             if(self.availableHints < 0){
                 self.availableHints = 0
             }
+            print(self.availableHints)
             self.ref.child("Jagd").child(userID).child(self.schnitzelId).child("Hints").setValue(self.availableHints)
             self.showHintAlert = true
         }) { (error) in
             print(error.localizedDescription)
         }
+    }
+    
+    struct UserScore: Identifiable {
+      var id: String = UUID().uuidString
+      var user: String
+      var score: Int
+    }
+    @IBAction func loadScores(){
+        DataModel.shared.ref.child("Jagd").observe(DataEventType.value, with: { (snapshot) in
+            let value = snapshot.value as? Dictionary<String, Dictionary<String, Any>>
+            if value != nil {
+                self.userScores = []
+                for (key, element) in value! {
+                    if(element["Score"] != nil){
+                        let userScore = UserScore(id: key, user: element["Username"] as! String, score: element["Score"] as! Int)
+                        self.userScores.append(userScore)
+                    }
+                }
+                self.userScores = self.userScores.sorted(by: { $0.score > $1.score })
+            }
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+        
     }
     
     // MARK: - AR session management
@@ -297,15 +342,7 @@ final class DataModel: ObservableObject {
         isRelocalizingMap = false
         //virtualObjectAnchor = nil
     }
-    
-//    var virtualObjectAnchor: ARAnchor?
-//    let virtualObjectAnchorName = "virtualObject"
-//
-//    let virtualObject = try! Experience.loadSchnitzel()
-    
-    
     #endif
-    
 }
 
 enum ScreenState {
@@ -314,5 +351,6 @@ enum ScreenState {
     case SEARCH_SCHNITZEL_MAP
     case SEARCH_SCHNITZEL_AR
     case PLACE_SCHNITZEL_AR
+    case SCOREBOARD
     
 }
