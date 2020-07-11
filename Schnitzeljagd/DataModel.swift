@@ -30,6 +30,7 @@ final class DataModel: ObservableObject {
     @Published var hasPlacedSchnitzel: Bool = false
     var isTakingSnapshot: Bool = false
     var schnitzelARAnchor: ARAnchor?
+    @Published var showHelperAlert: Bool = false
     
     // UI
     var uiViews: UIViews?
@@ -150,6 +151,16 @@ enum ScreenState {
     case SEARCH_SCHNITZEL_AR
     case PLACE_SCHNITZEL_AR
     case SCOREBOARD
+    
+}
+
+enum HelperState {
+    
+    case HELPER_INIT
+    case HELPER_REQUESTED
+    case HELPER_LOADING
+    case HELPER_SUGGESTED
+    case HELPER_DONE
     
 }
 

@@ -32,6 +32,7 @@ enum TextEnum: String {
     case dismiss = "Abbrechen"
     case okay = "Okay"
     case close = "Schließen"
+    case found = "Jagd beendet!"
     
     // MapView Messages
     case annotationTitle = "Schnitzel"
@@ -58,6 +59,17 @@ enum TextEnum: String {
     case foundAlertAccept = "Zum Menü"
     case foundAlertDecline = "Hier bleiben"
     
+    // Reload World Map Alert
+    case reloadAlertTitle = "Reloaden der WorldMap"
+    case reloadAlertMessage = "Die AR-Erkennung wird zurückgesetzt und ein neuer Versuch, das Schnitzel zu laden, wird gestartet."
+    
+    // Load Helper Schnitzel Alert
+    case helperAlertTitle = "Schnitzel manuell laden"
+    case helperAlertMessage = "Das Schnitzel erscheint nicht, obwohl du die richtige Stelle gefunden hast? Dann lade es jetzt manuell."
+    case helperNotAvailable = "Du bist noch zu weit vom Schnitzel entfernt, um es manuell laden zu können"
+    case helperSuggested = "Du kannst das Schnitzel manuell laden, in dem du auf das Schnitzel-Symbol drückst."
+    case helperLoading = "Das Schnitzel wird platziert, sobald eine horizontale Ebene gefunden wurde."
+    
     // Missing Schnitzel Alert
     case missingAlertTitle = "Fehlendes Schnitzel"
     case missingAlertMessage = "Bitte platziere erst ein Schnitzel, indem du auf den Bildschirm tippst."
@@ -78,7 +90,7 @@ enum NumberEnum: Double {
     case regionRadius = 80.0
     case regionRadiusSmall = 60.0
     /** Radius around actual position of Schnitzel in which Schnitzel counts as found*/
-    case foundRadius = 3.0
+    case foundRadius = 48.0 // TODO
     /** Buffer of exiting a region to prevent flimmering in meters */
     case regionBuffer = 6.0
     case offsetBuffer = 4.0

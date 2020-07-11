@@ -32,13 +32,7 @@ struct ContentView : View {
                          }
                          Spacer()
                          VStack {
-                              if (self.data.screenState == .MENU_MAP || self.data.screenState == .PLACE_SCHNITZEL_AR){
-                                   Text(self.title)
-                                        .font(.title)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.white)
-                                        .lineLimit(1)
-                              } else {
+                              if (self.data.screenState == .SEARCH_SCHNITZEL_MAP || self.data.screenState == .SEARCH_SCHNITZEL_AR ){
                                    Text(self.title)
                                         .font(.system(size: 22))
                                         .fontWeight(.bold)
@@ -49,6 +43,12 @@ struct ContentView : View {
                                         .foregroundColor(.white)
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)
+                              } else {
+                                   Text(self.title)
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
                               }
                           }
                           Spacer()

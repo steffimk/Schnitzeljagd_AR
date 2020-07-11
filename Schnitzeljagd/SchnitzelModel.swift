@@ -49,6 +49,7 @@ class SchnitzelJagd : Hashable {
         // Load time
         DataModel.shared.ref.child("Jagd").child(userID!).child(schnitzelId).observeSingleEvent(of: .value, with: { (snapshot) in
             let value = snapshot.value as? Dictionary<String,Any>
+            self.timePassed = value?["CurrentDuration"] as? Int ?? self.timePassed
             let finalTime = value?["FinalTime"] as? Int
             if finalTime != nil {
                 self.isFound = true
@@ -58,7 +59,6 @@ class SchnitzelJagd : Hashable {
             if (availableHints == nil){
                 DataModel.shared.ref.child("Jagd").child(userID!).child(self.schnitzelId).child("Hints").setValue(4)
             }
-            self.timePassed = value?["CurrentDuration"] as? Int ?? self.timePassed
             self.couldUpdate = true
             print("data loaded - time passed: \(self.timePassed), isFound: \(self.isFound)")
           }) { (error) in
@@ -113,7 +113,7 @@ class SchnitzelJagd : Hashable {
     }
     
     func determineDistanceToSchnitzel() -> Double {
-        return DataModel.shared.location!.distance(from: CLLocation(latitude: annotationWithRegion.actualLocation.latitude, longitude: annotationWithRegion.actualLocation.longitude))
+        return DataModel.shared.locationManager.location!.distance(from: CLLocation(latitude: annotationWithRegion.actualLocation.latitude, longitude: annotationWithRegion.actualLocation.longitude))
     }
     
     func saveTime() {

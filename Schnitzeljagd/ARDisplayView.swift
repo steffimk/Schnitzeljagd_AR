@@ -123,17 +123,16 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
     func handleGestureInSearchMode(withGestureRecognizer recognizer: UIGestureRecognizer) {
         // TODO: geht noch nicht
         let touchInView = recognizer.location(in: self)
-        guard self.entity (
-            at: touchInView
-            ) != nil else {
-          return
+        guard self.entity (at: touchInView) != nil else {
+                print("Touch not on entity")
+                return
         }
         DataModel.shared.loadedData.currentSchnitzelJagd!.found() // TODO: richtig beenden
         if DataModel.shared.screenState == .SEARCH_SCHNITZEL_AR {
             let uiView = DataModel.shared.uiViews!.getSearchARUIView()
-            uiView.showAlert = true
             uiView.showFoundAlert = true
             uiView.timer.upstream.connect().cancel()
+            print("Clicked on schnitzel")
         }
     }
     
@@ -304,6 +303,7 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         let schnitzelExperience = try! Experience.loadSchnitzel()
         schnitzelExperience.name = TextEnum.schnitzelAnchorEntity.rawValue
         schnitzelExperience.position = SIMD3<Float>(0, 0, 0)
+        
         self.scene.addAnchor(schnitzelExperience)
     }
     

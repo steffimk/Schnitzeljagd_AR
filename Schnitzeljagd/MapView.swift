@@ -75,8 +75,10 @@ struct SearchMapView: UIViewRepresentable {
         let shownRegion = MKCoordinateRegion(center: schnitzelAnnotation.coordinate, latitudinalMeters: CLLocationDistance(exactly: 200)!, longitudinalMeters: CLLocationDistance(exactly: 200)!)
         uiView.setRegion(uiView.regionThatFits(shownRegion), animated: true)
         
-//        let actualSchnitzel = MKPointAnnotation(__coordinate: schnitzelAnnotation.actualLocation)
-//        uiView.addAnnotation(actualSchnitzel)
+        if DataModel.shared.loadedData.currentSchnitzelJagd!.isFound {
+            let actualSchnitzel = MKPointAnnotation(__coordinate: schnitzelAnnotation.actualLocation)
+            uiView.addAnnotation(actualSchnitzel)
+        }
     }
     
     
