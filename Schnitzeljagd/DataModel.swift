@@ -50,7 +50,7 @@ final class DataModel: ObservableObject {
     @Published var showAnnotationInfoAlert: Bool = false
     var currentRegions: Set<CLRegion> = Set<CLRegion>()
     var loadedData: LoadedData = LoadedData()
-    @Published var v: MKMapView!
+    @Published var v: SearchMapView!
     
     // State
     @Published var isVeggie: Bool = false
@@ -94,29 +94,12 @@ final class DataModel: ObservableObject {
         self.locationManager.stopUpdatingLocation()
     }
     
-    func getAvailableHints(){
-        let userID: String = (Auth.auth().currentUser?.uid)!
-        
-        self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
-        self.availableHints = snapshot.value as! Int
-            
-        if(self.availableHints < 4){
-            self.showSmallerCircle = true
-        }
-            
-        }) { (error) in
-            print(error.localizedDescription)
-        }
-    }
-    
     @IBAction func showHint(){
         let userID: String = (Auth.auth().currentUser?.uid)!
         
         self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").observeSingleEvent(of: .value, with: { (snapshot) in
 
             self.availableHints = snapshot.value as! Int
-            print(self.loadedData.currentSchnitzelJagd!.schnitzelId)
-            print(self.availableHints)
             self.availableHints -= 1
             if(self.availableHints < 4){
                 self.showSmallerCircle = true
@@ -126,7 +109,6 @@ final class DataModel: ObservableObject {
             if(self.availableHints < 0){
                 self.availableHints = 0
             }
-            print(self.availableHints)
             self.ref.child("Jagd").child(userID).child(self.loadedData.currentSchnitzelJagd!.schnitzelId).child("Hints").setValue(self.availableHints)
             self.showHintAlert = true
         }) { (error) in

@@ -175,8 +175,6 @@ struct MapUIView: View {
                                 if schnitzel.readyForSearch() {
                                     DataModel.shared.showStartSearchAlert = false
                                     DataModel.shared.screenState = .SEARCH_SCHNITZEL_MAP
-                                    DataModel.shared.getAvailableHints()
-                                    print(DataModel.shared.availableHints)
                                 }
                              }),
                              secondaryButton: .cancel(Text(TextEnum.alertDecline.rawValue), action: {

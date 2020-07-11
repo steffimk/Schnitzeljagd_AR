@@ -76,7 +76,7 @@ enum TextEnum: String {
 enum NumberEnum: Double {
     
     case regionRadius = 80.0
-    case regionRadiusSmall = 40.0
+    case regionRadiusSmall = 60.0
     /** Radius around actual position of Schnitzel in which Schnitzel counts as found*/
     case foundRadius = 3.0
     /** Buffer of exiting a region to prevent flimmering in meters */

@@ -160,7 +160,7 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
     let circle: MKCircle
     let circleSmall: MKCircle
     
-    init(actualLocation: CLLocationCoordinate2D, center: CLLocationCoordinate2D, radius: CLLocationDistance, regionIdentifier: String, title: String = TextEnum.annotationTitle.rawValue, subtitle: String = TextEnum.annotationSubtitle.rawValue, isOwned: Bool) {
+    init(actualLocation: CLLocationCoordinate2D, center: CLLocationCoordinate2D, radius: CLLocationDistance, centerSmall: CLLocationCoordinate2D, radiusSmall: CLLocationDistance, regionIdentifier: String, title: String = TextEnum.annotationTitle.rawValue, subtitle: String = TextEnum.annotationSubtitle.rawValue, isOwned: Bool) {
         self.actualLocation = actualLocation
         self.coordinate = center
         self.title = title
@@ -171,7 +171,7 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
         self.region.notifyOnEntry = true
         self.region.notifyOnExit = true
         self.circle = MKCircle(center: center, radius: radius)
-        self.circleSmall = MKCircle(center: center, radius: radius/2)
+        self.circleSmall = MKCircle(center: centerSmall, radius: radiusSmall)
 
         super.init()
     }
@@ -205,15 +205,19 @@ class LoadedData : ObservableObject {
                         let lat = location?["latitude"] ?? 0.0
                         let lon = location?["longitude"] ?? 0.0
                         let regionCenter = element["RegionCenter"] as? Dictionary<String, CLLocationDegrees>
+                        let regionCenterSmall = element["RegionCenterSmall"] as? Dictionary<String, CLLocationDegrees>
                         let centerLat = regionCenter?["latitude"] ?? 0.0
                         let centerLon = regionCenter?["longitude"] ?? 0.0
+                        let centerLatSmall = regionCenterSmall?["latitude"] ?? 0.0
+                        let centerLonSmall = regionCenterSmall?["longitude"] ?? 0.0
                         
                         // TODO: Only add Schnitzel when not more than x kilometers away to improve schnitzel management
                         print("Loaded Schnitzel \(title) \(description) with Id \(schnitzelId) and coordinates \(lat) + \(lon) from user \(userId)")
 
                         let coordinateAnnotation = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
+                        let coordinateAnnotationSmall = CLLocationCoordinate2D(latitude: centerLatSmall, longitude: centerLonSmall)
                         let coordinateSchnitzel = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                        let schnitzelAnnotation = AnnotationWithRegion(actualLocation: coordinateSchnitzel, center: coordinateAnnotation, radius: NumberEnum.regionRadius.rawValue, regionIdentifier: schnitzelId, title: title, subtitle: description, isOwned: userId == currentUserId)
+                        let schnitzelAnnotation = AnnotationWithRegion(actualLocation: coordinateSchnitzel, center: coordinateAnnotation, radius: NumberEnum.regionRadius.rawValue, centerSmall: coordinateAnnotationSmall, radiusSmall: NumberEnum.regionRadiusSmall.rawValue, regionIdentifier: schnitzelId, title: title, subtitle: description, isOwned: userId == currentUserId)
 
                         let schnitzel = SchnitzelJagd(id: schnitzelId, ownerId: userId, annotation: schnitzelAnnotation)
 

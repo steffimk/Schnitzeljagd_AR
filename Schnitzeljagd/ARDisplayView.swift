@@ -247,6 +247,7 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
         let lon: Double = (dataModel.locationManager.location?.coordinate.longitude)!
         let schnitzelId: String = String(Date().toMillis())
         let shiftedCoordinates = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadius.rawValue))
+        let shiftedCoordinatesSmall = StaticFunctions.calculateRandomCenter(latitude: lat, longitude: lon, maxOffsetInMeters: Int(NumberEnum.regionRadiusSmall.rawValue/2))
         
         self.session.getCurrentWorldMap { worldMap, error in
             guard worldMap != nil else {
@@ -277,6 +278,7 @@ extension ARView: ARCoachingOverlayViewDelegate, ARSessionDelegate {
                 }
             }
             dataModel.ref.child("Schnitzel").child(schnitzelId).child("RegionCenter").setValue(["latitude": shiftedCoordinates.latitude, "longitude": shiftedCoordinates.longitude])
+            dataModel.ref.child("Schnitzel").child(schnitzelId).child("RegionCenterSmall").setValue(["latitude": shiftedCoordinatesSmall.latitude, "longitude": shiftedCoordinatesSmall.longitude])
             dataModel.ref.child("Schnitzel").child(schnitzelId).child("User").setValue(userID)
             dataModel.ref.child("Schnitzel").child(schnitzelId).child("Titel").setValue(title)
             dataModel.ref.child("Schnitzel").child(schnitzelId).child("Description").setValue(description)
