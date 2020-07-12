@@ -165,8 +165,7 @@ class AnnotationWithRegion : NSObject, MKAnnotation {
         self.coordinate = center
         self.title = title
         self.subtitle = subtitle
-//        TODO: self.isOwned = isOwned
-        self.isOwned = false
+        self.isOwned = isOwned
         self.region = CLCircularRegion(center: center, radius: radius, identifier: regionIdentifier)
         self.region.notifyOnEntry = true
         self.region.notifyOnExit = true
@@ -211,7 +210,7 @@ class LoadedData : ObservableObject {
                         let centerLatSmall = regionCenterSmall?["latitude"] ?? 0.0
                         let centerLonSmall = regionCenterSmall?["longitude"] ?? 0.0
                         
-                        // TODO: Only add Schnitzel when not more than x kilometers away to improve schnitzel management
+                        // TODO: Improve management: Only add Schnitzel when not more than x kilometers
                         print("Loaded Schnitzel \(title) \(description) with Id \(schnitzelId) and coordinates \(lat) + \(lon) from user \(userId)")
 
                         let coordinateAnnotation = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)

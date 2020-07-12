@@ -122,6 +122,7 @@ final class DataModel: ObservableObject {
       var user: String
       var score: Int
     }
+    
     @IBAction func loadScores(){
         DataModel.shared.ref.child("Jagd").observe(DataEventType.value, with: { (snapshot) in
             let value = snapshot.value as? Dictionary<String, Dictionary<String, Any>>
@@ -142,26 +143,6 @@ final class DataModel: ObservableObject {
         
     }
     #endif
-}
-
-enum ScreenState {
-    
-    case MENU_MAP
-    case SEARCH_SCHNITZEL_MAP
-    case SEARCH_SCHNITZEL_AR
-    case PLACE_SCHNITZEL_AR
-    case SCOREBOARD
-    
-}
-
-enum HelperState {
-    
-    case HELPER_INIT
-    case HELPER_REQUESTED
-    case HELPER_LOADING
-    case HELPER_SUGGESTED
-    case HELPER_DONE
-    
 }
 
 extension Date {

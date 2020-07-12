@@ -57,5 +57,13 @@ class SnapshotAnchor: ARAnchor {
     }
 
 }
-#endif
 
+extension ARWorldMap {
+
+    var snapshotAnchor: SnapshotAnchor? {
+        return anchors.compactMap { $0 as? SnapshotAnchor }.first
+    }
+
+}
+
+#endif

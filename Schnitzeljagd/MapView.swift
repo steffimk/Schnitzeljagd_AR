@@ -18,7 +18,6 @@ struct MapView: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
         startLocationServices()
         let mapView = MKMapView(frame: .zero)
-//        DataModel.shared.v = mapView
         mapView.delegate = DataModel.shared.mapViewDelegate
         mapView.showsCompass = true
         DataModel.shared.loadedData.observeAndLoadSchnitzelAnnotations()

@@ -114,26 +114,16 @@ struct PopOver : View {
      var body: some View {
           VStack{
                Text("\(self.contentView.session.session?.email ?? "Schnitzel")" )
-//               Divider()
-//               NavigationLink(destination: ContentView()) {
-//                    Text("Found Schnitzel")
-//                         .foregroundColor(Color.gray)
-//               }.buttonStyle(PlainButtonStyle())
-//                    .padding(8)
-//                    .frame(minWidth: 0, maxWidth: 200)
                Divider()
                     Toggle(isOn: self.contentView.$data.isVeggie) {
                         Image("corn")
                         Text("Vegetarier")
                     }.padding()
-//               NavigationLink(destination: ContentView()) {
-//                    Text("User Settings")
-//                         .foregroundColor(Color.gray)
-//               }.buttonStyle(PlainButtonStyle())
-//                    .padding(8)
-//                    .frame(minWidth: 0, maxWidth: 200)
                Divider()
-                    Button(action: { self.contentView.showUserMenu.toggle(); self.contentView.session.signOut() }){
+                    Button(action: {
+                              self.contentView.showUserMenu.toggle()
+                              self.contentView.session.signOut()
+                    }){
                     Text("Logout")
                }
           }.frame(width: 200, height: 100, alignment: .top)

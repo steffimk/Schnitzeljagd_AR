@@ -6,8 +6,6 @@
 //  Copyright © 2020 PIOSE. All rights reserved.
 //
 
-import Foundation
-
 /**
  An enum containing all strings/messages that are displayed in the app
  */
@@ -83,16 +81,4 @@ enum TextEnum: String {
     case schnitzelARAnchor = "SchnitzelARAnchor"
     case schnitzelEntity = "schnitzel"
     case cornEntity = "corn"
-}
-
-enum NumberEnum: Double {
-    
-    case regionRadius = 80.0
-    case regionRadiusSmall = 60.0
-    /** Radius around actual position of Schnitzel in which Schnitzel counts as found*/
-    case foundRadius = 48.0 // TODO
-    /** Buffer of exiting a region to prevent flimmering in meters */
-    case regionBuffer = 6.0
-    case offsetBuffer = 4.0
-    
 }

@@ -13,69 +13,6 @@ import MapKit
 
 #if !targetEnvironment(simulator)
 
-class UIViews {
-    
-    private let contentView: ContentView
-    private var placeSchnitzelUIView: PlaceSchnitzelUIView?
-    private var mapUIView: MapUIView?
-    private var searchMapUIView: SearchMapUIView?
-    private var searchARUIView: SearchARUIView?
-    private var scoreboardView: ScoreboardView?
-    
-    init(contentView: ContentView){
-        self.contentView = contentView
-    }
-    
-    func getPlaceSchnitzelUIView() -> PlaceSchnitzelUIView {
-        if placeSchnitzelUIView == nil {
-            placeSchnitzelUIView = PlaceSchnitzelUIView()
-        }
-        return placeSchnitzelUIView!
-    }
-    
-    func getMapUIView() -> MapUIView {
-        if mapUIView == nil {
-            mapUIView = MapUIView()
-        }
-        return mapUIView!
-    }
-    
-    func getSearchMapUIView() -> SearchMapUIView {
-        if searchMapUIView == nil {
-            searchMapUIView = SearchMapUIView()
-        }
-        return searchMapUIView!
-    }
-    
-    func getSearchARUIView() -> SearchARUIView {
-        if searchARUIView == nil {
-            searchARUIView = SearchARUIView()
-        }
-        return searchARUIView!
-    }
-    
-    func getScoreboardView() -> ScoreboardView {
-        if scoreboardView == nil {
-            scoreboardView = ScoreboardView()
-        }
-        return scoreboardView!
-    }
-    
-    func refreshAll() {
-        self.placeSchnitzelUIView = PlaceSchnitzelUIView()
-        self.mapUIView = MapUIView()
-        if self.searchMapUIView != nil {
-            self.searchMapUIView = SearchMapUIView()
-        }
-        if self.searchARUIView != nil {
-            self.searchARUIView = SearchARUIView()
-        }
-        if self.scoreboardView != nil {
-            self.scoreboardView = ScoreboardView()
-        }
-    }
-}
-
 struct PlaceSchnitzelUIView: View {
     @EnvironmentObject var data: DataModel
     @State var value: CGFloat = 0
@@ -381,10 +318,6 @@ struct SearchARUIView: View {
                 self.schnitzelJagd.found()
                 self.helperState = .HELPER_LOADING
             }), secondaryButton: .cancel(Text(TextEnum.dismiss.rawValue)))
-//        case .HELPER_SUGGESTED:
-//            return Alert(title: Text(TextEnum.helperAlertTitle.rawValue), message: Text(TextEnum.helperSuggested.rawValue), dismissButton: .default(Text(TextEnum.okay.rawValue), action: {
-//                self.helperState = .HELPER_REQUESTED
-//            }))
         case .HELPER_LOADING:
             return Alert(title: Text(TextEnum.helperAlertTitle.rawValue), message: Text(TextEnum.helperLoading.rawValue), dismissButton: .default(Text(TextEnum.okay.rawValue), action: { self.helperState = .HELPER_DONE }))
         default:
@@ -421,51 +354,71 @@ struct SearchARUIView: View {
         let currentDistance = self.schnitzelJagd.determineDistanceToSchnitzel()
         self.backgroundColor = StaticFunctions.getBackgroundColor(distanceToSchnitzel: currentDistance)
         print("currentDistance: \(currentDistance)")
-        if currentDistance < NumberEnum.foundRadius.rawValue && helperState == .HELPER_INIT {
+        if helperState == .HELPER_INIT && currentDistance < NumberEnum.foundRadius.rawValue {
             self.helperState = .HELPER_REQUESTED
         }
     }
-    
 }
 
-struct TextModifier: ViewModifier {
+class UIViews {
     
-    var color: Color = .blue
+    private let contentView: ContentView
+    private var placeSchnitzelUIView: PlaceSchnitzelUIView?
+    private var mapUIView: MapUIView?
+    private var searchMapUIView: SearchMapUIView?
+    private var searchARUIView: SearchARUIView?
+    private var scoreboardView: ScoreboardView?
     
-    func body(content: Content) -> some View {
-        content
-            .font(.headline)
-            .padding(8)
-            .background(color)
-            .cornerRadius(40)
-            .foregroundColor(.white)
-            .padding(4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 40)
-                    .stroke(Color.purple, lineWidth: 4)
-        )
+    init(contentView: ContentView){
+        self.contentView = contentView
     }
-}
-
-struct TextFieldStyle: ViewModifier {
-    var font: Font
-    var showPlaceHolder: Bool
-    var placeholder: String
     
-    func body(content: Content) -> some View {
-        ZStack(alignment: .leading) {
-            if showPlaceHolder {
-                Text(placeholder)
-                    .font(font)
-                    .foregroundColor(.white)
-                    .background(Color.clear)
-                    .padding(.horizontal, 15)
-            }
-            content
-                .font(font)
-                .foregroundColor(.white)
-                .background(Color.clear)
-                .padding(.horizontal, 15)
+    func getPlaceSchnitzelUIView() -> PlaceSchnitzelUIView {
+        if placeSchnitzelUIView == nil {
+            placeSchnitzelUIView = PlaceSchnitzelUIView()
+        }
+        return placeSchnitzelUIView!
+    }
+    
+    func getMapUIView() -> MapUIView {
+        if mapUIView == nil {
+            mapUIView = MapUIView()
+        }
+        return mapUIView!
+    }
+    
+    func getSearchMapUIView() -> SearchMapUIView {
+        if searchMapUIView == nil {
+            searchMapUIView = SearchMapUIView()
+        }
+        return searchMapUIView!
+    }
+    
+    func getSearchARUIView() -> SearchARUIView {
+        if searchARUIView == nil {
+            searchARUIView = SearchARUIView()
+        }
+        return searchARUIView!
+    }
+    
+    func getScoreboardView() -> ScoreboardView {
+        if scoreboardView == nil {
+            scoreboardView = ScoreboardView()
+        }
+        return scoreboardView!
+    }
+    
+    func refreshAll() {
+        self.placeSchnitzelUIView = PlaceSchnitzelUIView()
+        self.mapUIView = MapUIView()
+        if self.searchMapUIView != nil {
+            self.searchMapUIView = SearchMapUIView()
+        }
+        if self.searchARUIView != nil {
+            self.searchARUIView = SearchARUIView()
+        }
+        if self.scoreboardView != nil {
+            self.scoreboardView = ScoreboardView()
         }
     }
 }

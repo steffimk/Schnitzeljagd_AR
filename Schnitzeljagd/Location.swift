@@ -37,6 +37,32 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
         print("Location updates are paused")
     }
     
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus){
+        switch(status){
+        case .notDetermined:
+            print("Location authorization not determined")
+            manager.stopUpdatingLocation()
+        case .restricted:
+            print("Location authorization restricted")
+            manager.stopUpdatingLocation()
+        case .authorizedAlways:
+            print("Location always authorized")
+            manager.startUpdatingLocation()
+        case .authorizedWhenInUse:
+            print("Location authorized when in use")
+            manager.startUpdatingLocation()
+        default: print("Other location authorization")
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        if let error = error as? CLError, error.code == .denied {
+           // Location updates are not authorized.
+           manager.stopUpdatingLocation()
+        }
+        print("Location Manager failed: " + error.localizedDescription)
+    }
+    
 //    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
 //        print("Location Manager started to monitor region \(region.identifier)")
 //    }
@@ -64,35 +90,5 @@ class LocationDelegate : NSObject, CLLocationManagerDelegate {
 //
 //        print("State of region \(region.identifier) determined: \(stateValue)")
 //    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading){
-        // TODO: Handle new Heading
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus){
-        switch(status){
-        case .notDetermined:
-            print("Location authorization not determined")
-            manager.stopUpdatingLocation()
-        case .restricted:
-            print("Location authorization restricted")
-            manager.stopUpdatingLocation()
-        case .authorizedAlways:
-            print("Location always authorized")
-            manager.startUpdatingLocation()
-        case .authorizedWhenInUse:
-            print("Location authorized when in use")
-            manager.startUpdatingLocation()
-        default: print("Other location authorization")
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        if let error = error as? CLError, error.code == .denied {
-           // Location updates are not authorized.
-           manager.stopUpdatingLocation()
-        }
-        print("Location Manager failed: " + error.localizedDescription)
-    }
 
 }

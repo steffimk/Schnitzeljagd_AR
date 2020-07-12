@@ -28,6 +28,10 @@
 		84F1B06C2480FBDB00FCC68A /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1B06B2480FBDB00FCC68A /* MapView.swift */; };
 		A27BD61C2487FB19006D286F /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27BD61B2487FB19006D286F /* Location.swift */; };
 		A27BD6222488259C006D286F /* TextEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27BD6212488259C006D286F /* TextEnum.swift */; };
+		A284C47B24BB0303002DDB9B /* StateEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A284C47A24BB0303002DDB9B /* StateEnums.swift */; };
+		A284C47D24BB0623002DDB9B /* ARController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A284C47C24BB0623002DDB9B /* ARController.swift */; };
+		A284C48024BB0C09002DDB9B /* NumberEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = A284C47F24BB0C09002DDB9B /* NumberEnum.swift */; };
+		A284C48224BB0D50002DDB9B /* StyleModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A284C48124BB0D50002DDB9B /* StyleModifiers.swift */; };
 		A2C4AE83249E2B9900D69E86 /* SchnitzelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C4AE82249E2B9900D69E86 /* SchnitzelModel.swift */; };
 		A2D93E7924A0EC3100DAA99A /* StaticFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2D93E7824A0EC3100DAA99A /* StaticFunctions.swift */; };
 		F22BF67D8CEF878CBB8D0983 /* Pods_Schnitzeljagd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03B6BD240311064274541C23 /* Pods_Schnitzeljagd.framework */; };
@@ -80,6 +84,10 @@
 		84F1B06B2480FBDB00FCC68A /* MapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		A27BD61B2487FB19006D286F /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		A27BD6212488259C006D286F /* TextEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEnum.swift; sourceTree = "<group>"; };
+		A284C47A24BB0303002DDB9B /* StateEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateEnums.swift; sourceTree = "<group>"; };
+		A284C47C24BB0623002DDB9B /* ARController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARController.swift; sourceTree = "<group>"; };
+		A284C47F24BB0C09002DDB9B /* NumberEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberEnum.swift; sourceTree = "<group>"; };
+		A284C48124BB0D50002DDB9B /* StyleModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleModifiers.swift; sourceTree = "<group>"; };
 		A2C4AE82249E2B9900D69E86 /* SchnitzelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchnitzelModel.swift; sourceTree = "<group>"; };
 		A2D93E7824A0EC3100DAA99A /* StaticFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticFunctions.swift; sourceTree = "<group>"; };
 		BF03FD3F9717C364456DAC50 /* Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig"; path = "Target Support Files/Pods-Schnitzeljagd-SchnitzeljagdUITests/Pods-Schnitzeljagd-SchnitzeljagdUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -165,26 +173,28 @@
 		84DA5207247D2796006546B6 /* Schnitzeljagd */ = {
 			isa = PBXGroup;
 			children = (
-				84F1B06B2480FBDB00FCC68A /* MapView.swift */,
-				84DA523A247D2911006546B6 /* ARUIView.swift */,
-				84DA523B247D2911006546B6 /* ARDisplayView.swift */,
 				84DA5208247D2796006546B6 /* AppDelegate.swift */,
 				84DA520A247D2796006546B6 /* ContentView.swift */,
+				84DA523A247D2911006546B6 /* ARUIView.swift */,
+				84DA523B247D2911006546B6 /* ARDisplayView.swift */,
+				84F1B06B2480FBDB00FCC68A /* MapView.swift */,
 				8447665324B8453700E5AB70 /* ScoreboardView.swift */,
+				84D8BBF8247E7BD5006990B4 /* SignInView.swift */,
+				A284C47C24BB0623002DDB9B /* ARController.swift */,
+				A27BD61B2487FB19006D286F /* Location.swift */,
 				84DA5238247D2860006546B6 /* DataModel.swift */,
+				A2C4AE82249E2B9900D69E86 /* SchnitzelModel.swift */,
+				84D8BBF4247E6893006990B4 /* SessionStore.swift */,
+				8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */,
+				A284C47E24BB0BC8002DDB9B /* Enums */,
+				A2D93E7824A0EC3100DAA99A /* StaticFunctions.swift */,
+				A284C48124BB0D50002DDB9B /* StyleModifiers.swift */,
 				84DA520C247D2796006546B6 /* Experience.rcproject */,
 				84DA520E247D2797006546B6 /* Assets.xcassets */,
+				84DA5210247D2797006546B6 /* Preview Content */,
 				84DA5213247D2797006546B6 /* LaunchScreen.storyboard */,
 				84DA5216247D2797006546B6 /* Info.plist */,
 				84D8BBF2247E4ED4006990B4 /* GoogleService-Info.plist */,
-				84DA5210247D2797006546B6 /* Preview Content */,
-				84D8BBF4247E6893006990B4 /* SessionStore.swift */,
-				84D8BBF8247E7BD5006990B4 /* SignInView.swift */,
-				A27BD61B2487FB19006D286F /* Location.swift */,
-				A27BD6212488259C006D286F /* TextEnum.swift */,
-				8466F077248D9F4F00EAAC12 /* SnapshotAnchor.swift */,
-				A2C4AE82249E2B9900D69E86 /* SchnitzelModel.swift */,
-				A2D93E7824A0EC3100DAA99A /* StaticFunctions.swift */,
 			);
 			path = Schnitzeljagd;
 			sourceTree = "<group>";
@@ -213,6 +223,16 @@
 				84DA522C247D2798006546B6 /* Info.plist */,
 			);
 			path = SchnitzeljagdUITests;
+			sourceTree = "<group>";
+		};
+		A284C47E24BB0BC8002DDB9B /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				A27BD6212488259C006D286F /* TextEnum.swift */,
+				A284C47A24BB0303002DDB9B /* StateEnums.swift */,
+				A284C47F24BB0C09002DDB9B /* NumberEnum.swift */,
+			);
+			path = Enums;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -492,9 +512,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				84D8BBF9247E7BD5006990B4 /* SignInView.swift in Sources */,
+				A284C48024BB0C09002DDB9B /* NumberEnum.swift in Sources */,
 				84DA520B247D2796006546B6 /* ContentView.swift in Sources */,
 				A27BD61C2487FB19006D286F /* Location.swift in Sources */,
 				A2D93E7924A0EC3100DAA99A /* StaticFunctions.swift in Sources */,
+				A284C47B24BB0303002DDB9B /* StateEnums.swift in Sources */,
 				8447665424B8453700E5AB70 /* ScoreboardView.swift in Sources */,
 				A27BD6222488259C006D286F /* TextEnum.swift in Sources */,
 				84DA5239247D2860006546B6 /* DataModel.swift in Sources */,
@@ -506,6 +528,8 @@
 				8466F078248D9F4F00EAAC12 /* SnapshotAnchor.swift in Sources */,
 				84DA520D247D2796006546B6 /* Experience.rcproject in Sources */,
 				A2C4AE83249E2B9900D69E86 /* SchnitzelModel.swift in Sources */,
+				A284C47D24BB0623002DDB9B /* ARController.swift in Sources */,
+				A284C48224BB0D50002DDB9B /* StyleModifiers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
